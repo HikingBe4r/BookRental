@@ -32,6 +32,8 @@ public class RentalDAO {
 			
 			pstmt = conn.prepareStatement(sql.toString());
 			
+			pstmt.setString(1, memberId);
+			
 			rs = pstmt.executeQuery();
 			while(rs.next()) {
 				Vector<Object> book = new Vector<Object>();

@@ -5,9 +5,8 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 public class DBconn {
-
 	public static Connection getConnection() throws SQLException {
-		// driver 汲沥
+		// driver 靹れ爼
 		try {
 			Class.forName("oracle.jdbc.OracleDriver");
 
@@ -16,14 +15,14 @@ public class DBconn {
 			e.printStackTrace();
 		}
 
-		// Connection 按眉 积己
+		// Connection 臧濎泊 靸濎劚
 		String url = "jdbc:oracle:thin:@kodica0303-PC:1521:xe";
 		String user = "rental_server";
 		String password = "java1234";
 
 		Connection conn = DriverManager.getConnection(url, user, password);
 		
-		System.out.println("楷搬 己傍");
+		System.out.println("鞐瓣舶靹标车");
 		
 		return conn;
 	}

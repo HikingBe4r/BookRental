@@ -17,7 +17,6 @@ public class DBconn {
 		}
 
 		// Connection °´Ã¼ »ý¼º
-
 		String url = "jdbc:oracle:thin:@kodica0303-PC:1521:xe";
 		String user = "rental_server";
 		String password = "java1234";

@@ -44,6 +44,8 @@ public class MainFrame extends JFrame{
 		getContentPane().add(centerPanel);
 		centerPanel.setLayout(new CardLayout(0, 0));
 		
+		MemberPanel mPanel = new MemberPanel();
+		centerPanel.add(mPanel);
 	}
 	
 	public void init() {
@@ -55,7 +57,7 @@ public class MainFrame extends JFrame{
 	
 	public MainFrame() {
 		getContentPane().setBackground(Color.WHITE);
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);		
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
 		init();		
 		

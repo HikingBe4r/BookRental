@@ -34,7 +34,7 @@ public class LoginFrame extends JFrame {
     }
 
     /**
-     * Create the frame.
+     * Create the frame
      */
     public LoginFrame() {
 	setBounds(100,100,400,300);

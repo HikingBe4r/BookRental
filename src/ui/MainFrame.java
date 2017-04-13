@@ -35,7 +35,7 @@ public class MainFrame extends JFrame{
 		button_2.setBounds(10, 430+20, btnWidth, btnHeight);
 		leftPanel.add(button_2);
 		
-		JButton button_3 = new JButton("대여 / 반납 기록");
+		JButton button_3 = new JButton("대여 / 반납기록");
 		button_3.setBounds(10, 570+25, btnWidth, btnHeight);
 		leftPanel.add(button_3);
 		

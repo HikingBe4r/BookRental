@@ -13,17 +13,34 @@ public class RentalDAO {
 	
 	// 대여 히스토리 검색
 	public Vector<Vector<Object>> selectRentalHistoryList
-				(String keyword, String[] pattern, String startDate, String endDate) throws SQLException {
-		
+				(String keyword, boolean[] pattern, String startDate, String endDate) throws SQLException {
+		// pattern : String 배열에서 boolean 배열로 바꿈
+		// [0] : 도서명 or 회원명, [1] : 대여, [2] : 반납, [3] : 연장
 		Vector<Vector<Object>> historys = new Vector<Vector<Object>>();
 		Connection conn = null;
 		PreparedStatement pstmt = null;
+		ResultSet rs = null;
 		try {
+			conn = DBconn.getConnection();
+			
+			StringBuilder sql = new StringBuilder();
+			sql.append("select r.rental_id, b.book_id, b.title, m.member_id, m.name, m.phone, ");
+			sql.append("nvl2(r.return_date, '반납', decode(r.due_date - r.rent_date, 7, '대여', '연장')), ");
+			sql.append("r.rent_date, r.return_date, r.due_date ");
+			sql.append("from book b, rental r, member m ");
+			sql.append("where b.book_id = r.book_id and m.member_id = r.member_id and ");
+			sql.append(" r.rent_date between ? and ? and m.name = ? and b.title = ?  ");
+			
+			
+			
+			
 			
 		} catch (Exception e) {
-			
+			e.printStackTrace();
 		} finally {
-			
+			if(rs != null) rs.close();
+			if(pstmt != null) pstmt.close();
+			if(conn != null) conn.close();
 		}
 		
 		

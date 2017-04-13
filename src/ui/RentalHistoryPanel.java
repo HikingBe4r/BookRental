@@ -13,15 +13,47 @@ import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
 import javax.swing.JTextField;
+import javax.swing.table.DefaultTableModel;
 
 // 대여반납기록 조회 패널
 public class RentalHistoryPanel extends JPanel implements ActionListener {
 	private JCheckBox checkRental, checkReturn, checkRenewal;
 	private JComboBox<String> combo;
 	private JButton selectBtn;
+	private JTable rentingTable;
+	private DefaultTableModel dm;
 	private JTextField conditionTF, startDateTF, endDateTF;
 	private Vector<String> condition = new Vector<String>();
+	
+	private JTable createTable() {
+		try {
+			String[] columnNames = {"도서ID", "도서명", "저자", "출판사", "장르", "반납예정일", "연장여부"};
+			dm = new DefaultTableModel(columnNames, 0) {
+
+				@Override
+				public boolean isCellEditable(int row, int column) {
+					return false;
+				}			
+			};
+			/*RentalDAO dao = new RentalDAO();
+			Vector<Vector<Object>> rowData = dao.selectRentingBooksByMember(memberId);
+			for(int i=0; i<rowData.size(); i++) {
+				dm.addRow(rowData.elementAt(i));
+			}*/
+			
+			return new JTable(dm);
+					
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		} 
+			
+	} // createTable()
+	
+	
 	
 	private void addComponent() {
 		this.setLayout(new BorderLayout());
@@ -62,7 +94,12 @@ public class RentalHistoryPanel extends JPanel implements ActionListener {
 		selectBtn = new JButton("조회");
 		northPanel.add(selectBtn);
 		
-		
+		// 대여현황 리스트
+		this.rentingTable = createTable();
+		this.rentingTable.setRowHeight(20);
+		JScrollPane pane = new JScrollPane(rentingTable);
+				
+		add(pane, BorderLayout.CENTER);
 	}
 	
 	

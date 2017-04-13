@@ -13,7 +13,7 @@ import javax.swing.JTextField;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 
-public class LoginUI extends JFrame {
+public class LoginFrame extends JFrame {
     private JTextField textField;
     private JTextField textField_1;
 
@@ -24,7 +24,7 @@ public class LoginUI extends JFrame {
 	EventQueue.invokeLater(new Runnable() {
 	    public void run() {
 		try {
-		    LoginUI frame = new LoginUI();
+		    LoginFrame frame = new LoginFrame();
 		    frame.setVisible(true);
 		} catch (Exception e) {
 		    e.printStackTrace();
@@ -36,7 +36,7 @@ public class LoginUI extends JFrame {
     /**
      * Create the frame.
      */
-    public LoginUI() {
+    public LoginFrame() {
 	setBounds(100,100,400,300);
     	setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     	setBackground(Color.BLACK);

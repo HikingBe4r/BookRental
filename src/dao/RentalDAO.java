@@ -11,6 +11,57 @@ import conn.DBconn;
 
 public class RentalDAO {
 	
+	// 대여 히스토리 검색
+	public Vector<Vector<Object>> selectRentalHistoryList
+				(String keyword, String[] pattern, String startDate, String endDate) throws SQLException {
+		
+		Vector<Vector<Object>> historys = new Vector<Vector<Object>>();
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		try {
+			
+		} catch (Exception e) {
+			
+		} finally {
+			
+		}
+		
+		
+		
+		
+		return historys;
+	}
+	
+	
+	// 도서 연장
+	public void renewalBooksFromBasket(List<Integer> rentingBooksRecords) throws SQLException {
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		try {
+			conn = DBconn.getConnection();
+			StringBuilder sql = new StringBuilder();
+			sql.append("update rental ");
+			sql.append("set due_date = due_date + 7 ");
+			sql.append("where rental_id = ?");
+			pstmt = conn.prepareStatement(sql.toString());
+			
+			for(int i=0; i<rentingBooksRecords.size(); i++) {
+				pstmt.setInt(1, rentingBooksRecords.get(i));
+				pstmt.addBatch();
+				pstmt.clearParameters();
+			}		
+			pstmt.executeBatch();
+			conn.commit();
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			if (pstmt != null) pstmt.close();
+			if (conn != null) conn.close();
+		}
+	}
+	
+	
 	// 대여 현황 조회
 	public Vector<Vector<Object>> selectRentingBooksByMember(String memberId) throws SQLException{
 		Vector<Vector<Object>> books = new Vector<Vector<Object>>();
@@ -22,7 +73,7 @@ public class RentalDAO {
 			
 			StringBuilder sql = new StringBuilder();
 			sql.append("select b.book_id, b.title, b.writer, b.publisher, g.genre_name, to_char(r.due_date,'YYYY/MM/DD'), "); 
-			sql.append("decode(trunc(r.due_date - r.rent_date), 7, 'O', 'X' ");
+			sql.append("decode(trunc(r.due_date - r.rent_date), 14, 'O', 'X') "); // 연장을 이미 했는지 여부(연장완료? 기연장여부?)
 			sql.append("from book b, rental r, genre g ");
 			sql.append("where b.book_id = r.book_id ");
 			sql.append("and g.genre_id = b.genre_id ");

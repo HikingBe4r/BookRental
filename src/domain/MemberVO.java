@@ -5,13 +5,13 @@ public class MemberVO {
 	String name;
 	String phone;
 	String birthDay;
-	Boolean withdraw;
+	String withdraw;	// 탈퇴 or null
 	
 	public MemberVO() {
 		super();
 	}
 
-	public MemberVO(String id, String name, String phone, String birthDay, Boolean withdraw) {
+	public MemberVO(String id, String name, String phone, String birthDay, String withdraw) {
 		super();
 		this.id = id;
 		this.name = name;
@@ -44,10 +44,10 @@ public class MemberVO {
 	public void setBirthDay(String birthDay) {
 		this.birthDay = birthDay;
 	}
-	public Boolean getWithdraw() {
+	public String getWithdraw() {
 		return withdraw;
 	}
-	public void setWithdraw(Boolean withdraw) {
+	public void setWithdraw(String withdraw) {
 		this.withdraw = withdraw;
 	}
 	

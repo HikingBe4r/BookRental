@@ -42,7 +42,7 @@ public class RentalDAO {
 			// 대여 일련번호, 도서ID, 도서명, 회원ID, 회원명, 연락처, 구분, 대여일, 반납일, 반납예정일
 			rentSql.append("select r.rental_id, b.book_id, b.title, m.id, m.name, m.phonenum, ");
 			rentSql.append("nvl2(r.return_date, '반납', decode(r.due_date - r.rent_date, 7, '대여', '연장')), ");
-			rentSql.append("to_char(r.rent_date,'YYYY/MM/DD'), to_char(r.rent_date,'YYYY/MM/DD'), to_char(r.rent_date,'YYYY/MM/DD') ");
+			rentSql.append("to_char(r.rent_date,'YYYY/MM/DD'), to_char(r.return_date,'YYYY/MM/DD'), to_char(r.due_date,'YYYY/MM/DD') ");
 			rentSql.append("from book b, rental r, member m ");
 			rentSql.append("where b.book_id = r.book_id and m.id = r.member_id and ");
 			rentSql.append("m.name like ? and b.title like ? and r.rent_date between to_date(?, 'YYYY/MM/DD') and trunc(to_date(?, 'YYYY/MM/DD'))+1 and "); 
@@ -52,7 +52,7 @@ public class RentalDAO {
 			StringBuilder returnSql = new StringBuilder();
 			returnSql.append("select r.rental_id, b.book_id, b.title, m.id, m.name, m.phonenum, ");
 			returnSql.append("nvl2(r.return_date, '반납', decode(r.due_date - r.rent_date, 7, '대여', '연장')), ");
-			returnSql.append("to_char(r.rent_date,'YYYY/MM/DD'), to_char(r.rent_date,'YYYY/MM/DD'), to_char(r.rent_date,'YYYY/MM/DD') ");
+			returnSql.append("to_char(r.rent_date,'YYYY/MM/DD'), to_char(r.return_date,'YYYY/MM/DD'), to_char(r.due_date,'YYYY/MM/DD') ");
 			returnSql.append("from book b, rental r, member m ");
 			returnSql.append("where b.book_id = r.book_id and m.id = r.member_id and ");
 			returnSql.append("m.name like ? and b.title like ? and r.rent_date between to_date(?, 'YYYY/MM/DD') and trunc(to_date(?, 'YYYY/MM/DD'))+1 and ");
@@ -61,7 +61,7 @@ public class RentalDAO {
 			StringBuilder renewalSql = new StringBuilder();
 			renewalSql.append("select r.rental_id, b.book_id, b.title, m.id, m.name, m.phonenum, ");
 			renewalSql.append("nvl2(r.return_date, '반납', decode(r.due_date - r.rent_date, 7, '대여', '연장')), ");
-			renewalSql.append("to_char(r.rent_date,'YYYY/MM/DD'), to_char(r.rent_date,'YYYY/MM/DD'), to_char(r.rent_date,'YYYY/MM/DD') ");
+			renewalSql.append("to_char(r.rent_date,'YYYY/MM/DD'), to_char(r.return_date,'YYYY/MM/DD'), to_char(r.due_date,'YYYY/MM/DD') ");
 			renewalSql.append("from book b, rental r, member m ");
 			renewalSql.append("where b.book_id = r.book_id and m.id = r.member_id and ");
 			renewalSql.append("m.name like ? and b.title like ? and r.rent_date between to_date(?, 'YYYY/MM/DD') and trunc(to_date(?, 'YYYY/MM/DD'))+1 and ");

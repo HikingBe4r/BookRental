@@ -8,15 +8,14 @@ public class BookVO {
 	String publisher;
 	String publishDate;
 	String isbn;
-	boolean isRent;
+	String isRent;
 	int genre1;
 		
 	public BookVO() {
 		super();
 	}
 
-	public BookVO(String bookId, String subject, String writer, String publisher, String publishDate, String isbn, boolean isRent,
-			int genre1) {
+	public BookVO(String bookId, String subject, String writer, String publisher, String publishDate, String isbn, String isRent, int genre1) {
 		super();
 		this.bookId = bookId;
 		this.subject = subject;
@@ -68,11 +67,11 @@ public class BookVO {
 		this.isbn = isbn;
 	}
 
-	public boolean isRent() {
+	public String getIsRent() {
 		return isRent;
 	}
 
-	public void setRent(boolean isRent) {
+	public void setIsRent(String isRent) {
 		this.isRent = isRent;
 	}
 

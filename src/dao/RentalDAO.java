@@ -15,25 +15,125 @@ public class RentalDAO {
 	public Vector<Vector<Object>> selectRentalHistoryList
 				(String keyword, boolean[] pattern, String startDate, String endDate) throws SQLException {
 		// pattern : String 배열에서 boolean 배열로 바꿈
-		// [0] : 도서명 or 회원명, [1] : 대여, [2] : 반납, [3] : 연장
+		// [0] : 도서명(true) or 회원명(false), [1] : 대여, [2] : 반납, [3] : 연장
 		Vector<Vector<Object>> historys = new Vector<Vector<Object>>();
+		
+		
+		int numOfSelectedBox = 0; 	// 체크박스가 설정된 개수 
+		for(int i=1; i<pattern.length; i++) {
+			if(pattern[i]) numOfSelectedBox++; 
+		}
+		
+		// 체크박스 모두 해제 되어있을 때
+		if(numOfSelectedBox == 0) {
+			return historys;	// 비어있는 벡터
+		}
+		
 		Connection conn = null;
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
 		try {
 			conn = DBconn.getConnection();
 			
+			// 대여,반납,연장 조건처리 어떻게 할것인지 생각해볼 필요
+			// 대여,반납,연장 sql문 따로 생성한 후, union?
+			
+			StringBuilder rentSql = new StringBuilder();
+			// 대여 일련번호, 도서ID, 도서명, 회원ID, 회원명, 연락처, 구분, 대여일, 반납일, 반납예정일
+			rentSql.append("select r.rental_id, b.book_id, b.title, m.member_id, m.name, m.phone, ");
+			rentSql.append("nvl2(r.return_date, '반납', decode(r.due_date - r.rent_date, 7, '대여', '연장')), ");
+			rentSql.append("r.rent_date, r.return_date, r.due_date ");
+			rentSql.append("from book b, rental r, member m ");
+			rentSql.append("where b.book_id = r.book_id and m.member_id = r.member_id and ");
+			rentSql.append("m.name like ? and b.title like ? and r.rent_date between to_date(?, 'YYYY/MM/DD') and to_date(?, 'YYYY/MM/DD') and "); 
+			//					멤버 이름			책 이름									시작날	 					 끝날
+			rentSql.append("r.return_date is null and ");
+			rentSql.append("r.due_date - r.rent_date = 7 ");
+			
+			StringBuilder returnSql = new StringBuilder();
+			returnSql.append("select r.rental_id, b.book_id, b.title, m.member_id, m.name, m.phone, ");
+			returnSql.append("nvl2(r.return_date, '반납', decode(r.due_date - r.rent_date, 7, '대여', '연장')), ");
+			returnSql.append("r.rent_date, r.return_date, r.due_date ");
+			returnSql.append("from book b, rental r, member m ");
+			returnSql.append("where b.book_id = r.book_id and m.member_id = r.member_id and ");
+			returnSql.append("m.name like ? and b.title like ? and r.rent_date between to_date(?, 'YYYY/MM/DD') and to_date(?, 'YYYY/MM/DD') and ");
+			returnSql.append("r.return_date in not null ");
+			
+			StringBuilder renewalSql = new StringBuilder();
+			renewalSql.append("select r.rental_id, b.book_id, b.title, m.member_id, m.name, m.phone, ");
+			renewalSql.append("nvl2(r.return_date, '반납', decode(r.due_date - r.rent_date, 7, '대여', '연장')), ");
+			renewalSql.append("r.rent_date, r.return_date, r.due_date ");
+			renewalSql.append("from book b, rental r, member m ");
+			renewalSql.append("where b.book_id = r.book_id and m.member_id = r.member_id and ");
+			renewalSql.append("m.name like ? and b.title like ? and r.rent_date between to_date(?, 'YYYY/MM/DD') and to_date(?, 'YYYY/MM/DD') and ");
+			renewalSql.append("r.return_date is null and ");
+			renewalSql.append("r.due_date - r.rent_date = 14 ");
+			
 			StringBuilder sql = new StringBuilder();
-			sql.append("select r.rental_id, b.book_id, b.title, m.member_id, m.name, m.phone, ");
-			sql.append("nvl2(r.return_date, '반납', decode(r.due_date - r.rent_date, 7, '대여', '연장')), ");
-			sql.append("r.rent_date, r.return_date, r.due_date ");
-			sql.append("from book b, rental r, member m ");
-			sql.append("where b.book_id = r.book_id and m.member_id = r.member_id and ");
-			sql.append(" r.rent_date between ? and ? and m.name = ? and b.title = ?  ");
+			if(pattern[1]) {
+				sql.append(rentSql);
+				if(pattern[2]) sql.append(" union ").append(returnSql);
+				if(pattern[3]) sql.append(" union ").append(renewalSql);
+			} else if(pattern[2]) {
+				sql.append(returnSql);
+				if(pattern[3]) sql.append(" union ").append(renewalSql);
+			} else {
+				sql.append(renewalSql);
+			}
+			pstmt = conn.prepareStatement(sql.toString());
+					
+			if(pattern[0]) { // 도서명
+				pstmt.setString(1, "%");
+				pstmt.setString(2, "%" + keyword + "%");
+			} else { // 회원명
+				pstmt.setString(1, "%" + keyword + "%");
+				pstmt.setString(2, "%");
+			}
+			pstmt.setString(3, startDate);
+			pstmt.setString(4, endDate);	
 			
+			if (numOfSelectedBox >= 2) {
+				if(pattern[0]) { // 도서명
+					pstmt.setString(5, "%");
+					pstmt.setString(6, "%" + keyword + "%");
+				} else { // 회원명
+					pstmt.setString(5, "%" + keyword + "%");
+					pstmt.setString(6, "%");
+				}
+				pstmt.setString(7, startDate);
+				pstmt.setString(8, endDate);
+			} 
 			
+			if (numOfSelectedBox == 3) {
+				if(pattern[0]) { // 도서명
+					pstmt.setString(9, "%");
+					pstmt.setString(10, "%" + keyword + "%");
+				} else { // 회원명
+					pstmt.setString(9, "%" + keyword + "%");
+					pstmt.setString(10, "%");
+				}
+				pstmt.setString(11, startDate);
+				pstmt.setString(12, endDate);
+			} 
 			
+			rs = pstmt.executeQuery();
+			sql.delete(0, sql.length());
 			
+			while(rs.next()) {
+				Vector<Object> history = new Vector<Object>();
+				history.addElement(rs.getInt(1));		// 대여 일련번호
+				history.addElement(rs.getString(2));	// 도서ID
+				history.addElement(rs.getString(3));	// 도서명
+				history.addElement(rs.getString(4));	// 회원ID
+				history.addElement(rs.getString(5));	// 회원명
+				history.addElement(rs.getString(6));	// 연락처
+				history.addElement(rs.getString(7));	// 구분
+				history.addElement(rs.getString(8));	// 대여일
+				history.addElement(rs.getString(9));	// 반납일
+				history.addElement(rs.getString(10));	// 반납예정일
+				
+				historys.add(history);
+			}			
 			
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -41,10 +141,7 @@ public class RentalDAO {
 			if(rs != null) rs.close();
 			if(pstmt != null) pstmt.close();
 			if(conn != null) conn.close();
-		}
-		
-		
-		
+		}		
 		
 		return historys;
 	}
@@ -58,7 +155,7 @@ public class RentalDAO {
 			conn = DBconn.getConnection();
 			StringBuilder sql = new StringBuilder();
 			sql.append("update rental ");
-			sql.append("set due_date = due_date + 7 ");
+			sql.append("set due_date = due_date + 7 ");	// 연장시 반납예정일 7일 증가
 			sql.append("where rental_id = ?");
 			pstmt = conn.prepareStatement(sql.toString());
 			
@@ -89,13 +186,14 @@ public class RentalDAO {
 			conn = DBconn.getConnection();
 			
 			StringBuilder sql = new StringBuilder();
+			// 도서ID, 도서명, 저자, 출판사, 장르, 반납예정일
 			sql.append("select b.book_id, b.title, b.writer, b.publisher, g.genre_name, to_char(r.due_date,'YYYY/MM/DD'), "); 
 			sql.append("decode(trunc(r.due_date - r.rent_date), 14, 'O', 'X') "); // 연장을 이미 했는지 여부(연장완료? 기연장여부?)
 			sql.append("from book b, rental r, genre g ");
 			sql.append("where b.book_id = r.book_id ");
 			sql.append("and g.genre_id = b.genre_id ");
-			sql.append("and r.member_id = ? ");
-			sql.append("and r.return_date is null ");
+			sql.append("and r.member_id = ? ");			// 해당 회원의
+			sql.append("and r.return_date is null ");	// 현재 대여(연장)상태인 기록 
 			sql.append("order by r.rental_id asc");
 			
 			pstmt = conn.prepareStatement(sql.toString());
@@ -145,16 +243,17 @@ public class RentalDAO {
 			pstmt = conn.prepareStatement(sql.toString());
 			
 			sql2.append("update book ");
-			sql2.append("set status = 1 ");
+			sql2.append("set status = '1' "); // 0 : 대여가능, 1 : 대여중
 			sql2.append("where book_id = ? ");
-			pstmt2 = conn.prepareStatement(sql.toString());
+			pstmt2 = conn.prepareStatement(sql2.toString());
 			
-			for(int i=0; i<books.size(); i++) {			
-				pstmt.setString(1, memberId);
-				pstmt.setString(2, books.get(i));
-				pstmt.addBatch();
-				
+			for(int i=0; i<books.size(); i++) {		
 				String book = books.get(i);
+				
+				pstmt.setString(1, memberId);
+				pstmt.setString(2, book);
+				pstmt.addBatch();
+							
 				pstmt2.setString(1, book);
 				pstmt2.addBatch();
 				

@@ -30,7 +30,8 @@ public class RentalHistoryPanel extends JPanel implements ActionListener {
 	
 	private JTable createTable() {
 		try {
-			String[] columnNames = {"도서ID", "도서명", "저자", "출판사", "장르", "반납예정일", "연장여부"};
+			String[] columnNames = {" ", "도서ID", "도서명", "회원ID", "회원명", "연락처", "구분", 
+					"대여일", "반납일", "반납예정일"};
 			dm = new DefaultTableModel(columnNames, 0) {
 
 				@Override
@@ -100,28 +101,28 @@ public class RentalHistoryPanel extends JPanel implements ActionListener {
 		JScrollPane pane = new JScrollPane(rentingTable);
 				
 		add(pane, BorderLayout.CENTER);
-	}
+	} // addComponent()
 	
 	
 	private void addEventListener() {
 		
-	}
+	} // addEventListener()
 		
 	
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		
 		
-	}
+	} // acctionPerformed()
 
 	public void init() {
 		this.setBackground(Color.WHITE);
 		addComponent();
 		addEventListener();
-	}
+	} // init()
 	
 	public RentalHistoryPanel() {
 		init();
-	}
+	} // RentalHistoryPanel()
 
 }

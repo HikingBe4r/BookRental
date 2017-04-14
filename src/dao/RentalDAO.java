@@ -79,6 +79,7 @@ public class RentalDAO {
 			} else {
 				sql.append(renewalSql);
 			}
+			sql.append("order by rental_id desc ");
 			pstmt = conn.prepareStatement(sql.toString());
 					
 			if(pattern[0]) { // 도서명
@@ -130,7 +131,7 @@ public class RentalDAO {
 				history.addElement(rs.getString(8));	// 대여일
 				history.addElement(rs.getString(9));	// 반납일
 				history.addElement(rs.getString(10));	// 반납예정일
-				System.out.println(history.toString());
+				//System.out.println(history.toString());
 				historys.add(history);
 			}			
 			

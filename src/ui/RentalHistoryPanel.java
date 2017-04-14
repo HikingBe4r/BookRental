@@ -35,9 +35,10 @@ public class RentalHistoryPanel extends JPanel implements ActionListener {
 										// [0] : 도서명 or 회원명, [1]:대여, [2]:반납, [3]:연장
 	
 	
+	
 	private JTable createTable() {
 		try {
-			String[] columnNames = {" ", "도서ID", "도서명", "회원ID", "회원명", "연락처", "구분", 
+			String[] columnNames = {"대여일련번호", "도서ID", "도서명", "회원ID", "회원명", "연락처", "구분", 
 					"대여일", "반납일", "반납예정일"};
 			dm = new DefaultTableModel(columnNames, 0) {
 
@@ -162,11 +163,30 @@ public class RentalHistoryPanel extends JPanel implements ActionListener {
 			if(checkRenewal.isSelected()) pattern[3] = true;
 			else pattern[3] = false;		
 		} else if (target == retrieveBtn) { // ㅁ네9염09ㄴ요내ㅕㅗㅁㄴ9에7ㄹㄴㅁㅇㅎㄹ냐ㅛㄹㅇㅎㄴㅇㄹ78
-			this.rentingTable = createTable();
-			//this.rentingTable.setRowHeight(20);
-			JScrollPane pane = new JScrollPane(rentingTable);				
-			add(pane, BorderLayout.CENTER);	
-			
+			for(int i=dm.getRowCount()-1; i>=0; i--) {
+				dm.removeRow(i);
+			}
+			RentalDAO dao = new RentalDAO();
+			keyword = conditionTF.getText();		
+			startDate = startDateTF.getText();
+			if(startDate.length() != 10 || startDate.charAt(4) != '/' || startDate.charAt(7) != '/') {
+				// 날짜 포맷 맞는지 확인
+				JOptionPane.showMessageDialog(this, "YYYY/MM/DD 형태로 날짜를 입력하시오.");
+				return;
+			}
+			endDate = endDateTF.getText();
+			if(endDate.length() != 10 || endDate.charAt(4) != '/' || endDate.charAt(7) != '/') {
+				JOptionPane.showMessageDialog(this, "YYYY/MM/DD 형태로 날짜를 입력하시오.");
+				return;
+			}
+			try {
+				Vector<Vector<Object>> rowData = dao.selectRentalHistoryList(keyword, pattern, startDate, endDate);
+				for(int i=0; i<rowData.size(); i++) {
+					dm.addRow(rowData.elementAt(i));
+				}
+			} catch (Exception e2) {
+				e2.printStackTrace();
+			}	
 		}
 		
 		

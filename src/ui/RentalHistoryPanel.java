@@ -4,9 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Vector;
 
@@ -14,6 +12,7 @@ import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -51,7 +50,16 @@ public class RentalHistoryPanel extends JPanel implements ActionListener {
 			RentalDAO dao = new RentalDAO();
 			keyword = conditionTF.getText();		
 			startDate = startDateTF.getText();
+			if(startDate.length() != 10 || startDate.charAt(4) != '/' || startDate.charAt(7) != '/') {
+				// 날짜 포맷 맞는지 확인
+				JOptionPane.showMessageDialog(this, "YYYY/MM/DD 형태로 날짜를 입력하시오.");
+				return null;
+			}
 			endDate = endDateTF.getText();
+			if(endDate.length() != 10 || endDate.charAt(4) != '/' || endDate.charAt(7) != '/') {
+				JOptionPane.showMessageDialog(this, "YYYY/MM/DD 형태로 날짜를 입력하시오.");
+				return null;
+			}
 					
 			Vector<Vector<Object>> rowData = dao.selectRentalHistoryList(keyword, pattern, startDate, endDate);
 			for(int i=0; i<rowData.size(); i++) {
@@ -92,9 +100,12 @@ public class RentalHistoryPanel extends JPanel implements ActionListener {
 		checkRental =  new JCheckBox("대여");
 		checkReturn =  new JCheckBox("반납");
 		checkRenewal =  new JCheckBox("연장");
-		//checkRental.setSelected(true);
-		//checkReturn.setSelected(true);
-		//checkRenewal.setSelected(true);
+		checkRental.setSelected(true);
+		pattern[1] = true;
+		checkReturn.setSelected(true);
+		pattern[2] = true;
+		checkRenewal.setSelected(true);
+		pattern[3] = true;
 		northPanel.add(checkRental);
 		northPanel.add(checkReturn);
 		northPanel.add(checkRenewal);
@@ -143,18 +154,19 @@ public class RentalHistoryPanel extends JPanel implements ActionListener {
 			else pattern[0] = false;
 		} else if (target == checkRental) {
 			if(checkRental.isSelected()) pattern[1] = true;
-			else pattern[1] = false;
+			else pattern[1] = false;		
 		} else if (target == checkReturn) {
 			if(checkReturn.isSelected()) pattern[2] = true;
-			else pattern[2] = false;
+			else pattern[2] = false;		
 		} else if (target == checkRenewal) {
 			if(checkRenewal.isSelected()) pattern[3] = true;
-			else pattern[3] = false;
-		} else if (target == retrieveBtn) {
+			else pattern[3] = false;		
+		} else if (target == retrieveBtn) { // ㅁ네9염09ㄴ요내ㅕㅗㅁㄴ9에7ㄹㄴㅁㅇㅎㄹ냐ㅛㄹㅇㅎㄴㅇㄹ78
 			this.rentingTable = createTable();
 			//this.rentingTable.setRowHeight(20);
 			JScrollPane pane = new JScrollPane(rentingTable);				
-			add(pane, BorderLayout.CENTER);		
+			add(pane, BorderLayout.CENTER);	
+			
 		}
 		
 		

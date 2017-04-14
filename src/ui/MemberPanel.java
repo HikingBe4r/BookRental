@@ -122,6 +122,12 @@ public class MemberPanel extends JPanel{
 		withdrawTF.setColumns(10);
 		
 		JButton btnNewButton = new JButton("\uB4F1\uB85D");
+		btnNewButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+			    // 등록메소드
+			    
+			}
+		});
 		btnNewButton.setBounds(641, 196, 97, 23);
 		northPanel.add(btnNewButton);
 		
@@ -175,123 +181,22 @@ public class MemberPanel extends JPanel{
 		table.getColumnModel().getColumn(6).setPreferredWidth(49);
 		
 		
-		// 셀 안에 수정버튼 생성
-		//testTable buttonColumn = new testTable(table, null, 6);
-		//JButton renderBtn = new JButton();
-		JButton modifyBtn = new JButton("수정");	// 수정버튼 (클릭불가)?
-		JButton renderBtn = new JButton("수정");	// 기본버튼(클릭가능)?
-		
-		modifyBtn.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				System.out.println("으악");
-				// TODO Auto-generated method stub
-				
-			}
-		});
-		
-		
-		// 수정버튼 생성. column(6)자리에.
-		table.getColumnModel().getColumn(6).setCellRenderer(new TableCellRenderer() {
-			
-			@Override
-			public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus,
-					int row, int column) {
-				if (isSelected) {
-					renderBtn.setForeground(table.getSelectionForeground());
-					renderBtn.setBackground(table.getSelectionBackground());
-				} else {
-					renderBtn.setForeground(table.getForeground());
-					renderBtn.setBackground(UIManager.getColor("Button.background"));
-				}
-
-				if (hasFocus) {
-					renderBtn.setBorder(new LineBorder(Color.BLUE));
-				} else {
-					renderBtn.setBorder(new LineBorder(Color.white));
-				}
-				return renderBtn;
-			}
-		});
-		
-		// 더블클릭해도 버튼 안사라지게. --> 좀더 생각해봐야함.
-		table.getColumnModel().getColumn(6).setCellEditor(new TableCellEditor() {
-			
-			@Override
-			public boolean stopCellEditing() {
-				// TODO Auto-generated method stub
-				return false;
-			}
-			
-			@Override
-			public boolean shouldSelectCell(EventObject anEvent) {
-				// TODO Auto-generated method stub
-				return false;
-			}
-			
-			@Override
-			public void removeCellEditorListener(CellEditorListener l) {
-				// TODO Auto-generated method stub
-				
-			}
-			
-			@Override
-			public boolean isCellEditable(EventObject anEvent) {
-				// TODO Auto-generated method stub
-				return true;
-			}
-			
-			@Override
-			public Object getCellEditorValue() {
-				// TODO Auto-generated method stub
-				return null;
-			}
-			
-			@Override
-			public void cancelCellEditing() {
-				// TODO Auto-generated method stub
-				
-			}
-			
-			@Override
-			public void addCellEditorListener(CellEditorListener l) {
-				// TODO Auto-generated method stub
-				
-			}
-			
-			@Override
-			public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
-				if (value == null) {
-					modifyBtn.setText("수정");
-					modifyBtn.setIcon(null);
-				} else if (value instanceof Icon) {
-					modifyBtn.setText("");
-					modifyBtn.setIcon((Icon) value);
-				} else {
-					modifyBtn.setText(value.toString());
-					modifyBtn.setIcon(null);
-				}
-
-				//this.editorValue = value;
-				return modifyBtn;
-			}
-		});
-		
-		// 마우스 이벤트
-		
-		
-		
-		
-		
-		
-		
-		scrollPane.setViewportView(table);
-		
 		JButton withdrawBtn = new JButton("\uC120\uD0DD\uD68C\uC6D0\uD0C8\uD1F4");
 		withdrawBtn.setBounds(808, 428, 126, 23);
 		centerPanel.add(withdrawBtn);
 		
 		
+	}
+	
+	
+	// 기능추가
+	
+	//등록메소드
+	public void insertmember() {
+	    String name = nameTF.getText();
+	    String phoneNum = phoneTF.getText();
+	    String birthDay = birthdayTF.getText();
+	    
 	}
 }
 

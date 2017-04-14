@@ -32,7 +32,7 @@ public class MemberVO {
 	public void setName(String name) {
 		this.name = name;
 	}
-	public String getPhone() {
+	public String getPhoneNum() {
 		return phone;
 	}
 	public void setPhone(String phone) {

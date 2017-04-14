@@ -50,7 +50,7 @@ public class MainFrame extends JFrame implements ActionListener{
 		button_3.setBounds(10, 570+25, btnWidth, btnHeight);
 		leftPanel.add(button_3);
 		
-		JPanel centerPanel = new JPanel();
+		//JPanel centerPanel = new JPanel();
 		centerPanel = new JPanel();
 		centerPanel.setBounds(210, 0, 970, 762);
 		getContentPane().add(centerPanel);

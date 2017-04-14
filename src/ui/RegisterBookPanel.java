@@ -16,6 +16,7 @@ import javax.swing.JTextPane;
 import javax.swing.table.DefaultTableModel;
 import java.awt.Button;
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.SpinnerNumberModel;
 
 public class RegisterBookPanel extends JPanel {
 	private JTextField textField;
@@ -65,6 +66,7 @@ public class RegisterBookPanel extends JPanel {
 		panel_1.add(textPane_3);
 		
 		JSpinner spinner = new JSpinner();
+		spinner.setModel(new SpinnerNumberModel(new Integer(0), new Integer(0), null, new Integer(1)));
 		spinner.setBounds(294, 185, 66, 21);
 		panel_1.add(spinner);
 		

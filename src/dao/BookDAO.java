@@ -9,8 +9,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 
-import com.sun.corba.se.spi.orbutil.fsm.Guard.Result;
-
 import conn.DBconn;
 import domain.BookVO;
 import domain.GenreVO;
@@ -203,7 +201,6 @@ public class BookDAO {
 	public void insertBook(List<BookVO> book) throws SQLException { // 도서 등록
 		Connection conn = null;
 		PreparedStatement pstmt = null;
-		Result rs = null;
 
 		try {
 			conn = DBconn.getConnection();

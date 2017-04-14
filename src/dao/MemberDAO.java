@@ -36,7 +36,7 @@ public class MemberDAO {
 	    pstm.setString(3, member.getBirthDay());
 
 	    pstm.executeUpdate();
-
+ 
 	} finally {
 	    if (pstm != null)
 		pstm.close();

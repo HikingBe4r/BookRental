@@ -4,28 +4,31 @@ import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
-import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSpinner;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.JTextPane;
-import javax.swing.table.DefaultTableModel;
-import java.awt.Button;
-import javax.swing.DefaultComboBoxModel;
 import javax.swing.SpinnerNumberModel;
+import javax.swing.table.DefaultTableModel;
 
-public class RegisterBookPanel extends JPanel {
+public class RegisterBookPanel extends JPanel implements ActionListener{
 	private JTextField textField;
 	private JTextField textField_1;
 	private JTextField textField_2;
 	private JTextField textField_3;
 	private JTextField textField_4;
 	private JTable table;
-	public RegisterBookPanel() {
+	private JButton button3 = new JButton("\uCD08 \uAE30 \uD654");
+	private JSpinner spinner;
+	private JComboBox comboBox;
+	
+	
+	private void addComponent(){
 		setLayout(null);
 		
 		JPanel panel_1 = new JPanel();
@@ -54,7 +57,7 @@ public class RegisterBookPanel extends JPanel {
 		panel_1.add(textField);
 		textField.setColumns(10);
 		
-		JComboBox comboBox = new JComboBox();
+		comboBox = new JComboBox();
 		comboBox.setModel(new DefaultComboBoxModel(new String[] {"\uC18C\uC124", "\uC2DC/\uC5D0\uC138\uC774", "\uC778\uBB38", "\uAC00\uC815/\uC721\uC544", "\uC694\uB9AC", "\uAC74\uAC15", "\uCDE8\uBBF8/\uC2E4\uC6A9/\uC2A4\uD3EC\uCE20", "\uACBD\uC81C/\uACBD\uC601", "\uC790\uAE30\uACC4\uBC1C", "\uC815\uCE58/\uC0AC\uD68C", "\uC5ED\uC0AC/\uBB38\uD654", "\uC885\uAD50", "\uC608\uC220/\uB300\uC911\uBB38\uD654"}));
 		comboBox.setToolTipText("");
 		comboBox.setBounds(73, 185, 120, 21);
@@ -65,7 +68,7 @@ public class RegisterBookPanel extends JPanel {
 		textPane_3.setBounds(247, 185, 47, 21);
 		panel_1.add(textPane_3);
 		
-		JSpinner spinner = new JSpinner();
+		spinner = new JSpinner();
 		spinner.setModel(new SpinnerNumberModel(new Integer(0), new Integer(0), null, new Integer(1)));
 		spinner.setBounds(294, 185, 66, 21);
 		panel_1.add(spinner);
@@ -113,10 +116,11 @@ public class RegisterBookPanel extends JPanel {
 		btnNewButton_1.setBounds(830, 30, 90, 40);
 		panel_1.add(btnNewButton_1);
 		
-		JButton button_3 = new JButton("\uCD08 \uAE30 \uD654");
-		button_3.setBounds(830, 110, 90, 40);
-		panel_1.add(button_3);
+				//초기화
+		button3.setBounds(830, 110, 90, 40);
+		panel_1.add(button3);
 		
+		 		
 		JButton button_4 = new JButton("\uB4F1   \uB85D");
 		button_4.setBounds(830, 190, 90, 40);
 		panel_1.add(button_4);
@@ -148,101 +152,6 @@ public class RegisterBookPanel extends JPanel {
 				{null, null, null, null, null, null, null, null},
 				{null, null, null, null, null, null, null, null},
 				{null, null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null, null},
 			},
 			new String[] {
 				"  no", "                  \uC81C                \uBAA9                     ", "      \uC800  \uC790", "  \uCD9C  \uD310  \uC0AC ", "  \uC7A5  \uB974  ", "           I  S  B  N     ", "     \uC218   \uB7C9   ", "     \uAD00   \uB9AC"
@@ -265,10 +174,36 @@ public class RegisterBookPanel extends JPanel {
 		table.getColumnModel().getColumn(7).setPreferredWidth(87);
 		scrollPane.setViewportView(table);
 		
-		
-		
-		
-		
+				
+	}
+	
+	private void addEventListener() {
+		button3.addActionListener(this);
+	} 
+	
+	public void actionPerformed(ActionEvent e){
+		Object target = e.getSource();
+		if(target == button3){
+			textField.setText("");
+			textField_1.setText("");
+			textField_2.setText("");
+			textField_3.setText("");
+			textField_4.setText("");
+			comboBox.setSelectedIndex(0);
+			spinner.setValue(0);
+		}
 		
 	}
+	
+	public void init() {
+		addComponent();
+		addEventListener();
+	} // init()
+	
+	public RegisterBookPanel() {
+		init();
+	} // RentalHistoryPanel()
+	
+	
+	
 }

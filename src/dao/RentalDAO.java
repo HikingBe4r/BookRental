@@ -275,5 +275,51 @@ public class RentalDAO {
 			
 		}
 	}
+	//도서 반납
+		public void returnBooksFromBasket(List<Integer> rentingBookRecords) throws SQLException {
+			Connection conn = null;
+			PreparedStatement pstmt = null; //도서반납일 추가
+			PreparedStatement pstmt2 = null; //대여현황확인 변경 - 대여중 1, 대여가능 0
+			try {
+				conn = DBconn.getConnection();
+				
+				//도서반납일 추가 sql문
+				StringBuilder sql = new StringBuilder();
+				sql.append("update rental ");
+				sql.append("set return_date = sysdate ");
+				sql.append("where rental_id = ?");
+				pstmt = conn.prepareStatement(sql.toString());
+							
+				//대여현황확인 변경 sql문
+				StringBuilder sql2 = new StringBuilder();
+				sql2.append("update book ");
+				sql2.append("set status = 0 ");
+				sql2.append("where book_id = (select book_id from rental where rental_id = ?)");
+				pstmt2 = conn.prepareStatement(sql.toString());
+				
+				
+				for(int i = 0; i<rentingBookRecords.size(); i++){
+					pstmt.setInt(1, rentingBookRecords.get(i));
+					pstmt.addBatch();
+					pstmt.clearParameters();
+					
+					pstmt2.setInt(1, rentingBookRecords.get(i));
+					pstmt2.addBatch();
+					pstmt2.clearParameters();
+				}
+				
+				pstmt.executeBatch();
+				conn.commit();
+				pstmt2.executeBatch();
+				conn.commit();
+				
+			} catch (Exception e) {
+				e.printStackTrace();
+			}finally{
+				if(pstmt != null) pstmt.close();
+				if(conn != null) conn.close();
+			}
+		}
 
+	
 }

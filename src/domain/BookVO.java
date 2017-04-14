@@ -4,6 +4,7 @@ public class BookVO {
 
 	String bookId;
 	String subject;
+	String writer;
 	String publisher;
 	String publishDate;
 	String isbn;
@@ -14,11 +15,12 @@ public class BookVO {
 		super();
 	}
 
-	public BookVO(String bookId, String subject, String publisher, String publishDate, String isbn, boolean isRent,
+	public BookVO(String bookId, String subject, String writer, String publisher, String publishDate, String isbn, boolean isRent,
 			int genre1) {
 		super();
 		this.bookId = bookId;
 		this.subject = subject;
+		this.writer = writer;
 		this.publisher = publisher;
 		this.publishDate = publishDate;
 		this.isbn = isbn;
@@ -82,7 +84,12 @@ public class BookVO {
 		this.genre1 = genre1;
 	}
 
+	public String getWriter() {
+		return writer;
+	}
 
-	
+	public void setWriter(String writer) {
+		this.writer = writer;
+	}
 	
 }

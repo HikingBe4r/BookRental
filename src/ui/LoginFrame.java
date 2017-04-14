@@ -4,14 +4,19 @@ import java.awt.Color;
 import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.Image;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
+
+import conn.DBconn;
 
 public class LoginFrame extends JFrame {
     private JTextField textField;
@@ -73,8 +78,10 @@ public class LoginFrame extends JFrame {
 	
 	btnLogin.addActionListener(new ActionListener() {
 		public void actionPerformed(ActionEvent e) {
-		}
-	});
+		   
+		    }
+		    
+		});
 	btnLogin.setBounds(148, 176, 106, 38);
 	getContentPane().add(btnLogin);
 	

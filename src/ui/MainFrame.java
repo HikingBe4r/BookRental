@@ -19,23 +19,24 @@ public class MainFrame extends JFrame{
 		getContentPane().add(leftPanel);
 		leftPanel.setLayout(null);
 		
-		JButton btn1 = new JButton("\uD68C\uC6D0 \uAD00\uB9AC");
+		JButton btn1 = new JButton("회원관리");
 		btn1.setBounds(10, 10, btnWidth, btnHeight);
 		leftPanel.add(btn1);
 		
-		JButton button = new JButton("\uB300\uC5EC");
+		JButton button = new JButton("대여");
 		button.setBounds(10, 150+10, btnWidth, btnHeight);
+		
 		leftPanel.add(button);
 		
-		JButton button_1 = new JButton("\uBC18\uB0A9 / \uC5F0\uC7A5");
+		JButton button_1 = new JButton("반납 / 연장");
 		button_1.setBounds(10, 290+15, btnWidth, btnHeight);
 		leftPanel.add(button_1);
 		
-		JButton button_2 = new JButton("\uB3C4\uC11C \uAD00\uB9AC");
+		JButton button_2 = new JButton("도서관리");
 		button_2.setBounds(10, 430+20, btnWidth, btnHeight);
 		leftPanel.add(button_2);
 		
-		JButton button_3 = new JButton("\uB300\uC5EC / \uBC18\uB0A9\uAE30\uB85D");
+		JButton button_3 = new JButton("대여 / 반납기록");
 		button_3.setBounds(10, 570+25, btnWidth, btnHeight);
 		leftPanel.add(button_3);
 		
@@ -57,7 +58,7 @@ public class MainFrame extends JFrame{
 	
 	public MainFrame() {
 		getContentPane().setBackground(Color.WHITE);
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);		
 		
 		init();		
 		

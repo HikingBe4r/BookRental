@@ -186,7 +186,7 @@ public class RentalDAO {
 			conn = DBconn.getConnection();
 			
 			StringBuilder sql = new StringBuilder();
-			// 도서ID, 도서명, 저자, 출판사, 장르, 반납예정일
+			// 도서ID, 도서명, 저자, 출판사, 장르, 반납예정일, (기)연장여부
 			sql.append("select b.book_id, b.title, b.writer, b.publisher, g.genre_name, to_char(r.due_date,'YYYY/MM/DD'), "); 
 			sql.append("decode(trunc(r.due_date - r.rent_date), 14, 'O', 'X') "); // 연장을 이미 했는지 여부(연장완료? 기연장여부?)
 			sql.append("from book b, rental r, genre g ");

@@ -5,9 +5,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.List;
+import java.util.ArrayList;
 import java.util.Vector;
-
 
 import conn.DBconn;
 import domain.MemberVO;
@@ -114,23 +113,99 @@ public class MemberDAO {
     }
     // 이거 고치세요.
 
-    // 회원조건 검색
-    public Vector<Vector<Object>> retrieveMemberListByCondition(String keyField, String keyWord) {
-	Vector<Vector<Object>> memberList = null; // 이거 고치세요.
-
-	return memberList;
-    }
-
-    // 회원상세 조회
-    public MemberVO retrieveMember(String id) {
-	MemberVO member = null; // 이거 고치세요.
-
-	return member;
-    }
-
-    // 회원탈퇴
-    public void withdrawMemberList(List<String> idList) {
-
-    }
+ // 회원조건 검색 id순
+ 	public Vector<Vector<Object>> retrieveMemberListByCondition(String keyField, String keyWord) throws SQLException{
+ 		Vector<Vector<Object>> memberList = new Vector<Vector<Object>>(); // 이거 고치세요.
+ 		Connection conn = null;	//DBconn.getConnection(); 
+ 		PreparedStatement pstmt = null;
+ 		ResultSet rs = null;
+ 		
+ 		System.out.println("keyfield: "+keyField);
+ 		System.out.println("keyWord: "+keyWord);
+ 		
+ 		try {
+ 			conn = DBconn.getConnection();
+ 						
+ 			StringBuffer sql = new StringBuffer();
+ 			sql.append("select id, name, phoneNum, birthday, withdraw    ");
+ 			sql.append("from member    ");
+ 			
+ 			if(keyField == "id") {
+ 				sql.append("where id like ?    ");	// ? = keyword
+ 			} else if (keyField == "name") {
+ 				sql.append("where name like ?    ");	// ? = keyword
+ 			} else if (keyField == "phoneNum") {
+ 				sql.append("where phoneNum like ?    ");	// ? = keyword
+ 			} 
+ 			
+ 			sql.append("order by id asc   		");
+ 			
+ 			pstmt = conn.prepareStatement(sql.toString());
+ 			pstmt.setString(1, "%"+keyWord+"%");
+ 			
+ 			rs = pstmt.executeQuery();
+ 			while(rs.next()) {
+ 				Vector<Object> member = new Vector<Object>();
+ 				
+ 				member.addElement(false);
+ 				member.addElement(rs.getString(1));
+ 				member.addElement(rs.getString(2));
+ 				member.addElement(rs.getString(3));
+ 				member.addElement(rs.getString(4));
+ 				member.addElement(rs.getString(5));
+ 				
+ 				memberList.addElement(member);
+ 			}
+ 			
+ 		} finally {
+ 			if(rs != null) rs.close();
+ 			if(pstmt != null) pstmt.close();
+ 			if(conn != null) conn.close();
+ 		}
+ 				
+ 		return memberList;
+ 	}
+ 	
+ 	
+ 	// 회원상세 조회
+ 	public MemberVO retrieveMember(String id) {
+ 		MemberVO member = null; // 이거 고치세요.
+ 		
+ 		return member;
+ 	}
+ 	
+ 	// 회원탈퇴처리
+ 	public boolean withdrawMemberList(ArrayList<String> idList) throws SQLException {
+ 		
+ 		Connection conn = null;	//DBconn.getConnection(); 
+ 		PreparedStatement pstmt = null;
+ 		try {
+ 			conn = DBconn.getConnection();
+ 			
+ 			StringBuffer sql = new StringBuffer();
+ 			
+ 			
+ 			sql.append("update member 		");
+ 			sql.append("set withdraw = 1	");
+ 			sql.append("where id = ? 		");
+ 			
+ 			pstmt = conn.prepareStatement(sql.toString());
+ 			
+ 			for(int i = 0; i < idList.size(); i++) {
+ 				pstmt.setString(1, idList.get(i));
+ 				
+ 				pstmt.addBatch();
+ 				pstmt.clearParameters();
+ 			}
+ 			
+ 			pstmt.executeBatch();	// 이줄이 실행이 안됨.
+ 			
+ 			return true;
+ 			
+ 		} finally {
+ 			if(pstmt != null) pstmt.close();
+ 			if(conn != null) conn.close();
+ 		}
+ 	}
 
 }

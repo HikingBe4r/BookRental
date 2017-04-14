@@ -1,52 +1,189 @@
 package ui;
 
-import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.util.EventObject;
+import java.util.ArrayList;
+import java.util.Vector;
 
+import javax.swing.DefaultCellEditor;
 import javax.swing.DefaultComboBoxModel;
-import javax.swing.Icon;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.UIManager;
-import javax.swing.border.LineBorder;
-import javax.swing.event.CellEditorListener;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 
+import dao.MemberDAO;
+
 public class MemberPanel extends JPanel{
-	private JTextField keywordTF;
-	private JTextField idTF;
-	private JTextField nameTF;
-	private JTextField phoneTF;
-	private JTextField birthdayTF;
-	private JTextField withdrawTF;
-	private JTable memberListTable;
+	private JPanel northPanel , centerPanel;
+	private JButton retrieveMemberListBtn, retrieveAllMemberBtn, registerBtn, initBtn, withdrawBtn;
+	private JLabel idLabel, nameLabel, phoneLabel, birthdayLabel, withDrawLabel;
+	private JScrollPane scrollPane;
+	private JComboBox keyfieldCB; 
+	private JTextField keywordTF, idTF, nameTF, phoneTF, birthdayTF, withdrawTF;
 	private JTable table;
+	private JCheckBox box;
 	
-	public MemberPanel() {
-		setBackground(Color.WHITE);
-		setSize(970, 762);
-		setLayout(null);
+	private DefaultTableModel dtm;
+	
+	private MemberDAO dao = new MemberDAO();
+	
+	// 테이블 안에 버튼, 체크박스
+	class ButtonRenderer extends JButton implements TableCellRenderer {
+		public ButtonRenderer() {
+			setOpaque(true);
+		}
+
+		public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus,
+				int row, int column) {
+			if (isSelected) {
+				setForeground(table.getSelectionForeground());
+				setBackground(table.getSelectionBackground());
+			} else {
+				setForeground(table.getForeground());
+				setBackground(UIManager.getColor("Button.background"));
+			}
+			setText((value == null) ? "수정" : value.toString());
+			return this;
+		}
+	}
+
+	DefaultTableCellRenderer dcr = new DefaultTableCellRenderer() {
+		public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus,
+				int row, int column) {
+			JCheckBox box = new JCheckBox();
+			box.setSelected(((Boolean) value).booleanValue());
+			box.setHorizontalAlignment(JLabel.CENTER);
+			return box;
+		}
+	};
+
+	class ButtonEditor extends DefaultCellEditor {
+		protected JButton button;
+		private String label;
+		private boolean isPushed;
+
+		public ButtonEditor(JCheckBox checkBox) {
+			super(checkBox);
+			button = new JButton();
+			button.setOpaque(true);
+			button.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					fireEditingStopped();
+				}
+			});
+		}
+
+		public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row,
+				int column) {
+			if (isSelected) {
+				button.setForeground(table.getSelectionForeground());
+				button.setBackground(table.getSelectionBackground());
+			} else {
+				button.setForeground(table.getForeground());
+				button.setBackground(table.getBackground());
+			}
+			label = (value == null) ? "수정" : value.toString();
+			button.setText(label);
+			isPushed = true;
+			return button;
+		}
+
+		public Object getCellEditorValue() {
+			if (isPushed) {
+				int index = table.getSelectedRow();
+				JOptionPane.showMessageDialog(button, index + ": Ouch!");
+			}
+			isPushed = false;
+			return new String(label);
+		}
+
+		public boolean stopCellEditing() {
+			isPushed = false;
+			return super.stopCellEditing();
+		}
+
+		protected void fireEditingStopped() {
+			super.fireEditingStopped();
+		}
+	}
+	
+	private void addActionListener() {
+		retrieveMemberListBtn.addActionListener(listener);
+		withdrawBtn.addActionListener(listener);
+		box.addActionListener(listener);
+	}
+	
+	ArrayList<String> idList = null;
+	
+	ActionListener listener = new ActionListener() {
 		
-		JPanel northPanel = new JPanel();
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			// 버튼
+			if(e.getSource() instanceof JButton) {
+				if((JButton)(e.getSource()) == retrieveMemberListBtn) {
+					idList = new ArrayList<String>();
+					deleteTableRows();
+					if(searchMemberList()) {
+						// 확인창
+					}
+				} else if (e.getSource() == withdrawBtn) {
+					for(int i = 0; i < dtm.getRowCount(); i++) {
+						System.out.println("i번째: "+ dtm.getValueAt(i, 0));
+						if((boolean)dtm.getValueAt(i, 0) == true) {
+							idList.add((String)dtm.getValueAt(i, 1));
+							removeMember(idList);
+							//String selectedId = (String) dtm.getValueAt(index, 1);	// 해당 칼럼의 id
+						}
+					}
+					/*
+					if(removeMember(idList)) {
+						System.out.println("회원 탈퇴 성공");
+					}*/
+					//System.out.println();
+				}
+			} else if(e.getSource() instanceof JCheckBox) {
+				if((JCheckBox)(e.getSource()) == box) {
+					
+					if (box.isSelected()) {
+						
+						int index = table.getSelectedRow();	// 선택한 칼럼
+						
+						
+						dtm.setValueAt(true, index, 0);
+						//idList.add(index, selectedId);
+					} else {
+						int index = table.getSelectedRow();	// 선택한 칼럼
+						dtm.setValueAt(false, index, 0);
+						//idList.remove(table.getSelectedRow());
+						//System.out.println("DeSelected!!");
+						
+					}
+				}
+			}
+		}
+	};
+	
+	private void addComponent() {
+		northPanel = new JPanel();
 		northPanel.setBounds(12, 10, 946, 254);
 		add(northPanel);
 		northPanel.setLayout(null);
 		
-		JComboBox keyfieldCB = new JComboBox();
+		keyfieldCB = new JComboBox();
 		keyfieldCB.setModel(new DefaultComboBoxModel(new String[] {"\uC774\uB984", "ID", "\uC804\uD654\uBC88\uD638"}));
 		keyfieldCB.setBounds(20, 20, 80, 20);
 		northPanel.add(keyfieldCB);
@@ -57,35 +194,35 @@ public class MemberPanel extends JPanel{
 		northPanel.add(keywordTF);
 		keywordTF.setColumns(10);
 		
-		JButton retrieveMemberListBtn = new JButton("\uAC80\uC0C9");
+		retrieveMemberListBtn = new JButton("\uAC80\uC0C9");
 		retrieveMemberListBtn.setBounds(424, 19, 63, 23);
 		northPanel.add(retrieveMemberListBtn);
 		
-		JButton retrieveAllMemberBtn = new JButton("\uC804\uCCB4\uD68C\uC6D0\uC870\uD68C");
+		retrieveAllMemberBtn = new JButton("\uC804\uCCB4\uD68C\uC6D0\uC870\uD68C");
 		retrieveAllMemberBtn.setBounds(499, 19, 130, 23);
 		northPanel.add(retrieveAllMemberBtn);
 		
-		JLabel idLabel = new JLabel("ID");
+		idLabel = new JLabel("ID");
 		idLabel.setHorizontalAlignment(SwingConstants.RIGHT);
 		idLabel.setBounds(43, 100, 57, 15);
 		northPanel.add(idLabel);
 		
-		JLabel nameLabel = new JLabel("\uC774\uB984");
+		nameLabel = new JLabel("\uC774\uB984");
 		nameLabel.setHorizontalAlignment(SwingConstants.RIGHT);
 		nameLabel.setBounds(43, 150, 57, 15);
 		northPanel.add(nameLabel);
 		
-		JLabel phoneLabel = new JLabel("\uC804\uD654\uBC88\uD638");
+		phoneLabel = new JLabel("\uC804\uD654\uBC88\uD638");
 		phoneLabel.setHorizontalAlignment(SwingConstants.RIGHT);
 		phoneLabel.setBounds(43, 200, 57, 15);
 		northPanel.add(phoneLabel);
 		
-		JLabel birthdayLabel = new JLabel("\uC0DD\uB144\uC6D4\uC77C");
+		birthdayLabel = new JLabel("\uC0DD\uB144\uC6D4\uC77C");
 		birthdayLabel.setHorizontalAlignment(SwingConstants.RIGHT);
 		birthdayLabel.setBounds(301, 100, 57, 15);
 		northPanel.add(birthdayLabel);
 		
-		JLabel withDrawLabel = new JLabel("\uD0C8\uD1F4\uC5EC\uBD80");
+		withDrawLabel = new JLabel("\uD0C8\uD1F4\uC5EC\uBD80");
 		withDrawLabel.setHorizontalAlignment(SwingConstants.RIGHT);
 		withDrawLabel.setBounds(301, 150, 57, 15);
 		northPanel.add(withDrawLabel);
@@ -121,56 +258,47 @@ public class MemberPanel extends JPanel{
 		northPanel.add(withdrawTF);
 		withdrawTF.setColumns(10);
 		
-		JButton btnNewButton = new JButton("\uB4F1\uB85D");
-		btnNewButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-			    // 등록메소드
-			    
-			}
-		});
-		btnNewButton.setBounds(641, 196, 97, 23);
-		northPanel.add(btnNewButton);
+		registerBtn = new JButton("\uB4F1\uB85D");
+		registerBtn.setBounds(641, 196, 97, 23);
+		northPanel.add(registerBtn);
 		
-		JButton btnNewButton_1 = new JButton("\uCD08\uAE30\uD654");
-		btnNewButton_1.setBounds(750, 196, 97, 23);
-		northPanel.add(btnNewButton_1);
+		initBtn = new JButton("\uCD08\uAE30\uD654");
+		initBtn.setBounds(750, 196, 97, 23);
+		northPanel.add(initBtn);
 		
-		JPanel centerPanel = new JPanel();
+		centerPanel = new JPanel();
 		centerPanel.setBounds(12, 274, 946, 478);
 		add(centerPanel);
 		centerPanel.setLayout(null);
 		
-		JScrollPane scrollPane = new JScrollPane();
-		scrollPane.setBounds(12, 10, 922, 396);
-		centerPanel.add(scrollPane);
 		
-		table = new JTable();
-		table.setFillsViewportHeight(true);
-		table.setModel(new DefaultTableModel(
-			new Object[][] {
-				{null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null},
-			},
-			new String[] {
-				"\uC120\uD0DD", "ID", "\uC774\uB984", "\uC804\uD654\uBC88\uD638", "\uC0DD\uB144\uC6D4\uC77C", "\uD0C8\uD1F4\uC5EC\uBD80", "\uAD00\uB9AC"
-			}
-		) {
+		// 테이블에 들어갈 체크박스, 버튼 추가
+		box = new JCheckBox();
+		
+		
+		
+		dtm = new DefaultTableModel(
+				new Object[][] {
+				},
+				new String[] {
+					"\uC120\uD0DD", "ID", "\uC774\uB984", "\uC804\uD654\uBC88\uD638", "\uC0DD\uB144\uC6D4\uC77C", "\uD0C8\uD1F4\uC5EC\uBD80", "\uAD00\uB9AC"
+				}
+		);/*{
 			Class[] columnTypes = new Class[] {
-				Boolean.class, Object.class, Object.class, Object.class, Object.class, Object.class, Object.class
-			};
-			public Class getColumnClass(int columnIndex) {
-				return columnTypes[columnIndex];
-			}
-		});
+					Boolean.class, Object.class, Object.class, Object.class, Object.class, Object.class, Object.class
+				};
+				public Class getColumnClass(int columnIndex) {
+					return columnTypes[columnIndex];
+				}
+		};*/
+		
+		table = new JTable(dtm);
+		table.setFillsViewportHeight(true);
+		
 		table.getColumnModel().getColumn(0).setResizable(false);
 		table.getColumnModel().getColumn(0).setPreferredWidth(35);
+		table.getColumnModel().getColumn(0).setCellEditor(new DefaultCellEditor(box));
+		table.getColumnModel().getColumn(0).setCellRenderer(dcr);
 		table.getColumnModel().getColumn(1).setPreferredWidth(121);
 		table.getColumnModel().getColumn(2).setPreferredWidth(104);
 		table.getColumnModel().getColumn(3).setPreferredWidth(140);
@@ -179,25 +307,88 @@ public class MemberPanel extends JPanel{
 		table.getColumnModel().getColumn(5).setPreferredWidth(59);
 		table.getColumnModel().getColumn(6).setResizable(false);
 		table.getColumnModel().getColumn(6).setPreferredWidth(49);
+		table.getColumnModel().getColumn(6).setCellRenderer(new ButtonRenderer());
+		table.getColumnModel().getColumn(6).setCellEditor(new ButtonEditor(new JCheckBox()));
 		
 		
-		JButton withdrawBtn = new JButton("\uC120\uD0DD\uD68C\uC6D0\uD0C8\uD1F4");
+		withdrawBtn = new JButton("\uC120\uD0DD\uD68C\uC6D0\uD0C8\uD1F4");
 		withdrawBtn.setBounds(808, 428, 126, 23);
 		centerPanel.add(withdrawBtn);
 		
+		scrollPane = new JScrollPane(table);
+		scrollPane.setBounds(12, 10, 922, 396);
+		centerPanel.add(scrollPane);
+	}
+	
+	private void init() {
+		setBackground(Color.WHITE);
+		setSize(970, 762);
+		setLayout(null);
+
+		addComponent();
+		addActionListener();
+	}
+	
+	public MemberPanel() {
+		init();
+	}
+	
+	
+	
+	// 테이블에 행추가 하기전에. 다 지워주는거 
+	private void deleteTableRows() {
+		dtm.setRowCount(0);
+	}
+	
+	/**
+	 * 회원등록, 수정, 전체조회 등 은 아래에 추가해주세요.
+	 */
+	
+	// 회원 조건검색
+	private boolean searchMemberList() {
+		String keyfield = null, keyword = keywordTF.getText(); 
 		
+		try {
+			if(keyfieldCB.getSelectedIndex() == 0) {
+				keyfield = "name";
+			} else if (keyfieldCB.getSelectedIndex() == 1) {
+				keyfield = "id";
+			} else if (keyfieldCB.getSelectedIndex() == 2) {
+				keyfield = "phoneNum";
+			}
+			if(keyword.isEmpty()) {
+				System.out.println("검색어를 입력하세요.");
+				// alert 추가
+				
+			} else {
+			//Vector<Vector<Object>> rowData = dao.retrieveMemberListByCondition(keyfield, keyWord);
+				Vector<Vector<Object>> rowData = dao.retrieveMemberListByCondition(keyfield, keyword);
+				
+				for(Vector<Object> rd: rowData) {
+					dtm.addRow(rd);
+				}
+			}
+			return true;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return false;				
+	}
+	
+	// 회원탈퇴
+	private boolean removeMember(ArrayList<String> idList) {
+		
+		try {
+			dao.withdrawMemberList(idList);
+			return true;
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+		
+		return false;
 	}
 	
 	
-	// 기능추가
-	
-	//등록메소드
-	public void insertmember() {
-	    String name = nameTF.getText();
-	    String phoneNum = phoneTF.getText();
-	    String birthDay = birthdayTF.getText();
-	    
-	}
 }
 
 

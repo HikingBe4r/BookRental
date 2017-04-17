@@ -390,7 +390,7 @@ public class RegisterBookPanel extends JPanel implements ActionListener {
             dTF.setText("");
             ISBNTF.setText("");
             comboBox.setSelectedIndex(0);
-            spinner.setValue(0);
+            spinner.setValue(1);
          } else if (target == btnNewButton_1) {
             card.show(this, "second");
 
@@ -408,8 +408,7 @@ public class RegisterBookPanel extends JPanel implements ActionListener {
                   return;
                }
             }
-            System.out.println("call");
-            
+                       
             Vector<Object> rowData2 = new Vector<Object>();
             rowData2.addElement(false);
             rowData2.addElement(idTF.getText());
@@ -450,6 +449,17 @@ public class RegisterBookPanel extends JPanel implements ActionListener {
                table.setValueAt(comboBox.getSelectedItem(), table.getSelectedRow(), 5);
                table.setValueAt(ISBNTF.getText(), table.getSelectedRow(), 6);
                table.setValueAt(spinner.getValue(), table.getSelectedRow(), 7);
+               
+               int index = JOptionPane.showConfirmDialog(this,  "수정하시겠습니까?", "수정", 2);
+               
+               if(index == 0) {
+                  BookDAO dao = new BookDAO();
+                  dao.insertBook(rowData);
+                  JOptionPane.showMessageDialog(this, "수정완료되었습니다.");
+                  
+               }
+               
+               
                
                /*
                idTF.setText((String) dm.getValueAt(row, 1));

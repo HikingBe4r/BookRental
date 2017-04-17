@@ -21,6 +21,9 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.UIManager;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
@@ -29,10 +32,10 @@ import dao.BookDAO;
 import dao.RentalDAO;
 import domain.MemberVO;
 
-public class RentalPanel extends JPanel implements ActionListener {
+public class RentalPanel extends JPanel implements ActionListener{
 	public JTextField memberIdTF, memberNameTF, phoneTF, rentableBookNumTF, bookSearchConditionTF;
 	private JTable booksTable, cartTable;
-	private JButton memberSearchBtn, bookSearchBtn, rentBtn;
+	private JButton memberSearchBtn, bookSearchBtn, rentBtn, cartBtn;
 	private JComboBox combo;
 	private Vector<String> condition = new Vector<String>();
 	private int bookKeyfield;	// 도서검색 기준
@@ -40,8 +43,11 @@ public class RentalPanel extends JPanel implements ActionListener {
 	private DefaultTableModel bookDm, cartDm;
 	private List<String> rentCart = new ArrayList<String>();
 	public static MemberVO member = new MemberVO();
-	public static boolean flag = false;
 	
+	
+	
+
+
 	private void addComponent() {
 		setBounds(100, 100, 970, 762);
 		setVisible(true);
@@ -191,8 +197,7 @@ public class RentalPanel extends JPanel implements ActionListener {
 	public void actionPerformed(ActionEvent e) {
 		Object target = e.getSource();
 		if(target == memberSearchBtn) { // 회원 검색 버튼
-			// 회원검색 팝업을 띄운다!
-			// 회원선택~~~~~~~~
+			
 			SearchMemberFrame frame = new SearchMemberFrame(this);
             frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
             frame.setLocationRelativeTo(null);                                 
@@ -333,7 +338,7 @@ public class RentalPanel extends JPanel implements ActionListener {
 			if (isPushed) {
 				int index = booksTable.getSelectedRow();
 				
-				if(!booksTable.getValueAt(index, 5).equals("0")) { // 도서가 대여 불가능 상태일 때
+				if(!booksTable.getValueAt(index, 5).equals("대여 가능")) { // 도서가 대여 불가능 상태일 때
 					JOptionPane.showMessageDialog(button, "대여가 불가능한 도서입니다.");				
 				} else if(memberIdTF.getText().length() == 0) {
 					JOptionPane.showMessageDialog(button, "회원을 선택하여 주십시오.");
@@ -402,42 +407,43 @@ public class RentalPanel extends JPanel implements ActionListener {
 	};
 
 	class ButtonEditor1 extends DefaultCellEditor {
-		protected JButton button;
+		//protected JButton button;
 		private String label;
 		private boolean isPushed;
 
 		public ButtonEditor1(JCheckBox checkBox) {
 			super(checkBox);
-			button = new JButton();
-			button.setOpaque(true);
-			button.addActionListener(new ActionListener() {
+			cartBtn = new JButton();
+			cartBtn.setOpaque(true);
+			cartBtn.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					fireEditingStopped();
 				}
 			});
 		}
+		
 
 		public Component getTableCellEditorComponent(JTable table_1, Object value, boolean isSelected, int row,
 				int column) {
 			if (isSelected) {
-				button.setForeground(table_1.getSelectionForeground());
-				button.setBackground(table_1.getSelectionBackground());
+				cartBtn.setForeground(table_1.getSelectionForeground());
+				cartBtn.setBackground(table_1.getSelectionBackground());
 			} else {
-				button.setForeground(table_1.getForeground());
-				button.setBackground(table_1.getBackground());
+				cartBtn.setForeground(table_1.getForeground());
+				cartBtn.setBackground(table_1.getBackground());
 			}
 			label = (value == null) ? "대여취소" : value.toString();
-			button.setText(label);
+			cartBtn.setText(label);
 			isPushed = true;
-			return button;
+			return cartBtn;
 
 		}
 
 		public Object getCellEditorValue() {
-			if (isPushed) {
-				int index = cartTable.getSelectedRow();	
+			int index = cartTable.getSelectedRow();	
 				
-				rentCart.remove(index); // 어차피 리스트에 담긴 순서와 테이블에 보여지는 순서는 같으므로 index로 삭제 가능
+			 if (isPushed) {					
+				rentCart.remove(index); // 어차피 리스트에 담긴 순서와 테이블에 보여지는 순서는 같으므로 index로 삭제 가능			
 				cartDm.removeRow(index); // 에러 남.... 이유 모름....★			
 			}
 			isPushed = false;

@@ -268,6 +268,7 @@ public class RentalDAO {
 			pstmt.setString(1, memberId);
 			
 			rs = pstmt.executeQuery();
+			
 			while(rs.next()) {
 				Vector<Object> book = new Vector<Object>();
 				book.addElement(rs.getString(1));

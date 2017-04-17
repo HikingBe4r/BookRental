@@ -58,7 +58,7 @@ public class BookDAO {
 		Connection conn = null;							// String id에서 isbn값을 넘길수 있는것인가?
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
-		Vector<Vector<Object>> books = null;
+		Vector<Vector<Object>> books = new Vector<Vector<Object>>();
 		try {
 			conn = DBconn.getConnection();
 			StringBuilder sql = new StringBuilder();
@@ -109,23 +109,24 @@ public class BookDAO {
 		Connection conn = null;							
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
-		Vector<Vector<Object>> books = null;
+		Vector<Vector<Object>> books = new Vector<Vector<Object>>();
 		try {
 			conn = DBconn.getConnection();
 			StringBuilder sql = new StringBuilder();
 			// 책 고유번호, 제목, 저자, 장르, 출판사, 출판일, isbn, 장르
 			if(keyfield == 1) {		// 전체 검색
-				sql.append("select book_id, title, writer, publisher, isbn, status, publish_date, genre_id  ");
-				sql.append("from book  ");
+				sql.append("select b.book_id, b.title, b.writer, b.publisher, b.isbn, b.status, b.publish_date, g.genre_name  ");
+				sql.append("from book b, genre g  ");
+				sql.append("where b.genre_id = g.genre_id and b.status = '0' ");
 				sql.append("order by title ");
 				pstmt = conn.prepareStatement(sql.toString());
 				
 				rs = pstmt.executeQuery();
 			}
 			else if(keyfield == 2) {		// 제목 검색
-				sql.append("select book_id, title, writer, publisher, isbn, status, publish_date, genre_id  ");
-				sql.append("from book  ");
-				sql.append("where title like ? ");		
+				sql.append("select b.book_id, b.title, b.writer, b.publisher, b.isbn, b.status, b.publish_date, g.genre_id  ");
+				sql.append("from book b, genre g ");
+				sql.append("where title like ? and b.genre_id = g.genre_id and b.status = '0' ");		
 				sql.append("order by title ");
 				pstmt = conn.prepareStatement(sql.toString());
 				
@@ -133,9 +134,9 @@ public class BookDAO {
 				rs = pstmt.executeQuery();
 			}
 			else if(keyfield == 3) {			// 저자 검색
-				sql.append("select book_id, title, writer, publisher, isbn, status, publish_date, genre_id  ");
-				sql.append("from book  ");
-				sql.append("where writer like ? ");		
+				sql.append("select b.book_id, b.title, b.writer, b.publisher, b.isbn, b.status, b.publish_date, g.genre_id  ");
+				sql.append("from book b, genre g ");
+				sql.append("where writer like ? and b.genre_id = g.genre_id and b.status = '0' ");		
 				sql.append("order by title ");
 				pstmt = conn.prepareStatement(sql.toString());
 				
@@ -143,9 +144,9 @@ public class BookDAO {
 				rs = pstmt.executeQuery();
 			}
 			else if(keyfield == 4) {			// 출판사 검색
-				sql.append("select book_id, title, writer, publisher, isbn, status, publish_date, genre_id  ");
-				sql.append("from book  ");
-				sql.append("where publisher like ? ");		
+				sql.append("select b.book_id, b.title, b.writer, b.publisher, b.isbn, b.status, b.publish_date, g.genre_id  ");
+				sql.append("from book b, genre g  ");
+				sql.append("where publisher like ? and b.genre_id = g.genre_id and b.status = '0' ");		
 				sql.append("order by title ");
 				pstmt = conn.prepareStatement(sql.toString());
 				
@@ -155,7 +156,7 @@ public class BookDAO {
 			else if(keyfield == 5) {			// 장르 검색
 				sql.append("select b.book_id, b.title, b.writer, b.publisher, b.isbn, b.status, b.publish_date, b.genre_id  ");
 				sql.append("from book b, genre g  ");
-				sql.append("where b.genre_id = g.genre_id and g.genre_name = ? ");		
+				sql.append("where b.genre_id = g.genre_id and g.genre_name like ? and b.status = '0' ");		
 				sql.append("order by title ");
 				pstmt = conn.prepareStatement(sql.toString());
 				
@@ -172,11 +173,15 @@ public class BookDAO {
 				book.addElement(rs.getString(5));
 				book.addElement(rs.getString(6));
 				book.addElement(rs.getString(7));
-				book.addElement(rs.getInt(8));
+				book.addElement(rs.getString(8));
 				
-				books.add(book);
+				/* for(int i=0; i<book.size(); i++)
+					  System.out.println(book.get(i));
+				*/
+				books.addElement(book);
 			}
-			// 수정시 swing - setSelectedIndex 통해서 바꿔줌!
+
+			return books;
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -195,7 +200,7 @@ public class BookDAO {
 			}
 		}
 		
-		return books;	   
+		return null;	   
 	}
 
 	public void insertBook(List<BookVO> book) throws SQLException { // 도서 등록
@@ -208,7 +213,7 @@ public class BookDAO {
 			for (int i = 0; i < book.size(); i++) {
 				StringBuilder sql = new StringBuilder();
 				sql.append("insert into book_id,title,writer,publisher,ISBN,status,genre_id,publish_date				");
-				sql.append("values (?,?,?,?,?,?,?,to_Date(?, 'YYYY/MM/DD'))							");
+				sql.append("values (?,?,?,?,?,?,?,to_Date(?, 'YYYY-MM-DD'))							");
 
 				pstmt = conn.prepareStatement(sql.toString());
 
@@ -243,7 +248,7 @@ public class BookDAO {
 			StringBuilder sql = new StringBuilder();
 
 			sql.append("update book																				");
-			sql.append("set title=?,writer=?,publisher=?,ISBN=?,status=?,	genre_id=?,publish_date=to_Date(?, 'YYYY/MM/DD')			");
+			sql.append("set title=?, writer=?, publisher=?, ISBN=?, status=?,	genre_id=?, publish_date=TO_DATE(SUBSTR(?,0,10), 'YYYY-MM-DD')			");
 			sql.append("where book_id = ?                                            ");
 
 			pstmt = conn.prepareStatement(sql.toString());
@@ -252,9 +257,9 @@ public class BookDAO {
 			pstmt.setString(2, book.getWriter());
 			pstmt.setString(3, book.getPublisher());
 			pstmt.setString(4, book.getIsbn());
-			pstmt.setInt(5, book.getGenre1());
-			pstmt.setString(6, book.getPublishDate());
-			pstmt.setString(7, book.getIsRent());
+			pstmt.setString(5, book.getIsRent());
+			pstmt.setInt(6, book.getGenre1());
+			pstmt.setString(7, book.getPublishDate());
 			pstmt.setString(8, book.getBookId());
 
 			pstmt.executeUpdate();

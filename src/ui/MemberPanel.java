@@ -4,6 +4,8 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.Vector;
 
@@ -124,6 +126,7 @@ public class MemberPanel extends JPanel{
 		retrieveMemberListBtn.addActionListener(listener);
 		withdrawBtn.addActionListener(listener);
 		box.addActionListener(listener);
+		table.addMouseListener(mListener);
 	}
 	
 	ArrayList<String> idList = null;
@@ -137,8 +140,8 @@ public class MemberPanel extends JPanel{
 				if((JButton)(e.getSource()) == retrieveMemberListBtn) {
 					idList = new ArrayList<String>();
 					deleteTableRows();
-					if(searchMemberList()) {
-						// 확인창
+					if(searchMemberList(keyfieldCB.getSelectedIndex(), keywordTF.getText())) {
+						// alert
 					}
 				} else if (e.getSource() == withdrawBtn) {
 					for(int i = 0; i < dtm.getRowCount(); i++) {
@@ -146,35 +149,39 @@ public class MemberPanel extends JPanel{
 						if((boolean)dtm.getValueAt(i, 0) == true) {
 							idList.add((String)dtm.getValueAt(i, 1));
 							removeMember(idList);
-							//String selectedId = (String) dtm.getValueAt(index, 1);	// 해당 칼럼의 id
+							//alert
 						}
 					}
-					/*
-					if(removeMember(idList)) {
-						System.out.println("회원 탈퇴 성공");
-					}*/
-					//System.out.println();
 				}
-			} else if(e.getSource() instanceof JCheckBox) {
-				if((JCheckBox)(e.getSource()) == box) {
-					
+			} else if (e.getSource() instanceof JCheckBox) {
+				if ((JCheckBox) (e.getSource()) == box) {
+
 					if (box.isSelected()) {
-						
-						int index = table.getSelectedRow();	// 선택한 칼럼
-						
-						
+						int index = table.getSelectedRow(); // 선택한 칼럼
 						dtm.setValueAt(true, index, 0);
-						//idList.add(index, selectedId);
 					} else {
-						int index = table.getSelectedRow();	// 선택한 칼럼
+						int index = table.getSelectedRow(); // 선택한 칼럼
 						dtm.setValueAt(false, index, 0);
-						//idList.remove(table.getSelectedRow());
-						//System.out.println("DeSelected!!");
-						
+
 					}
 				}
 			}
 		}
+	};
+	
+	MouseAdapter mListener = new MouseAdapter() {
+		@Override
+		public void mouseClicked(MouseEvent e) {
+			if(e.getSource() instanceof JTable) {
+				int index = table.getSelectedRow();
+				
+				idTF.setText(table.getValueAt(index, 1).toString());
+				nameTF.setText(table.getValueAt(index, 2).toString());
+				phoneTF.setText(table.getValueAt(index, 3).toString());
+				birthdayTF.setText(table.getValueAt(index, 4).toString());
+				withdrawTF.setText(table.getValueAt(index, 5).toString());
+			}
+		};
 	};
 	
 	private void addComponent() {
@@ -274,23 +281,13 @@ public class MemberPanel extends JPanel{
 		
 		// 테이블에 들어갈 체크박스, 버튼 추가
 		box = new JCheckBox();
-		
-		
-		
 		dtm = new DefaultTableModel(
 				new Object[][] {
 				},
 				new String[] {
 					"\uC120\uD0DD", "ID", "\uC774\uB984", "\uC804\uD654\uBC88\uD638", "\uC0DD\uB144\uC6D4\uC77C", "\uD0C8\uD1F4\uC5EC\uBD80", "\uAD00\uB9AC"
 				}
-		);/*{
-			Class[] columnTypes = new Class[] {
-					Boolean.class, Object.class, Object.class, Object.class, Object.class, Object.class, Object.class
-				};
-				public Class getColumnClass(int columnIndex) {
-					return columnTypes[columnIndex];
-				}
-		};*/
+		);
 		
 		table = new JTable(dtm);
 		table.setFillsViewportHeight(true);
@@ -345,15 +342,15 @@ public class MemberPanel extends JPanel{
 	 */
 	
 	// 회원 조건검색
-	private boolean searchMemberList() {
-		String keyfield = null, keyword = keywordTF.getText(); 
+	private boolean searchMemberList(int selectedKeyfield, String keyword) {
+		String keyfield = null;//, keyword = keywordTF.getText(); 
 		
 		try {
-			if(keyfieldCB.getSelectedIndex() == 0) {
+			if(selectedKeyfield == 0) {
 				keyfield = "name";
-			} else if (keyfieldCB.getSelectedIndex() == 1) {
+			} else if (selectedKeyfield == 1) {
 				keyfield = "id";
-			} else if (keyfieldCB.getSelectedIndex() == 2) {
+			} else if (selectedKeyfield == 2) {
 				keyfield = "phoneNum";
 			}
 			if(keyword.isEmpty()) {
@@ -388,6 +385,15 @@ public class MemberPanel extends JPanel{
 		return false;
 	}
 	
+	// 회원 상세조회
+	// 마우스 리스너로 클릭하면 그 행정보 가져오기.
+	private void viewSelectedMember(String id) {
+		try {
+			
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+	}
 	
 }
 

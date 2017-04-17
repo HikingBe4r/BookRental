@@ -59,8 +59,6 @@ public class MainFrame extends JFrame implements ActionListener{
 		MemberPanel mPanel = new MemberPanel();
 		centerPanel.add(mPanel);
 		
-		RentalHistoryPanel hPanel = new RentalHistoryPanel();
-		centerPanel.add("h", hPanel);
 	}
 	private void addEventListner() {
 		hButton.addActionListener(this);

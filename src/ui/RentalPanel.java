@@ -5,10 +5,11 @@ import java.awt.Component;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Vector;
 
 import javax.swing.DefaultCellEditor;
-import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
@@ -24,16 +25,18 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 
 import dao.BookDAO;
+import dao.RentalDAO;
 
 public class RentalPanel extends JPanel implements ActionListener {
 	private JTextField memberIdTF, memberNameTF, phoneTF, rentableBookNumTF, bookSearchConditionTF;
-	private JTable booksTable, table_1;
-	private JButton memberSearchBtn, bookSearchBtn;
+	private JTable booksTable, cartTable;
+	private JButton memberSearchBtn, bookSearchBtn, rentBtn;
 	private JComboBox combo;
 	private Vector<String> condition = new Vector<String>();
 	private int bookKeyfield;	// 도서검색 기준
 	private String bookKeyword;	// 도서 검색어
-	private DefaultTableModel bookDm;
+	private DefaultTableModel bookDm, cartDm;
+	private List<String> rentCart = new ArrayList<String>();
 	
 	private void addComponent() {
 		setBounds(100, 100, 970, 762);
@@ -93,6 +96,7 @@ public class RentalPanel extends JPanel implements ActionListener {
 		rentableBookNumTF.setBounds(735, 24, 100, 25);
 		panel.add(rentableBookNumTF);
 		rentableBookNumTF.setColumns(10);
+		rentableBookNumTF.setText("5");
 
 		JPanel panel_1 = new JPanel();
 		panel_1.setBounds(10, 95, 948, 465);
@@ -128,21 +132,12 @@ public class RentalPanel extends JPanel implements ActionListener {
 		
 		//대여하기 목록 조회 테이블
 		booksTable = new JTable();
-		String[] bookColumnNames = {"No", "제목", "저자", "출판사", "장르", "대여가능상태", ""};
+		booksTable.setSurrendersFocusOnKeystroke(true);
+		booksTable.setRowHeight(25);
+		String[] bookColumnNames = {"도서ID", "제목", "저자", "출판사", "장르", "대여가능상태", ""};
 		
-		/*booksTable.setModel(new DefaultTableModel(new Object[][] { { "1", "해리포터", "일길동","" , null, null, null }, },
-				new String[] { "No", "\uC81C\uBAA9", "\uC800\uC790", "\uCD9C\uD310\uC0AC", "\uC7A5\uB974",
-						"\uB300\uC5EC\uAC00\uB2A5\uC0C1\uD0DC", "" }));*/
-		
-		
-		bookDm = new DefaultTableModel(bookColumnNames, 0) {
-			@Override
-			public boolean isCellEditable(int row, int column) {
-				return false;
-			}
-		};
+		bookDm = new DefaultTableModel(bookColumnNames, 0);
 		booksTable.setModel(bookDm);
-		
 		
 		booksTable.setColumnSelectionAllowed(true);
 		booksTable.setCellSelectionEnabled(true);
@@ -156,10 +151,10 @@ public class RentalPanel extends JPanel implements ActionListener {
 		add(panel_2);
 		panel_2.setLayout(null);
 
-		JButton btnNewButton_2 = new JButton("대여하기");
-		btnNewButton_2.setFont(new Font("굴림", Font.BOLD, 40));
-		btnNewButton_2.setBounds(724, 10, 210, 165);
-		panel_2.add(btnNewButton_2);
+		rentBtn = new JButton("대여하기");
+		rentBtn.setFont(new Font("굴림", Font.BOLD, 40));
+		rentBtn.setBounds(724, 10, 210, 165);
+		panel_2.add(rentBtn);
 
 		JScrollPane scrollPane_1 = new JScrollPane();
 		scrollPane_1.setBounds(12, 10, 700, 162);
@@ -167,30 +162,25 @@ public class RentalPanel extends JPanel implements ActionListener {
 
 		
 		//대여하기 장바구니 테이블
-		table_1 = new JTable();
-		table_1.setSurrendersFocusOnKeystroke(true);
-		table_1.setRowHeight(25);
-		table_1.setModel(new DefaultTableModel(new Object[][] { { null, null, null, null }, },
-				new String[] { "\uC81C\uBAA9", "\uC800\uC790", "\uCD9C\uD310\uC0AC", "" }) {
-			Class[] columnTypes = new Class[] { String.class, String.class, String.class, Object.class };
+		cartTable = new JTable();
+		cartTable.setSurrendersFocusOnKeystroke(true);
+		cartTable.setRowHeight(25);
+		String[] cartColumnNames = {"제목","저자","출판사", ""};
+		
+		cartDm = new DefaultTableModel(cartColumnNames, 0);
+		cartTable.setModel(cartDm);
+				
+		scrollPane_1.setViewportView(cartTable);
 
-			public Class getColumnClass(int columnIndex) {
-				return columnTypes[columnIndex];
-			}
-		});
-		
-		
-		
-		scrollPane_1.setViewportView(table_1);
-
-		table_1.getColumnModel().getColumn(3).setCellRenderer(new ButtonRenderer1());
-		table_1.getColumnModel().getColumn(3).setCellEditor(new ButtonEditor1(new JCheckBox()));
+		cartTable.getColumnModel().getColumn(3).setCellRenderer(new ButtonRenderer1());
+		cartTable.getColumnModel().getColumn(3).setCellEditor(new ButtonEditor1(new JCheckBox()));
 	}
 	
 	private void addEventListener() {
 		memberSearchBtn.addActionListener(this);
 		bookSearchBtn.addActionListener(this);
 		combo.addActionListener(this);
+		rentBtn.addActionListener(this);
 	}
 	
 
@@ -200,8 +190,28 @@ public class RentalPanel extends JPanel implements ActionListener {
 		if(target == memberSearchBtn) { // 회원 검색 버튼
 			// 회원검색 팝업을 띄운다!
 			// 회원선택~~~~~~~~
+			
+			
+			
+			
+			
+			
 		} else if(target == combo) { // 도서검색 콤보박스
 			bookKeyfield = combo.getSelectedIndex() + 1;
+		} else if(target == rentBtn) { // 대여 버튼
+			
+			RentalDAO rDAO = new RentalDAO();
+			try {
+				rDAO.rentalBooksFromBasket(memberIdTF.getText(), rentCart);
+			} catch (Exception e2) {
+				e2.printStackTrace();
+			}
+			
+			rentCart.clear();
+			for(int i=cartDm.getRowCount()-1; i>=0; i--) {
+				cartDm.removeRow(i);
+			}
+					
 		} else if(target == bookSearchBtn) { // 도서 검색 버튼
 			for(int i=bookDm.getRowCount()-1; i>=0; i--) {
 				bookDm.removeRow(i);
@@ -307,8 +317,26 @@ public class RentalPanel extends JPanel implements ActionListener {
 		public Object getCellEditorValue() {
 			if (isPushed) {
 				int index = booksTable.getSelectedRow();
-				JOptionPane.showMessageDialog(button, index + ": 대여하기");
 				
+				if(!booksTable.getValueAt(index, 5).equals("0")) { // 도서가 대여 불가능 상태일 때
+					JOptionPane.showMessageDialog(button, "대여가 불가능한 도서입니다.");				
+				} else if(Integer.parseInt(rentableBookNumTF.getText()) == 0) { // 대여가능권수가 0일 때 
+					JOptionPane.showMessageDialog(button, "현재 대여가 불가능한 회원입니다.");
+				} else if(Integer.parseInt(rentableBookNumTF.getText()) == rentCart.size()) { // 장바구니에 대여가능권수보다 책을 많이 담았을 때,
+					JOptionPane.showMessageDialog(button, "도서를 더 이상 장바구니에 담을 수 없습니다.");
+				} else {
+					if(rentCart.contains((String)booksTable.getValueAt(index, 0))){ // 장바구니에 이미 있을 때
+						JOptionPane.showMessageDialog(button, "이미 장바구니에 담긴 도서입니다.");
+						return null;
+					}
+					rentCart.add((String)booksTable.getValueAt(index, 0)); // 장바구니에 도서 아이디 추가
+									
+					Vector<Object> temp = new Vector<Object>();
+					temp.addElement(bookDm.getValueAt(booksTable.getSelectedRow(), 1));			
+					temp.addElement(bookDm.getValueAt(booksTable.getSelectedRow(), 2));
+					temp.addElement(bookDm.getValueAt(booksTable.getSelectedRow(), 3));
+					cartDm.addRow(temp);				
+				}
 			}
 			isPushed = false;
 			return new String(label);
@@ -390,9 +418,10 @@ public class RentalPanel extends JPanel implements ActionListener {
 
 		public Object getCellEditorValue() {
 			if (isPushed) {
-				int index = table_1.getSelectedRow();
-				JOptionPane.showMessageDialog(button, index + ": 대여취소");
+				int index = cartTable.getSelectedRow();	
 				
+				rentCart.remove(index); // 어차피 리스트에 담긴 순서와 테이블에 보여지는 순서는 같으므로 index로 삭제 가능
+				cartDm.removeRow(index); // 에러 남.... 이유 모름....★			
 			}
 			isPushed = false;
 			return new String(label);

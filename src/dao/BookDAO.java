@@ -109,7 +109,7 @@ public class BookDAO {
 		Connection conn = null;							
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
-		Vector<Vector<Object>> books = null;
+		Vector<Vector<Object>> books = new Vector<Vector<Object>>();
 		try {
 			conn = DBconn.getConnection();
 			StringBuilder sql = new StringBuilder();

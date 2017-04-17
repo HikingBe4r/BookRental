@@ -1,53 +1,41 @@
 package ui;
 
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Font;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.Vector;
+
+import javax.swing.DefaultCellEditor;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.UIManager;
-import javax.swing.DefaultComboBoxModel;
-import javax.swing.JTable;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 
-import ui.ReturnPanel.ButtonEditor;
-import ui.ReturnPanel.ButtonRenderer;
+import dao.BookDAO;
 
-import javax.swing.JScrollPane;
-import javax.swing.event.AncestorListener;
-import javax.swing.event.AncestorEvent;
-import java.awt.event.InputMethodListener;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.InputMethodEvent;
-import java.beans.VetoableChangeListener;
-import java.rmi.server.SocketSecurityException;
-import java.beans.PropertyChangeEvent;
-import javax.swing.DebugGraphics;
-import javax.swing.DefaultCellEditor;
-import javax.swing.DropMode;
-
-import java.awt.Component;
-import java.awt.Font;
-import java.awt.Color;
-
-public class RentalPanel extends JPanel {
-	private JTextField textField;
-	private JTextField textField_1;
-	private JTextField textField_2;
-	private JTextField textField_3;
-	private JTextField textField_4;
-	private JTable table;
-	private JTable table_1;
-	private JButton btn;
-
-	public RentalPanel() {
-		setBackground(Color.WHITE);
-
+public class RentalPanel extends JPanel implements ActionListener {
+	private JTextField memberIdTF, memberNameTF, phoneTF, rentableBookNumTF, bookSearchConditionTF;
+	private JTable booksTable, table_1;
+	private JButton memberSearchBtn, bookSearchBtn;
+	private JComboBox combo;
+	private Vector<String> condition = new Vector<String>();
+	private int bookKeyfield;	// 도서검색 기준
+	private String bookKeyword;	// 도서 검색어
+	private DefaultTableModel bookDm;
+	
+	private void addComponent() {
 		setBounds(100, 100, 970, 762);
 		setVisible(true);
 		setLayout(null);
@@ -57,74 +45,81 @@ public class RentalPanel extends JPanel {
 		add(panel);
 		panel.setLayout(null);
 
-		JButton btnNewButton = new JButton("회원검색");
-		btnNewButton.setFont(new Font("굴림", Font.BOLD, 15));
-		btnNewButton.setBounds(70, 12, 100, 50);
-		panel.add(btnNewButton);
+		memberSearchBtn = new JButton("회원검색");
+		memberSearchBtn.setFont(new Font("굴림", Font.BOLD, 15));
+		memberSearchBtn.setBounds(70, 12, 100, 50);
+		panel.add(memberSearchBtn);
 
 		JLabel label = new JLabel("회원ID");
 		label.setFont(new Font("굴림", Font.BOLD, 12));
 		label.setBounds(195, 24, 45, 20);
 		panel.add(label);
 
-		textField = new JTextField();
-		textField.setEditable(false);
-		textField.setBounds(250, 24, 70, 25);
-		panel.add(textField);
-		textField.setColumns(10);
+		memberIdTF = new JTextField();
+		memberIdTF.setEditable(false);
+		memberIdTF.setBounds(250, 24, 70, 25);
+		panel.add(memberIdTF);
+		memberIdTF.setColumns(10);
 
 		JLabel lblNewLabel = new JLabel("회원명");
 		lblNewLabel.setFont(new Font("굴림", Font.BOLD, 12));
 		lblNewLabel.setBounds(330, 24, 45, 20);
 		panel.add(lblNewLabel);
 
-		textField_1 = new JTextField();
-		textField_1.setEditable(false);
-		textField_1.setBounds(390, 24, 70, 25);
-		panel.add(textField_1);
-		textField_1.setColumns(10);
+		memberNameTF = new JTextField();
+		memberNameTF.setEditable(false);
+		memberNameTF.setBounds(390, 24, 70, 25);
+		panel.add(memberNameTF);
+		memberNameTF.setColumns(10);
 
 		JLabel lblNewLabel_1 = new JLabel("전화번호");
 		lblNewLabel_1.setFont(new Font("굴림", Font.BOLD, 12));
 		lblNewLabel_1.setBounds(470, 24, 55, 20);
 		panel.add(lblNewLabel_1);
 
-		textField_2 = new JTextField();
-		textField_2.setEditable(false);
-		textField_2.setBounds(535, 24, 100, 25);
-		panel.add(textField_2);
-		textField_2.setColumns(10);
+		phoneTF = new JTextField();
+		phoneTF.setEditable(false);
+		phoneTF.setBounds(535, 24, 100, 25);
+		panel.add(phoneTF);
+		phoneTF.setColumns(10);
 
 		JLabel lblNewLabel_2 = new JLabel("대여가능권수");
 		lblNewLabel_2.setFont(new Font("굴림", Font.BOLD, 12));
 		lblNewLabel_2.setBounds(645, 24, 80, 20);
 		panel.add(lblNewLabel_2);
 
-		textField_3 = new JTextField();
-		textField_3.setEditable(false);
-		textField_3.setBounds(735, 24, 100, 25);
-		panel.add(textField_3);
-		textField_3.setColumns(10);
+		rentableBookNumTF = new JTextField();
+		rentableBookNumTF.setEditable(false);
+		rentableBookNumTF.setBounds(735, 24, 100, 25);
+		panel.add(rentableBookNumTF);
+		rentableBookNumTF.setColumns(10);
 
 		JPanel panel_1 = new JPanel();
 		panel_1.setBounds(10, 95, 948, 465);
 		add(panel_1);
 		panel_1.setLayout(null);
 
-		textField_4 = new JTextField();
-		textField_4.setBounds(555, 13, 300, 25);
-		panel_1.add(textField_4);
-		textField_4.setColumns(10);
+		bookSearchConditionTF = new JTextField();
+		bookSearchConditionTF.setBounds(555, 13, 300, 25);
+		panel_1.add(bookSearchConditionTF);
+		bookSearchConditionTF.setColumns(10);
 
-		JButton btnNewButton_1 = new JButton("검색");
-		btnNewButton_1.setFont(new Font("굴림", Font.BOLD, 12));
-		btnNewButton_1.setBounds(865, 10, 60, 30);
-		panel_1.add(btnNewButton_1);
+		bookSearchBtn = new JButton("검색");
+		bookSearchBtn.setFont(new Font("굴림", Font.BOLD, 12));
+		bookSearchBtn.setBounds(865, 10, 60, 30);
+		panel_1.add(bookSearchBtn);
 
-		JComboBox comboBox = new JComboBox();
-		comboBox.setModel(new DefaultComboBoxModel(new String[] { "전체", "제목", "저자", "출판사", "장르" }));
-		comboBox.setBounds(461, 13, 80, 25);
-		panel_1.add(comboBox);
+		combo = new JComboBox<String>(condition);
+		//combo.setModel(new DefaultComboBoxModel(new String[] { "전체", "제목", "저자", "출판사", "장르" }));
+		condition.addElement("전체");
+		condition.addElement("제목");
+		condition.addElement("저자");
+		condition.addElement("출판사");
+		condition.addElement("장르");
+		combo.setSelectedIndex(0); // 디폴트 : 전체
+		bookKeyfield = 1; // 디폴트 : 전체
+		combo.setBounds(461, 13, 80, 25);
+		panel_1.add(combo);
 
 		JScrollPane scrollPane = new JScrollPane();
 		scrollPane.setBounds(12, 48, 924, 407);
@@ -132,16 +127,29 @@ public class RentalPanel extends JPanel {
 
 		
 		//대여하기 목록 조회 테이블
-		table = new JTable();
-		table.setModel(new DefaultTableModel(new Object[][] { { "1", "해리포터", "일길동","" , null, null, null }, },
+		booksTable = new JTable();
+		String[] bookColumnNames = {"No", "제목", "저자", "출판사", "장르", "대여가능상태", ""};
+		
+		/*booksTable.setModel(new DefaultTableModel(new Object[][] { { "1", "해리포터", "일길동","" , null, null, null }, },
 				new String[] { "No", "\uC81C\uBAA9", "\uC800\uC790", "\uCD9C\uD310\uC0AC", "\uC7A5\uB974",
-						"\uB300\uC5EC\uAC00\uB2A5\uC0C1\uD0DC", "" }));
-		table.setColumnSelectionAllowed(true);
-		table.setCellSelectionEnabled(true);
-		scrollPane.setViewportView(table);
+						"\uB300\uC5EC\uAC00\uB2A5\uC0C1\uD0DC", "" }));*/
+		
+		
+		bookDm = new DefaultTableModel(bookColumnNames, 0) {
+			@Override
+			public boolean isCellEditable(int row, int column) {
+				return false;
+			}
+		};
+		booksTable.setModel(bookDm);
+		
+		
+		booksTable.setColumnSelectionAllowed(true);
+		booksTable.setCellSelectionEnabled(true);
+		scrollPane.setViewportView(booksTable);
 
-		table.getColumnModel().getColumn(6).setCellRenderer(new ButtonRenderer());
-		table.getColumnModel().getColumn(6).setCellEditor(new ButtonEditor(new JCheckBox()));
+		booksTable.getColumnModel().getColumn(6).setCellRenderer(new ButtonRenderer());
+		booksTable.getColumnModel().getColumn(6).setCellEditor(new ButtonEditor(new JCheckBox()));
 
 		JPanel panel_2 = new JPanel();
 		panel_2.setBounds(10, 570, 948, 182);
@@ -177,6 +185,61 @@ public class RentalPanel extends JPanel {
 
 		table_1.getColumnModel().getColumn(3).setCellRenderer(new ButtonRenderer1());
 		table_1.getColumnModel().getColumn(3).setCellEditor(new ButtonEditor1(new JCheckBox()));
+	}
+	
+	private void addEventListener() {
+		memberSearchBtn.addActionListener(this);
+		bookSearchBtn.addActionListener(this);
+		combo.addActionListener(this);
+	}
+	
+
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		Object target = e.getSource();
+		if(target == memberSearchBtn) { // 회원 검색 버튼
+			// 회원검색 팝업을 띄운다!
+			// 회원선택~~~~~~~~
+		} else if(target == combo) { // 도서검색 콤보박스
+			bookKeyfield = combo.getSelectedIndex() + 1;
+		} else if(target == bookSearchBtn) { // 도서 검색 버튼
+			for(int i=bookDm.getRowCount()-1; i>=0; i--) {
+				bookDm.removeRow(i);
+			}
+			BookDAO bDAO = new BookDAO();
+			bookKeyword = bookSearchConditionTF.getText();
+			Vector<Vector<Object>> books = new Vector<Vector<Object>>();
+			Vector<Vector<Object>> editedBooks = new Vector<Vector<Object>>();
+			try {
+				books = bDAO.selectBookList(bookKeyfield, bookKeyword);
+				for(int i=0; i<books.size(); i++) {
+					Vector<Object> editedbook = new Vector<Object>();
+					Vector<Object> book = books.get(i);
+					editedbook.addElement(book.elementAt(0));
+					editedbook.addElement(book.elementAt(1));
+					editedbook.addElement(book.elementAt(2));
+					editedbook.addElement(book.elementAt(3));
+					editedbook.addElement(book.elementAt(7));
+					editedbook.addElement(book.elementAt(5));
+					editedBooks.add(editedbook);
+				}
+				for(int i=0; i<editedBooks.size(); i++) {
+					bookDm.addRow(editedBooks.elementAt(i));
+				}
+			} catch (Exception e2) {
+				e2.printStackTrace();
+			}
+		}	
+	}
+	
+	private void init() {
+		setBackground(Color.WHITE);
+		addComponent();
+		addEventListener();
+	}
+
+	public RentalPanel() {
+		init();	
 	}
 
 	//대여하기 목록 조회 테이블 - 대여장바구니 추가 버튼
@@ -243,7 +306,7 @@ public class RentalPanel extends JPanel {
 
 		public Object getCellEditorValue() {
 			if (isPushed) {
-				int index = table.getSelectedRow();
+				int index = booksTable.getSelectedRow();
 				JOptionPane.showMessageDialog(button, index + ": 대여하기");
 				
 			}

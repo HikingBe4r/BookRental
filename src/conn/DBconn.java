@@ -22,7 +22,7 @@ public class DBconn {
 
 		Connection conn = DriverManager.getConnection(url, user, password);
 		
-		System.out.println("연결성공");
+		//System.out.println("연결성공");
 		
 		return conn;
 	}

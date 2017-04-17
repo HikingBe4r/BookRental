@@ -90,7 +90,7 @@ public class RentalHistoryPanel extends JPanel implements ActionListener {
 		northPanel.add(combo);
 		condition.addElement("도서명");
 		condition.addElement("회원명");
-		combo.setSelectedIndex(0);
+		combo.setSelectedIndex(0); // 디폴트 : 도서명
 		pattern[0] = true; // 도서명 선택
 		
 		// 텍스트 필드
@@ -162,7 +162,7 @@ public class RentalHistoryPanel extends JPanel implements ActionListener {
 		} else if (target == checkRenewal) {
 			if(checkRenewal.isSelected()) pattern[3] = true;
 			else pattern[3] = false;		
-		} else if (target == retrieveBtn) { // ㅁ네9염09ㄴ요내ㅕㅗㅁㄴ9에7ㄹㄴㅁㅇㅎㄹ냐ㅛㄹㅇㅎㄴㅇㄹ78
+		} else if (target == retrieveBtn) { 
 			for(int i=dm.getRowCount()-1; i>=0; i--) {
 				dm.removeRow(i);
 			}
@@ -192,7 +192,7 @@ public class RentalHistoryPanel extends JPanel implements ActionListener {
 		
 	} // acctionPerformed()
 
-	public void init() {
+	private void init() {
 		this.setBackground(Color.WHITE);
 		addComponent();
 		addEventListener();

@@ -202,6 +202,15 @@ public class RentalPanel extends JPanel implements ActionListener {
 		} else if(target == combo) { // 도서검색 콤보박스
 			bookKeyfield = combo.getSelectedIndex() + 1;
 		} else if(target == rentBtn) { // 대여 버튼
+			if(memberIdTF.getText().length() == 0) {
+				JOptionPane.showMessageDialog(rentBtn, "선택된 회원이 없습니다.");
+				return;
+			}
+			
+			if(rentCart.size() == 0) {
+				JOptionPane.showMessageDialog(rentBtn, "장바구니가 비어 있습니다");
+				return;
+			}
 			
 			RentalDAO rDAO = new RentalDAO();
 			try {
@@ -212,7 +221,7 @@ public class RentalPanel extends JPanel implements ActionListener {
 			
 			rentCart.clear();
 			for(int i=cartDm.getRowCount()-1; i>=0; i--) {
-				//cartDm.removeRow(i);
+				cartDm.removeRow(i);
 			}
 			JOptionPane.showMessageDialog(rentBtn, "도서가 정상 대여되었습니다.");
 					
@@ -234,7 +243,9 @@ public class RentalPanel extends JPanel implements ActionListener {
 					editedbook.addElement(book.elementAt(2));
 					editedbook.addElement(book.elementAt(3));
 					editedbook.addElement(book.elementAt(7));
-					editedbook.addElement(book.elementAt(5));
+					//editedbook.addElement(book.elementAt(5));
+					if(book.elementAt(5).equals("0")) editedbook.addElement("대여 가능");
+					else editedbook.addElement("대여 중");
 					editedBooks.add(editedbook);
 				}
 				for(int i=0; i<editedBooks.size(); i++) {
@@ -324,6 +335,8 @@ public class RentalPanel extends JPanel implements ActionListener {
 				
 				if(!booksTable.getValueAt(index, 5).equals("0")) { // 도서가 대여 불가능 상태일 때
 					JOptionPane.showMessageDialog(button, "대여가 불가능한 도서입니다.");				
+				} else if(memberIdTF.getText().length() == 0) {
+					JOptionPane.showMessageDialog(button, "회원을 선택하여 주십시오.");
 				} else if(Integer.parseInt(rentableBookNumTF.getText()) == 0) { // 대여가능권수가 0일 때 
 					JOptionPane.showMessageDialog(button, "현재 대여가 불가능한 회원입니다.");
 				} else if(Integer.parseInt(rentableBookNumTF.getText()) == rentCart.size()) { // 장바구니에 대여가능권수보다 책을 많이 담았을 때,
@@ -425,7 +438,7 @@ public class RentalPanel extends JPanel implements ActionListener {
 				int index = cartTable.getSelectedRow();	
 				
 				rentCart.remove(index); // 어차피 리스트에 담긴 순서와 테이블에 보여지는 순서는 같으므로 index로 삭제 가능
-				//cartDm.removeRow(index); // 에러 남.... 이유 모름....★			
+				cartDm.removeRow(index); // 에러 남.... 이유 모름....★			
 			}
 			isPushed = false;
 			return new String(label);

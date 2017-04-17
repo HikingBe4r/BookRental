@@ -354,7 +354,7 @@ public class RentalDAO {
 				StringBuilder sql = new StringBuilder();
 				sql.append("update rental ");
 				sql.append("set return_date = sysdate ");
-				sql.append("where book_id = ?");
+				sql.append("where book_id = ? and return_date is null ");
 				pstmt = conn.prepareStatement(sql.toString());
 							
 				//대여현황확인 변경 sql문

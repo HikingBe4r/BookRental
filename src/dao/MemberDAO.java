@@ -66,6 +66,7 @@ public class MemberDAO {
 	    pstm.setString(2, member.getPhoneNum());
 	    pstm.setString(3, member.getBirthDay());
 	    pstm.setString(4, member.getWithdraw());
+	    pstm.setString(5, member.getId());
 
 	    pstm.executeUpdate();
 
@@ -90,17 +91,26 @@ public class MemberDAO {
 	    stmt = conn.createStatement();
 
 	    StringBuilder sql = new StringBuilder();
-	    sql.append("select id, name, phoneNum, birthDay  ");
+	    sql.append("select id, name, phoneNum, birthDay ,withdraw ");
 	    sql.append("from member ");
+	    sql.append("order by id asc   		");
+	  
+	    
 	    rs = stmt.executeQuery(sql.toString());
+	    
 	    while (rs.next()) {
+		
 		Vector<Object> mem = new Vector<Object>();
+		mem.addElement(false);
 		mem.addElement(rs.getString(1));
 		mem.addElement(rs.getString(2));
 		mem.addElement(rs.getString(3));
 		mem.addElement(rs.getString(4));
-		mem.add(memall);
+		mem.addElement(rs.getString(5));
+		memall.add(mem);
 	    }
+	    
+	    return memall;
 	} finally {
 	    if (rs != null)
 		rs.close();
@@ -109,9 +119,8 @@ public class MemberDAO {
 	    if (conn != null)
 		conn.close();
 	}
-	return memall;
     }
-    // 이거 고치세요.
+    
 
  // 회원조건 검색 id순
  	public Vector<Vector<Object>> retrieveMemberListByCondition(String keyField, String keyWord) throws SQLException{

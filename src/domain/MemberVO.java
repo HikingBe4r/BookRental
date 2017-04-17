@@ -10,6 +10,13 @@ public class MemberVO {
 	public MemberVO() {
 		super();
 	}
+	public MemberVO(String name, String phone, String birthDay) {
+	    super();
+	    this.name = name;
+	    this.phone = phone;
+	    this.birthDay = birthDay;
+	}
+
 
 	public MemberVO(String id, String name, String phone, String birthDay, String withdraw) {
 		super();

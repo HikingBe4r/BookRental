@@ -1,27 +1,29 @@
+
 /**
  * 
  */
 package ui;
 
-import java.awt.BorderLayout;
-import java.awt.EventQueue;
+import java.awt.Font;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.Vector;
 
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
-import javax.swing.border.EmptyBorder;
-import javax.swing.JComboBox;
-import javax.swing.JTextField;
-import javax.swing.JButton;
-import javax.swing.DefaultComboBoxModel;
-import java.awt.Font;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
-import javax.swing.table.DefaultTableModel;
+import javax.swing.JTextField;
 import javax.swing.ScrollPaneConstants;
-import javax.swing.JProgressBar;
-import javax.swing.JSeparator;
+import javax.swing.border.EmptyBorder;
+import javax.swing.table.DefaultTableModel;
+
+import dao.MemberDAO;
+import dao.RentalDAO;
+import domain.MemberVO;
 
 /**
  * @author kodica0301
@@ -29,91 +31,155 @@ import javax.swing.JSeparator;
  */
 public class SearchMemberFrame extends JFrame {
 
-	private JPanel contentPane;
-	private JTextField keywordTF;
-	private JTable table;
+   private JButton searchBtn, acceptBtn, cancelBtn;
+   private JPanel contentPane;
+   private JTextField keywordTF;
+   private JTable table;
+   private JComboBox keyfieldCB;
+   private JScrollPane scrollPane;
+   private DefaultTableModel dtm;
+   
+   private MemberDAO dao = new MemberDAO();
+   private MemberVO member = new MemberVO();
+   private RentalPanel rentalPanel;
+   
+   
+   
+   public SearchMemberFrame(RentalPanel rentalPanel) {
+	  this.rentalPanel = rentalPanel;
+      setTitle("\uD68C\uC6D0\uAC80\uC0C9");
+      setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+      setBounds(400, 200, 600, 400);
+      contentPane = new JPanel();
+      contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
+      setContentPane(contentPane);
+      contentPane.setLayout(null);
 
-	/**
-	 * Launch the application
-	 */
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					SearchMemberFrame frame = new SearchMemberFrame();
-					frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}
+      keyfieldCB = new JComboBox();
+      keyfieldCB.setModel(new DefaultComboBoxModel(new String[] {"\uC774\uB984", "ID", "\uC804\uD654\uBC88\uD638"}));
+      keyfieldCB.setBounds(12, 10, 74, 21);
+      contentPane.add(keyfieldCB);
 
-	/**
-	 * Create the frame.
-	 */
-	public SearchMemberFrame() {
-		setTitle("\uD68C\uC6D0\uAC80\uC0C9");
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(400, 200, 600, 400);
-		contentPane = new JPanel();
-		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
-		setContentPane(contentPane);
-		contentPane.setLayout(null);
+      keywordTF = new JTextField();
+      keywordTF.setBounds(98, 10, 232, 21);
+      contentPane.add(keywordTF);
+      keywordTF.setColumns(10);
 
-		JComboBox keyfieldCB = new JComboBox();
-		keyfieldCB
-				.setModel(new DefaultComboBoxModel(new String[] { "\uC774\uB984", "\uC804\uD654\uBC88\uD638", "ID" }));
-		keyfieldCB.setBounds(12, 10, 74, 21);
-		contentPane.add(keyfieldCB);
+      searchBtn = new JButton("\uAC80\uC0C9");
+      searchBtn.addActionListener(new ActionListener() {
+         public void actionPerformed(ActionEvent e) {
+            dtm.setRowCount(0);
+            searchMemberList(keyfieldCB.getSelectedIndex(), keywordTF.getText());
+         }
+      });
+      searchBtn.setFont(new Font("굴림", Font.PLAIN, 12));
+      searchBtn.setBounds(342, 9, 64, 23);
+      contentPane.add(searchBtn);
 
-		keywordTF = new JTextField();
-		keywordTF.setBounds(98, 10, 232, 21);
-		contentPane.add(keywordTF);
-		keywordTF.setColumns(10);
+      acceptBtn = new JButton("\uC120\uD0DD");
+      acceptBtn.addActionListener(new ActionListener() {
+         public void actionPerformed(ActionEvent e) {
+        	MemberVO member = selectedMember(table.getSelectedRow());
+            rentalPanel.memberIdTF.setText(member.getId());
+            rentalPanel.memberNameTF.setText(member.getName());
+            rentalPanel.phoneTF.setText(member.getPhoneNum());
+            RentalDAO dao = new RentalDAO();
+            try {        	
+                rentalPanel.rentableBookNumTF.setText(""+dao.rentableBookNum(member.getId())); // 연체자면 대여가능권수 0   	
+			} catch (Exception e2) {
+				e2.printStackTrace();
+			}            
+            setVisible(false);
+         }
+      });
+      acceptBtn.setFont(new Font("굴림", Font.PLAIN, 12));
+      acceptBtn.setBounds(432, 329, 64, 23);
+      contentPane.add(acceptBtn);
 
-		JButton searchBtn = new JButton("\uAC80\uC0C9");
-		searchBtn.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-			}
-		});
-		searchBtn.setFont(new Font("굴림", Font.PLAIN, 12));
-		searchBtn.setBounds(342, 9, 64, 23);
-		contentPane.add(searchBtn);
+      cancelBtn = new JButton("\uCDE8\uC18C");
+      cancelBtn.addActionListener(new ActionListener() {
+         public void actionPerformed(ActionEvent e) {
+            setVisible(false);
+         }
+      });
+      cancelBtn.setFont(new Font("굴림", Font.PLAIN, 12));
+      cancelBtn.setBounds(508, 329, 64, 23);
+      contentPane.add(cancelBtn);
 
-		JButton acceptBtn = new JButton("\uC120\uD0DD");
-		acceptBtn.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-			}
-		});
-		acceptBtn.setFont(new Font("굴림", Font.PLAIN, 12));
-		acceptBtn.setBounds(432, 329, 64, 23);
-		contentPane.add(acceptBtn);
+      scrollPane = new JScrollPane();
+      scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER);
+      scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+      scrollPane.setBounds(12, 49, 560, 270);
+      contentPane.add(scrollPane);
 
-		JButton cancelBtn = new JButton("\uCDE8\uC18C");
-		cancelBtn.setFont(new Font("굴림", Font.PLAIN, 12));
-		cancelBtn.setBounds(508, 329, 64, 23);
-		contentPane.add(cancelBtn);
+      dtm = new DefaultTableModel(new Object[][] {}, new String[] {"ID", "\uC774\uB984",
+            "\uC804\uD654\uBC88\uD638", "\uC0DD\uB144\uC6D4\uC77C" });
+      
+      
+      table = new JTable(dtm);
+      table.setFillsViewportHeight(true);
+      table.setBounds(0, 0, 499, 160);
+      scrollPane.setViewportView(table);
+      table.getColumnModel().getColumn(0).setResizable(false);
+      table.getColumnModel().getColumn(1).setResizable(false);
+      table.getColumnModel().getColumn(1).setPreferredWidth(86);
+      table.getColumnModel().getColumn(2).setResizable(false);
+      table.getColumnModel().getColumn(2).setPreferredWidth(142);
+      table.getColumnModel().getColumn(3).setResizable(false);
+      table.getColumnModel().getColumn(3).setPreferredWidth(121);
+   }
+   
+   public MemberVO getMember() {
+	return member;
+}
 
-		JScrollPane scrollPane = new JScrollPane();
-		scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER);
-		scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-		scrollPane.setBounds(12, 49, 560, 270);
-		contentPane.add(scrollPane);
-
-		table = new JTable();
-		table.setFillsViewportHeight(true);
-		table.setBounds(0, 0, 499, 160);
-		scrollPane.setViewportView(table);
-		table.setModel(new DefaultTableModel(new Object[][] {}, new String[] { "\uC120\uD0DD", "ID", "\uC774\uB984",
-				"\uC804\uD654\uBC88\uD638", "\uC0DD\uB144\uC6D4\uC77C" }));
-		table.getColumnModel().getColumn(0).setResizable(false);
-		table.getColumnModel().getColumn(1).setResizable(false);
-		table.getColumnModel().getColumn(2).setResizable(false);
-		table.getColumnModel().getColumn(2).setPreferredWidth(86);
-		table.getColumnModel().getColumn(3).setResizable(false);
-		table.getColumnModel().getColumn(3).setPreferredWidth(142);
-		table.getColumnModel().getColumn(4).setResizable(false);
-		table.getColumnModel().getColumn(4).setPreferredWidth(121);
-	}
+private boolean searchMemberList(int selectedKeyfield, String keyword) {
+      String keyfield = null;//, keyword = keywordTF.getText(); 
+      
+      try {
+         if(selectedKeyfield == 0) {
+            keyfield = "name";
+         } else if (selectedKeyfield == 1) {
+            keyfield = "id";
+         } else if (selectedKeyfield == 2) {
+            keyfield = "phoneNum";
+         }
+         if(keyword.isEmpty()) {
+            System.out.println("검색어를 입력하세요.");
+            // alert 추가
+            
+         } else {
+            Vector<Vector<Object>> rowData = dao.retrieveMemberListByCondition(keyfield, keyword);
+            for(Vector<Object> rd: rowData) {
+               Vector<Object> member = new Vector<Object>();
+               if(rd.elementAt(5).equals("0")) {
+                  member.addElement(rd.elementAt(1));
+                  member.addElement(rd.elementAt(2));
+                  member.addElement(rd.elementAt(3));
+                  member.addElement(rd.elementAt(4));
+                  
+                  dtm.addRow(member);
+               }
+               
+            }
+         }
+         return true;
+      } catch (Exception e) {
+         e.printStackTrace();
+      }
+      return false;            
+   }
+   
+   public MemberVO selectedMember(int selectedRow) {
+      //MemberVO member = new MemberVO();
+      int index = table.getSelectedRow();
+      member.setId(table.getValueAt(selectedRow, 0).toString());
+      member.setName(table.getValueAt(selectedRow, 1).toString());
+      member.setPhone(table.getValueAt(selectedRow, 2).toString());
+      member.setBirthDay(table.getValueAt(selectedRow, 3).toString());
+      member.setWithdraw("0");
+      
+      return member;
+   }
+   
 }

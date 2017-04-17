@@ -11,6 +11,73 @@ import conn.DBconn;
 
 public class RentalDAO {
 	
+	// 대여 가능권수
+	public int rentableBookNum(String memberId) throws SQLException {
+		int num = 0;
+		if(isDelayer(memberId)) {
+			return 0;
+		} else {
+			Connection conn = null;
+			PreparedStatement pstmt = null;
+			ResultSet rs = null;
+			try {
+				conn = DBconn.getConnection();
+				StringBuilder sql = new StringBuilder();
+				sql.append("select count(rental_id) ");
+				sql.append("from rental ");
+				sql.append("where member_id = ? ");
+				sql.append("and return_date is null ");
+				
+				pstmt = conn.prepareStatement(sql.toString());
+				
+				pstmt.setString(1, memberId);
+				
+				rs = pstmt.executeQuery();
+				if(rs.next()) {
+					num = 5 - rs.getInt(1);
+				}			
+			} catch (Exception e) {
+				e.printStackTrace();
+			} finally {
+				if(rs != null) rs.close();
+				if(pstmt != null) pstmt.close();
+				if(conn != null) conn.close();
+			}
+			return num;
+		}
+	}
+	
+	// 연체자인지 확인(맞으면 true)
+	public boolean isDelayer(String memberId) throws SQLException{
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		try {
+			conn = DBconn.getConnection();
+			StringBuilder sql = new StringBuilder();
+			sql.append("select trunc(due_date) - trunc(sysdate) ");
+			sql.append("from rental ");
+			sql.append("where member_id = ? and return_date is null ");
+			pstmt = conn.prepareStatement(sql.toString());
+			
+			pstmt.setString(1, memberId);
+			
+			rs = pstmt.executeQuery();
+			while(rs.next()) {
+				if(rs.getInt(1) < 0) return true;				
+			}
+					
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			if(rs != null) rs.close();
+			if(pstmt != null) pstmt.close();
+			if(conn != null) conn.close();
+		}
+		
+		return false;
+	}
+	
 	// 대여 히스토리 검색
 	public Vector<Vector<Object>> selectRentalHistoryList
 				(String keyword, boolean[] pattern, String startDate, String endDate) throws SQLException {
@@ -148,7 +215,7 @@ public class RentalDAO {
 	
 	
 	// 도서 연장
-	public void renewalBooksFromBasket(List<Integer> rentingBooksRecords) throws SQLException {
+	public void renewalBooksFromBasket(List<String> rentingBooksId) throws SQLException {
 		Connection conn = null;
 		PreparedStatement pstmt = null;
 		try {
@@ -156,11 +223,11 @@ public class RentalDAO {
 			StringBuilder sql = new StringBuilder();
 			sql.append("update rental ");
 			sql.append("set due_date = due_date + 7 ");	// 연장시 반납예정일 7일 증가
-			sql.append("where rental_id = ?");
+			sql.append("where book_id = ?");
 			pstmt = conn.prepareStatement(sql.toString());
 			
-			for(int i=0; i<rentingBooksRecords.size(); i++) {
-				pstmt.setInt(1, rentingBooksRecords.get(i));
+			for(int i=0; i<rentingBooksId.size(); i++) {
+				pstmt.setString(1, rentingBooksId.get(i));
 				pstmt.addBatch();
 				pstmt.clearParameters();
 			}		
@@ -239,7 +306,7 @@ public class RentalDAO {
 			StringBuilder sql = new StringBuilder();
 			StringBuilder sql2 = new StringBuilder();
 			sql.append("insert into rental(rental_id, member_id, book_id, rent_date, due_date) " );
-			sql.append("valus (rental_seq.nextval, ?, ?, sysdate, sysdate+7) ");
+			sql.append("values (rental_seq.nextval, ?, ?, sysdate, sysdate+7) ");
 			pstmt = conn.prepareStatement(sql.toString());
 			
 			sql2.append("update book ");
@@ -276,7 +343,7 @@ public class RentalDAO {
 		}
 	}
 	//도서 반납
-		public void returnBooksFromBasket(List<Integer> rentingBookRecords) throws SQLException {
+		public void returnBooksFromBasket(List<String> rentingBookId) throws SQLException {
 			Connection conn = null;
 			PreparedStatement pstmt = null; //도서반납일 추가
 			PreparedStatement pstmt2 = null; //대여현황확인 변경 - 대여중 1, 대여가능 0
@@ -287,23 +354,23 @@ public class RentalDAO {
 				StringBuilder sql = new StringBuilder();
 				sql.append("update rental ");
 				sql.append("set return_date = sysdate ");
-				sql.append("where rental_id = ?");
+				sql.append("where book_id = ?");
 				pstmt = conn.prepareStatement(sql.toString());
 							
 				//대여현황확인 변경 sql문
 				StringBuilder sql2 = new StringBuilder();
 				sql2.append("update book ");
 				sql2.append("set status = 0 ");
-				sql2.append("where book_id = (select book_id from rental where rental_id = ?)");
+				sql2.append("where book_id = ?");
 				pstmt2 = conn.prepareStatement(sql.toString());
 				
 				
-				for(int i = 0; i<rentingBookRecords.size(); i++){
-					pstmt.setInt(1, rentingBookRecords.get(i));
+				for(int i = 0; i<rentingBookId.size(); i++){
+					pstmt.setString(1, rentingBookId.get(i));
 					pstmt.addBatch();
 					pstmt.clearParameters();
 					
-					pstmt2.setInt(1, rentingBookRecords.get(i));
+					pstmt2.setString(1, rentingBookId.get(i));
 					pstmt2.addBatch();
 					pstmt2.clearParameters();
 				}

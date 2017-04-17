@@ -13,6 +13,7 @@ import javax.swing.DefaultCellEditor;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -26,9 +27,10 @@ import javax.swing.table.TableCellRenderer;
 
 import dao.BookDAO;
 import dao.RentalDAO;
+import domain.MemberVO;
 
 public class RentalPanel extends JPanel implements ActionListener {
-	private JTextField memberIdTF, memberNameTF, phoneTF, rentableBookNumTF, bookSearchConditionTF;
+	public JTextField memberIdTF, memberNameTF, phoneTF, rentableBookNumTF, bookSearchConditionTF;
 	private JTable booksTable, cartTable;
 	private JButton memberSearchBtn, bookSearchBtn, rentBtn;
 	private JComboBox combo;
@@ -37,6 +39,8 @@ public class RentalPanel extends JPanel implements ActionListener {
 	private String bookKeyword;	// 도서 검색어
 	private DefaultTableModel bookDm, cartDm;
 	private List<String> rentCart = new ArrayList<String>();
+	public static MemberVO member = new MemberVO();
+	public static boolean flag = false;
 	
 	private void addComponent() {
 		setBounds(100, 100, 970, 762);
@@ -96,8 +100,7 @@ public class RentalPanel extends JPanel implements ActionListener {
 		rentableBookNumTF.setBounds(735, 24, 100, 25);
 		panel.add(rentableBookNumTF);
 		rentableBookNumTF.setColumns(10);
-		rentableBookNumTF.setText("5");
-
+		
 		JPanel panel_1 = new JPanel();
 		panel_1.setBounds(10, 95, 948, 465);
 		add(panel_1);
@@ -183,18 +186,18 @@ public class RentalPanel extends JPanel implements ActionListener {
 		rentBtn.addActionListener(this);
 	}
 	
-
+	
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		Object target = e.getSource();
 		if(target == memberSearchBtn) { // 회원 검색 버튼
 			// 회원검색 팝업을 띄운다!
 			// 회원선택~~~~~~~~
-			
-			
-			
-			
-			
+			SearchMemberFrame frame = new SearchMemberFrame(this);
+            frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+            frame.setLocationRelativeTo(null);                                 
+            frame.setAlwaysOnTop(true);                                      
+            frame.setVisible(true);
 			
 		} else if(target == combo) { // 도서검색 콤보박스
 			bookKeyfield = combo.getSelectedIndex() + 1;
@@ -209,8 +212,9 @@ public class RentalPanel extends JPanel implements ActionListener {
 			
 			rentCart.clear();
 			for(int i=cartDm.getRowCount()-1; i>=0; i--) {
-				cartDm.removeRow(i);
+				//cartDm.removeRow(i);
 			}
+			JOptionPane.showMessageDialog(rentBtn, "도서가 정상 대여되었습니다.");
 					
 		} else if(target == bookSearchBtn) { // 도서 검색 버튼
 			for(int i=bookDm.getRowCount()-1; i>=0; i--) {
@@ -421,7 +425,7 @@ public class RentalPanel extends JPanel implements ActionListener {
 				int index = cartTable.getSelectedRow();	
 				
 				rentCart.remove(index); // 어차피 리스트에 담긴 순서와 테이블에 보여지는 순서는 같으므로 index로 삭제 가능
-				cartDm.removeRow(index); // 에러 남.... 이유 모름....★			
+				//cartDm.removeRow(index); // 에러 남.... 이유 모름....★			
 			}
 			isPushed = false;
 			return new String(label);

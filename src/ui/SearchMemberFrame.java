@@ -101,7 +101,7 @@ public class SearchMemberFrame extends JFrame {
 				}
 	            
 				
-				
+		
 	            
 	            
 	            

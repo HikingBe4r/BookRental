@@ -24,7 +24,6 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 
 import dao.RentalDAO;
-import domain.MemberVO;
 
 public class ReturnPanel extends JPanel implements ActionListener{
 		
@@ -44,7 +43,8 @@ public class ReturnPanel extends JPanel implements ActionListener{
 	public Vector<Vector<Object>> rowData = new Vector<Vector<Object>>();
 	private List<String> returnbooks = new ArrayList<String>();
 	private List<String> renewalbooks = new ArrayList<String>();
-	private Vector<Vector<Object>> temp = new Vector<Vector<Object>>();
+	// private Vector<Vector<Object>> temp = new Vector<Vector<Object>>();
+	private List<String> temp = new ArrayList<String>();
 	private SearchMemberFrame smf = new SearchMemberFrame(this);
 	private RentalDAO rental = new RentalDAO();
 	
@@ -154,15 +154,16 @@ public class ReturnPanel extends JPanel implements ActionListener{
 		panel_2.add(scrollPane_2);
 		
 		//반납 장바구니 테이블
-		String[] columnNames2 = {"도서ID", "제목", "저자", ""};
+		//String[] columnNames2 = {"도서ID", "제목", "저자", ""};
+		String[] columnNames2 = {"도서ID", "제목", "저자", "출판사", "장르", "반납예정일", "연장여부", ""};
 			
 		Class[] columnTypes2 = new Class[] {String.class, String.class, String.class, Object.class};
 		returncarttabledm = new DefaultTableModel(columnNames2, 0);
 		returncarttable = new JTable(returncarttabledm);
 		returncarttable.setRowHeight(25);
 		
-		returncarttable.getColumnModel().getColumn(3).setCellRenderer(new ButtonRenderer02());
-		returncarttable.getColumnModel().getColumn(3).setCellEditor(new ButtonEditor02(new JCheckBox()));
+		returncarttable.getColumnModel().getColumn(7).setCellRenderer(new ButtonRenderer02());
+		returncarttable.getColumnModel().getColumn(7).setCellEditor(new ButtonEditor02(new JCheckBox()));
 		
 		scrollPane_2.setViewportView(returncarttable);
 				
@@ -181,7 +182,8 @@ public class ReturnPanel extends JPanel implements ActionListener{
 		panel_3.add(scrollPane_1);
 		
 		//연장 장바구니 테이블
-		String[] columnNames1 = {"도서ID", "제목", "저자", ""};
+		//String[] columnNames1 = {"도서ID", "제목", "저자", ""};
+		String[] columnNames1 = {"도서ID", "제목", "저자", "출판사", "장르", "반납예정일", "연장여부", ""};
 		
 		Class[] columnTypes1 = new Class[] {String.class, String.class, String.class, Object.class};
 		
@@ -189,8 +191,8 @@ public class ReturnPanel extends JPanel implements ActionListener{
 		
 		renewalcarttable = new JTable(renewalcarttabledm);
 		renewalcarttable.setRowHeight(25);
-		renewalcarttable.getColumnModel().getColumn(3).setCellRenderer(new ButtonRenderer01());
-		renewalcarttable.getColumnModel().getColumn(3).setCellEditor(new ButtonEditor01(new JCheckBox()));
+		renewalcarttable.getColumnModel().getColumn(7).setCellRenderer(new ButtonRenderer01());
+		renewalcarttable.getColumnModel().getColumn(7).setCellEditor(new ButtonEditor01(new JCheckBox()));
 		
 		scrollPane_1.setViewportView(renewalcarttable);
 	
@@ -366,17 +368,11 @@ public class ReturnPanel extends JPanel implements ActionListener{
 						rowData1.add((String)retrievetable.getValueAt(index, 0));
 						rowData1.add((String)retrievetable.getValueAt(index, 1));
 						rowData1.add((String)retrievetable.getValueAt(index, 2));
+						rowData1.add((String)retrievetable.getValueAt(index, 3));
+						rowData1.add((String)retrievetable.getValueAt(index, 4));
+						rowData1.add((String)retrievetable.getValueAt(index, 5));
+						rowData1.add((String)retrievetable.getValueAt(index, 6));
 						renewalcarttabledm.addRow(rowData1);
-						// 장바구니에 담은 도서 임시 저장
-						Vector<Object> rowData2 = new Vector<Object>();
-						rowData2.add((String)retrievetable.getValueAt(index, 0));
-						rowData2.add((String)retrievetable.getValueAt(index, 1));
-						rowData2.add((String)retrievetable.getValueAt(index, 2));
-						rowData2.add((String)retrievetable.getValueAt(index, 3));
-						rowData2.add((String)retrievetable.getValueAt(index, 4));
-						rowData2.add((String)retrievetable.getValueAt(index, 5));
-						rowData2.add((String)retrievetable.getValueAt(index, 6));
-						temp.add(rowData2);
 						
 						retrievetabledm.removeRow(index); // 장바구니에 추가한 행 삭제	
 						
@@ -487,20 +483,14 @@ public class ReturnPanel extends JPanel implements ActionListener{
 						rowData1.add((String)retrievetable.getValueAt(index, 0));
 						rowData1.add((String)retrievetable.getValueAt(index, 1));
 						rowData1.add((String)retrievetable.getValueAt(index, 2));
+						rowData1.add((String)retrievetable.getValueAt(index, 3));
+						rowData1.add((String)retrievetable.getValueAt(index, 4));
+						rowData1.add((String)retrievetable.getValueAt(index, 5));
+						rowData1.add((String)retrievetable.getValueAt(index, 6));
 						returncarttabledm.addRow(rowData1);
-						// 장바구니에 담은 도서 임시 저장
-						Vector<Object> rowData2 = new Vector<Object>();
-						rowData2.add((String)retrievetable.getValueAt(index, 0));
-						rowData2.add((String)retrievetable.getValueAt(index, 1));
-						rowData2.add((String)retrievetable.getValueAt(index, 2));
-						rowData2.add((String)retrievetable.getValueAt(index, 3));
-						rowData2.add((String)retrievetable.getValueAt(index, 4));
-						rowData2.add((String)retrievetable.getValueAt(index, 5));
-						rowData2.add((String)retrievetable.getValueAt(index, 6));
-						temp.add(rowData2);
-											
-						retrievetabledm.removeRow(index); // 장바구니에 추가한 행 삭제
 						
+						retrievetabledm.removeRow(index); // 장바구니에 추가한 행 삭제
+					
 					}
 					
 								
@@ -541,7 +531,7 @@ public class ReturnPanel extends JPanel implements ActionListener{
 				setForeground(renewalcarttable.getForeground());
 				setBackground(UIManager.getColor("Button.background"));
 			}
-			setText((value == null) ? "연장취소" : value.toString());
+			setText((value == null) ? "취소" : value.toString());
 			return this;
 		}
 	}
@@ -581,7 +571,7 @@ public class ReturnPanel extends JPanel implements ActionListener{
 				button.setForeground(renewalcarttable.getForeground());
 				button.setBackground(renewalcarttable.getBackground());
 			}
-			label = (value == null) ? "연장취소" : value.toString();
+			label = (value == null) ? "취소" : value.toString();
 			button.setText(label);
 			isPushed = true;
 			return button;
@@ -590,19 +580,21 @@ public class ReturnPanel extends JPanel implements ActionListener{
 
 		public Object getCellEditorValue() {
 			int index = renewalcarttable.getSelectedRow();
-			if (isPushed) {							
+			if (isPushed) {	// 연장 취소버튼		
+				Vector<Object> rowData1 = new Vector<Object>();
+				
+				rowData1.add((String)renewalcarttabledm.getValueAt(index, 0));
+				rowData1.add((String)renewalcarttabledm.getValueAt(index, 1));
+				rowData1.add((String)renewalcarttabledm.getValueAt(index, 2));
+				rowData1.add((String)renewalcarttabledm.getValueAt(index, 3));
+				rowData1.add((String)renewalcarttabledm.getValueAt(index, 4));
+				rowData1.add((String)renewalcarttabledm.getValueAt(index, 5));
+				rowData1.add((String)renewalcarttabledm.getValueAt(index, 6));
+				retrievetabledm.addRow(rowData1);
+				
 				renewalbooks.remove(index); // 장바구니에 담긴 순서와 테이블에 표시되는 순서가 같으므로 인덱스로 삭제 가능
 				renewalcarttabledm.removeRow(index);
-				Vector<Object> tempData = new Vector<Object>();
-				for(int i=0; i<temp.size(); i++) {
-					if(temp.get(i).get(1).equals(renewalcarttabledm.getValueAt(index, 0))) {
-						tempData = temp.get(i-1);
-						temp.remove(i-1);
-						break;
-					}
 				}
-				retrievetabledm.addRow(tempData);
-			}
 			isPushed = false;
 			return new String(label);
 		}
@@ -636,7 +628,7 @@ public class ReturnPanel extends JPanel implements ActionListener{
 				setForeground(returncarttable.getForeground());
 				setBackground(UIManager.getColor("Button.background"));
 			}
-			setText((value == null) ? "반납취소" : value.toString());
+			setText((value == null) ? "취소" : value.toString());
 			return this;
 		}
 	}
@@ -677,7 +669,7 @@ public class ReturnPanel extends JPanel implements ActionListener{
 				button.setForeground(returncarttable.getForeground());
 				button.setBackground(returncarttable.getBackground());
 			}
-			label = (value == null) ? "반납취소" : value.toString();
+			label = (value == null) ? "취소" : value.toString();
 			button.setText(label);
 			isPushed = true;
 			return button;
@@ -687,19 +679,20 @@ public class ReturnPanel extends JPanel implements ActionListener{
 		public Object getCellEditorValue() {
 			int index = returncarttable.getSelectedRow();
 			
-			if (isPushed) {
+			if (isPushed) { // 반납 취소버튼
+				Vector<Object> rowData1 = new Vector<Object>();
+				rowData1.add((String)returncarttabledm.getValueAt(index, 0));
+				rowData1.add((String)returncarttabledm.getValueAt(index, 1));
+				rowData1.add((String)returncarttabledm.getValueAt(index, 2));
+				rowData1.add((String)returncarttabledm.getValueAt(index, 3));
+				rowData1.add((String)returncarttabledm.getValueAt(index, 4));
+				rowData1.add((String)returncarttabledm.getValueAt(index, 5));
+				rowData1.add((String)returncarttabledm.getValueAt(index, 6));
+				retrievetabledm.addRow(rowData1);
+				
 				returnbooks.remove(index); // 장바구니에 담긴 순서와 테이블에 표시되는 순서가 같으므로 인덱스로 삭제 가능
 				returncarttabledm.removeRow(index);		
-				Vector<Object> tempData = new Vector<Object>();
-				for(int i=0; i<temp.size(); i++) {
-					if(temp.get(i).get(1).equals(returncarttabledm.getValueAt(index, 0))) {
-						tempData = temp.get(i-1);
-						temp.remove(i-1);
-						break;
-					}
-				}
-				retrievetabledm.addRow(tempData);
-				
+						
 			}
 			isPushed = false;
 			return new String(label);

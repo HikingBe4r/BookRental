@@ -106,6 +106,7 @@ public class SearchMemberFrame extends JFrame {
 	            
 	            
 	            
+	            
 	         }
 	      });
 	      acceptBtn.setFont(new Font("굴림", Font.PLAIN, 12));

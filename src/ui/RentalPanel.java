@@ -43,7 +43,32 @@ public class RentalPanel extends JPanel implements ActionListener{
 	private DefaultTableModel bookDm, cartDm;
 	private List<String> rentCart = new ArrayList<String>();
 	public static MemberVO member = new MemberVO();
-	
+	private void viewAllBooks() {
+		BookDAO bDAO = new BookDAO();
+		bookKeyword = bookSearchConditionTF.getText();
+		Vector<Vector<Object>> books = new Vector<Vector<Object>>();
+		Vector<Vector<Object>> editedBooks = new Vector<Vector<Object>>();
+		try {
+			books = bDAO.selectBookList(bookKeyfield, bookKeyword);
+			for(int i=0; i<books.size(); i++) {
+				Vector<Object> editedbook = new Vector<Object>();
+				Vector<Object> book = books.get(i);
+				editedbook.addElement(book.elementAt(0));
+				editedbook.addElement(book.elementAt(1));
+				editedbook.addElement(book.elementAt(2));
+				editedbook.addElement(book.elementAt(3));
+				editedbook.addElement(book.elementAt(7));
+				if(book.elementAt(5).equals("0")) editedbook.addElement("대여 가능");
+				else editedbook.addElement("대여 중");
+				editedBooks.add(editedbook);
+			}
+			for(int i=0; i<editedBooks.size(); i++) {
+				bookDm.addRow(editedBooks.elementAt(i));
+			}
+		} catch (Exception e2) {
+			e2.printStackTrace();
+		}
+	}
 	
 
 	private void addComponent() {
@@ -200,7 +225,7 @@ public class RentalPanel extends JPanel implements ActionListener{
             frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
             frame.setLocationRelativeTo(null);                                 
             frame.setAlwaysOnTop(true);                                      
-            frame.setVisible(true);
+            frame.setVisible(true);     
 			
 		} else if(target == combo) { // 도서검색 콤보박스
 			bookKeyfield = combo.getSelectedIndex() + 1;
@@ -227,36 +252,13 @@ public class RentalPanel extends JPanel implements ActionListener{
 				cartDm.removeRow(i);
 			}
 			JOptionPane.showMessageDialog(rentBtn, "도서가 정상 대여되었습니다.");
-					
+				
+			
 		} else if(target == bookSearchBtn) { // 도서 검색 버튼
 			for(int i=bookDm.getRowCount()-1; i>=0; i--) {
 				bookDm.removeRow(i);
 			}
-			BookDAO bDAO = new BookDAO();
-			bookKeyword = bookSearchConditionTF.getText();
-			Vector<Vector<Object>> books = new Vector<Vector<Object>>();
-			Vector<Vector<Object>> editedBooks = new Vector<Vector<Object>>();
-			try {
-				books = bDAO.selectBookList(bookKeyfield, bookKeyword);
-				for(int i=0; i<books.size(); i++) {
-					Vector<Object> editedbook = new Vector<Object>();
-					Vector<Object> book = books.get(i);
-					editedbook.addElement(book.elementAt(0));
-					editedbook.addElement(book.elementAt(1));
-					editedbook.addElement(book.elementAt(2));
-					editedbook.addElement(book.elementAt(3));
-					editedbook.addElement(book.elementAt(7));
-					//editedbook.addElement(book.elementAt(5));
-					if(book.elementAt(5).equals("0")) editedbook.addElement("대여 가능");
-					else editedbook.addElement("대여 중");
-					editedBooks.add(editedbook);
-				}
-				for(int i=0; i<editedBooks.size(); i++) {
-					bookDm.addRow(editedBooks.elementAt(i));
-				}
-			} catch (Exception e2) {
-				e2.printStackTrace();
-			}
+			viewAllBooks();
 		}	
 	}
 	
@@ -264,6 +266,8 @@ public class RentalPanel extends JPanel implements ActionListener{
 		setBackground(Color.WHITE);
 		addComponent();
 		addEventListener();
+		viewAllBooks();
+		
 	}
 
 	public RentalPanel() {

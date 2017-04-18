@@ -229,7 +229,7 @@ public class RentalPanel extends JPanel implements ActionListener{
 			
 		} else if(target == combo) { // 도서검색 콤보박스
 			bookKeyfield = combo.getSelectedIndex() + 1;
-		} else if(target == rentBtn) { // 대여 버튼
+		} else if(target == rentBtn) { // 대여하기 버튼
 			if(memberIdTF.getText().length() == 0) {
 				JOptionPane.showMessageDialog(rentBtn, "선택된 회원이 없습니다.");
 				return;
@@ -246,12 +246,20 @@ public class RentalPanel extends JPanel implements ActionListener{
 			} catch (Exception e2) {
 				e2.printStackTrace();
 			}
-			
+			Integer changed = Integer.parseInt(rentableBookNumTF.getText()) - rentCart.size();
+			rentableBookNumTF.setText(changed.toString());
+			// 바구니 비우기
 			rentCart.clear();
 			for(int i=cartDm.getRowCount()-1; i>=0; i--) {
 				cartDm.removeRow(i);
 			}
+			// 도서 목록 상태 최신화
+			for(int i=bookDm.getRowCount()-1; i>=0; i--) {
+				bookDm.removeRow(i);
+			}
+			viewAllBooks();
 			JOptionPane.showMessageDialog(rentBtn, "도서가 정상 대여되었습니다.");
+			
 				
 			
 		} else if(target == bookSearchBtn) { // 도서 검색 버튼
@@ -450,7 +458,7 @@ public class RentalPanel extends JPanel implements ActionListener{
 			
 			 if (isPushed) {					
 				rentCart.remove(index); // 어차피 리스트에 담긴 순서와 테이블에 보여지는 순서는 같으므로 index로 삭제 가능			
-				cartDm.removeRow(index); // 에러 남.... 이유 모름....★			
+				cartDm.removeRow(index); 
 			}
 			isPushed = false;
 			return new String(label);

@@ -118,4 +118,8 @@ public class MainFrame extends JFrame implements ActionListener{
 		
 		setVisible(true);
 	}
+	
+	public static void main(String[] args) {
+		new MainFrame();
+	}
 }

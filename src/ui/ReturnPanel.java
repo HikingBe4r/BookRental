@@ -152,7 +152,6 @@ public class ReturnPanel extends JPanel implements ActionListener{
 		panel_2.add(scrollPane_2);
 		
 		//반납 장바구니 테이블
-		//String[] columnNames2 = {"도서ID", "제목", "저자", ""};
 		String[] columnNames2 = {"도서ID", "제목", "저자", "출판사", "장르", "반납예정일", "연장여부", ""};
 			
 		Class[] columnTypes2 = new Class[] {String.class, String.class, String.class, Object.class};
@@ -180,7 +179,6 @@ public class ReturnPanel extends JPanel implements ActionListener{
 		panel_3.add(scrollPane_1);
 		
 		//연장 장바구니 테이블
-		//String[] columnNames1 = {"도서ID", "제목", "저자", ""};
 		String[] columnNames1 = {"도서ID", "제목", "저자", "출판사", "장르", "반납예정일", "연장여부", ""};
 		
 		Class[] columnTypes1 = new Class[] {String.class, String.class, String.class, Object.class};
@@ -265,14 +263,19 @@ public class ReturnPanel extends JPanel implements ActionListener{
 				Vector<Object> rowData1 = new Vector<Object>();
 				JOptionPane.showMessageDialog(renewalbutton, "도서가 정상 연장되었습니다.");		
 				
-			}else if(target == returnbutton){ // 반납하기 버튼
+				
+				
+				
+				
+				
+				
+				
+			} else if(target == returnbutton){ // 반납하기 버튼
 				if(memberidtf.getText().length() == 0) { 
 					JOptionPane.showMessageDialog(returnbutton, "선택된 회원이 없습니다.");
 					return;
 				}
-				for(int i=0; i<returncarttabledm.getRowCount(); i++) {
-					returnbooks.add((String)returncarttabledm.getValueAt(i, 0)); // 리시트에 아이디들 담기
-				}
+
 				if(returnbooks.size() == 0) {
 					JOptionPane.showMessageDialog(returnbutton, "장바구니가 비어 있습니다");
 					return;
@@ -499,7 +502,7 @@ public class ReturnPanel extends JPanel implements ActionListener{
 						
 					} else {
 						
-						//returnbooks.add((String)retrievetable.getValueAt(index, 0)); // 장바구니에 도서 ID 추가
+						returnbooks.add((String)retrievetable.getValueAt(index, 0)); // 장바구니에 도서 ID 추가
 						// 반납 장바구니 테이블에 출력
 						Vector<Object> rowData1 = new Vector<Object>();
 						rowData1.add((String)retrievetable.getValueAt(index, 0));
@@ -722,11 +725,9 @@ public class ReturnPanel extends JPanel implements ActionListener{
 				
 				retrievetabledm.addRow(rowData1); // 반납/연장 테이블에 행 추가
 				
-				//returnbooks.remove(index); // 장바구니에 담긴 순서와 테이블에 표시되는 순서가 같으므로 인덱스로 삭제 가능
+				returnbooks.remove(index); // 장바구니에 담긴 순서와 테이블에 표시되는 순서가 같으므로 인덱스로 삭제 가능
 				returncarttabledm.removeRow(index);	// 해당 행 삭제
 				
-				//retrievetabledm.fireTableDataChanged();
-				//returncarttabledm.fireTableDataChanged();
 						
 			}
 			isPushed = false;

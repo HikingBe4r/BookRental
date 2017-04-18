@@ -50,7 +50,7 @@ public class RentalDAO {
 	// 연체자인지 확인(맞으면 true)
 	public boolean isDelayer(String memberId) throws SQLException{
 		Connection conn = null;
-		PreparedStatement pstmt = null;
+		PreparedStatement pstmt = null;		
 		ResultSet rs = null;
 		try {
 			conn = DBconn.getConnection();

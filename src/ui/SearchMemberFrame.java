@@ -91,11 +91,10 @@ public class SearchMemberFrame extends JFrame {
 				}            
 	            setVisible(false);
 	            try {
-	            	Vector<Vector<Object>>rowData = dao.selectRentingBooksByMember(member.getId());
+	            	Vector<Vector<Object>> rowData = dao.selectRentingBooksByMember(member.getId());
 	            	
 	            	for(int i = 0; i<rowData.size(); i++){
-						returnPanel.retrievetabledm.addRow(rowData.elementAt(i));
-						
+						returnPanel.retrievetabledm.addRow(rowData.elementAt(i));	
 					}
 				} catch (Exception e2) {
 				}

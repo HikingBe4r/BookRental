@@ -6,12 +6,14 @@ import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Vector;
 
 import javax.swing.DefaultCellEditor;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -39,21 +41,22 @@ public class ReturnPanel extends JPanel implements ActionListener{
 	private JButton search;
 	private JButton renewalbutton;
 	private JButton returnbutton;
-	Vector<Vector<Object>> rowData = new Vector<Vector<Object>>();
-	ArrayList<String> returnbooks = new ArrayList<String>();
-	ArrayList<String> renewalbooks = new ArrayList<String>();
-	SearchMemberFrame smf = new SearchMemberFrame(this);
-	RentalDAO rental = new RentalDAO();
-	MemberVO member = new MemberVO();
+	public Vector<Vector<Object>> rowData = new Vector<Vector<Object>>();
+	private List<String> returnbooks = new ArrayList<String>();
+	private List<String> renewalbooks = new ArrayList<String>();
+	private Vector<Vector<Object>> temp = new Vector<Vector<Object>>();
+	private SearchMemberFrame smf = new SearchMemberFrame(this);
+	private RentalDAO rental = new RentalDAO();
+	
 	
 	
 	public ReturnPanel() {
-		
 		setBackground(Color.WHITE);
 		
 		setBounds(100,100,970,762);
 		setVisible(true);
 		setLayout(null);
+		
 		
 		JPanel panel = new JPanel();
 		panel.setBounds(10, 10, 948, 75);
@@ -127,23 +130,8 @@ public class ReturnPanel extends JPanel implements ActionListener{
 		retrievetabledm = new DefaultTableModel(columnNames, 0);
 	    	    
 	    retrievetable = new JTable(retrievetabledm);
-		
+	    retrievetable.setRowHeight(35);
 
-		try{
-		
-			rowData = rental.selectRentingBooksByMember(memberidtf.getText());
-			
-			for(int i = 0; i<rowData.size(); i++){
-				retrievetabledm.addRow(rowData.elementAt(i));
-			}
-		
-		}catch(Exception e){
-			e.printStackTrace();
-		}
-		
-		
-		
-		
 		retrievetable.getColumnModel().getColumn(7).setCellRenderer(new ButtonRenderer());
 		retrievetable.getColumnModel().getColumn(7).setCellEditor(new ButtonEditor(new JCheckBox()));
 		retrievetable.getColumnModel().getColumn(8).setCellRenderer(new ButtonRenderer1());
@@ -166,11 +154,12 @@ public class ReturnPanel extends JPanel implements ActionListener{
 		panel_2.add(scrollPane_2);
 		
 		//반납 장바구니 테이블
-		String[] columnNames2 = {"\uC81C\uBAA9", "\uC800\uC790", "\uCD9C\uD310\uC0AC", ""};
+		String[] columnNames2 = {"도서ID", "제목", "저자", ""};
 			
 		Class[] columnTypes2 = new Class[] {String.class, String.class, String.class, Object.class};
 		returncarttabledm = new DefaultTableModel(columnNames2, 0);
 		returncarttable = new JTable(returncarttabledm);
+		returncarttable.setRowHeight(25);
 		
 		returncarttable.getColumnModel().getColumn(3).setCellRenderer(new ButtonRenderer02());
 		returncarttable.getColumnModel().getColumn(3).setCellEditor(new ButtonEditor02(new JCheckBox()));
@@ -192,14 +181,14 @@ public class ReturnPanel extends JPanel implements ActionListener{
 		panel_3.add(scrollPane_1);
 		
 		//연장 장바구니 테이블
-		String[] columnNames1 = {"\uC81C\uBAA9", "\uC800\uC790", "\uCD9C\uD310\uC0AC", ""};
+		String[] columnNames1 = {"도서ID", "제목", "저자", ""};
 		
 		Class[] columnTypes1 = new Class[] {String.class, String.class, String.class, Object.class};
 		
 		renewalcarttabledm = new DefaultTableModel(columnNames1, 0);
 		
 		renewalcarttable = new JTable(renewalcarttabledm);
-		
+		renewalcarttable.setRowHeight(25);
 		renewalcarttable.getColumnModel().getColumn(3).setCellRenderer(new ButtonRenderer01());
 		renewalcarttable.getColumnModel().getColumn(3).setCellEditor(new ButtonEditor01(new JCheckBox()));
 		
@@ -222,30 +211,67 @@ public class ReturnPanel extends JPanel implements ActionListener{
 	public void actionPerformed(ActionEvent e) {
 		Object target = e.getSource();
 		
-			if(target == search){
+			if(target == search){ // 회원 검색
+				for(int i=retrievetabledm.getRowCount()-1; i>=0; i--) {
+					retrievetabledm.removeRow(i);
+				}
+				temp.clear();
+
 				smf.setDefaultCloseOperation(MainFrame.DISPOSE_ON_CLOSE);
 				smf.setLocationRelativeTo(null);                                 
 				smf.setAlwaysOnTop(true);  
 				smf.setVisible(true);
 					
-			} else if(target == renewalbutton){
-				try{
-					rental.renewalBooksFromBasket(renewalbooks);	
-				}catch(Exception e2){
-					e2.printStackTrace();
+			} else if(target == renewalbutton){ // 연장하기 버튼
+				if(memberidtf.getText().length() == 0) { 
+					JOptionPane.showMessageDialog(renewalbutton, "선택된 회원이 없습니다.");
+					return;
 				}
-	
 				
-			}else if(target == returnbutton){
+				if(renewalbooks.size() == 0) {
+					JOptionPane.showMessageDialog(renewalbutton, "장바구니가 비어 있습니다");
+					return;
+				}
+				
+				RentalDAO rDAO = new RentalDAO();
 				try {
-				
-				
-				rental.renewalBooksFromBasket(renewalbooks);	
-									
+					rDAO.renewalBooksFromBasket(renewalbooks);
 				} catch (Exception e2) {
 					e2.printStackTrace();
 				}
 				
+				renewalbooks.clear();
+				for(int i=renewalcarttabledm.getRowCount()-1; i>=0; i--) {
+					renewalcarttabledm.removeRow(i);
+				}
+				JOptionPane.showMessageDialog(renewalbutton, "도서가 정상 연장되었습니다.");
+						
+				
+				
+			}else if(target == returnbutton){ // 반납하기 버튼
+				if(memberidtf.getText().length() == 0) { 
+					JOptionPane.showMessageDialog(returnbutton, "선택된 회원이 없습니다.");
+					return;
+				}
+				
+				if(returnbooks.size() == 0) {
+					JOptionPane.showMessageDialog(returnbutton, "장바구니가 비어 있습니다");
+					return;
+				}
+				
+				RentalDAO rDAO = new RentalDAO();
+				try {
+					rDAO.returnBooksFromBasket(returnbooks);	// 도서 반납
+				} catch (Exception e2) {
+					e2.printStackTrace();
+				}
+				
+				returnbooks.clear();
+				for(int i=returncarttabledm.getRowCount()-1; i>=0; i--) {
+					returncarttabledm.removeRow(i);
+				}
+				JOptionPane.showMessageDialog(returnbutton, "도서가 정상 반납되었습니다.");
+						
 				
 				
 			}
@@ -317,20 +343,47 @@ public class ReturnPanel extends JPanel implements ActionListener{
 		}
 
 		public Object getCellEditorValue() {
-			if (isPushed) {
-				try{
-										
-					int index = retrievetable.getSelectedRow();
-					Vector<Object> renewalb = new Vector<Object>();
-					rowData = rental.selectRentingBooksByMember(memberidtf.getText());
-					renewalb.addElement(rowData.get(index).elementAt(1));
-					renewalb.addElement(rowData.get(index).elementAt(2));
-					renewalb.addElement(rowData.get(index).elementAt(3));
-															
+			int index = retrievetable.getSelectedRow();
+			if (isPushed) { // 연장 장바구니에 추가
+				try{							
+					if(returnbooks.contains((String)retrievetable.getValueAt(index, 0))) {
+						// 이미 반납 장바구니에 들어 있으면
+						JOptionPane.showMessageDialog(button, "이미 반납 장바구니에 존재합니다.");
+					} else if (renewalbooks.contains((String)retrievetable.getValueAt(index, 0))){
+						// 이미 연장 장바구니에 들어 있으면
+						JOptionPane.showMessageDialog(button, "이미 연장 장바구니에 존재합니다.");
 						
-					renewalcarttabledm.addRow(renewalb);
+					} else if(((String)retrievetabledm.getValueAt(index, 6)).equals("O")) {
+						//이미 연장한 도서
+						JOptionPane.showMessageDialog(button, "이미 연장 기록이 있는 도서입니다.");
+					} else if(rental.isDelayer(memberidtf.getText())) {
+						// 연체 회원
+						JOptionPane.showMessageDialog(button, "연체 중인 도서가 있는 회원입니다.");
+					} else {
+						renewalbooks.add((String)retrievetable.getValueAt(index, 0)); // 장바구니에 도서 ID 추가
+						// 연장 장바구니 테이블에 출력
+						Vector<Object> rowData1 = new Vector<Object>();
+						rowData1.add((String)retrievetable.getValueAt(index, 0));
+						rowData1.add((String)retrievetable.getValueAt(index, 1));
+						rowData1.add((String)retrievetable.getValueAt(index, 2));
+						renewalcarttabledm.addRow(rowData1);
+						// 장바구니에 담은 도서 임시 저장
+						Vector<Object> rowData2 = new Vector<Object>();
+						rowData2.add((String)retrievetable.getValueAt(index, 0));
+						rowData2.add((String)retrievetable.getValueAt(index, 1));
+						rowData2.add((String)retrievetable.getValueAt(index, 2));
+						rowData2.add((String)retrievetable.getValueAt(index, 3));
+						rowData2.add((String)retrievetable.getValueAt(index, 4));
+						rowData2.add((String)retrievetable.getValueAt(index, 5));
+						rowData2.add((String)retrievetable.getValueAt(index, 6));
+						temp.add(rowData2);
+						
+						retrievetabledm.removeRow(index); // 장바구니에 추가한 행 삭제	
+						
+					}
 					
-					}catch(Exception e){
+								
+				} catch(Exception e){
 					 e.printStackTrace();
 				 }
 			    
@@ -415,26 +468,43 @@ public class ReturnPanel extends JPanel implements ActionListener{
 		}
 
 		public Object getCellEditorValue() {
-			if (isPushed) {
+			int index = retrievetable.getSelectedRow();
+			
+			if (isPushed) { // 반납 장바구니에 추가
 				
-				try{
-					
-					int index = retrievetable.getSelectedRow();
-					Vector<Object> returnb = new Vector<Object>();
-					rowData = rental.selectRentingBooksByMember(memberidtf.getText());
-					returnb.addElement(rowData.get(index).elementAt(1));
-					returnb.addElement(rowData.get(index).elementAt(2));
-					returnb.addElement(rowData.get(index).elementAt(3));
-					
-					
-					
-					
-					returncarttabledm.addRow(returnb);
+				try{							
+					if(returnbooks.contains((String)retrievetable.getValueAt(index, 0))) {
+						// 이미 반납 장바구니에 들어 있으면
+						JOptionPane.showMessageDialog(button, "이미 반납 장바구니에 존재합니다.");
+					} else if (renewalbooks.contains((String)retrievetable.getValueAt(index, 0))){
+						// 이미 연장 장바구니에 들어 있으면
+						JOptionPane.showMessageDialog(button, "이미 연장 장바구니에 존재합니다.");
 						
+					} else {
+						returnbooks.add((String)retrievetable.getValueAt(index, 0)); // 장바구니에 도서 ID 추가
+						// 반납 장바구니 테이블에 출력
+						Vector<Object> rowData1 = new Vector<Object>();
+						rowData1.add((String)retrievetable.getValueAt(index, 0));
+						rowData1.add((String)retrievetable.getValueAt(index, 1));
+						rowData1.add((String)retrievetable.getValueAt(index, 2));
+						returncarttabledm.addRow(rowData1);
+						// 장바구니에 담은 도서 임시 저장
+						Vector<Object> rowData2 = new Vector<Object>();
+						rowData2.add((String)retrievetable.getValueAt(index, 0));
+						rowData2.add((String)retrievetable.getValueAt(index, 1));
+						rowData2.add((String)retrievetable.getValueAt(index, 2));
+						rowData2.add((String)retrievetable.getValueAt(index, 3));
+						rowData2.add((String)retrievetable.getValueAt(index, 4));
+						rowData2.add((String)retrievetable.getValueAt(index, 5));
+						rowData2.add((String)retrievetable.getValueAt(index, 6));
+						temp.add(rowData2);
+											
+						retrievetabledm.removeRow(index); // 장바구니에 추가한 행 삭제
 						
-									
 					}
-				catch(Exception e){
+					
+								
+				} catch(Exception e){
 					 e.printStackTrace();
 				 }
 			
@@ -519,22 +589,19 @@ public class ReturnPanel extends JPanel implements ActionListener{
 		}
 
 		public Object getCellEditorValue() {
-			if (isPushed) {
-								
-				try{
-					
-					int index = renewalcarttable.getSelectedRow();
-					System.out.println(renewalcarttable.getSelectedRow());
-					renewalcarttabledm.removeRow(index);
-					
-	
-					
+			int index = renewalcarttable.getSelectedRow();
+			if (isPushed) {							
+				renewalbooks.remove(index); // 장바구니에 담긴 순서와 테이블에 표시되는 순서가 같으므로 인덱스로 삭제 가능
+				renewalcarttabledm.removeRow(index);
+				Vector<Object> tempData = new Vector<Object>();
+				for(int i=0; i<temp.size(); i++) {
+					if(temp.get(i).get(1).equals(renewalcarttabledm.getValueAt(index, 0))) {
+						tempData = temp.get(i-1);
+						temp.remove(i-1);
+						break;
 					}
-				catch(Exception e){
-					 e.printStackTrace();
-				 }
-				
-			
+				}
+				retrievetabledm.addRow(tempData);
 			}
 			isPushed = false;
 			return new String(label);
@@ -551,7 +618,7 @@ public class ReturnPanel extends JPanel implements ActionListener{
 	}
 	
 	
-	//반납 장바구니 테이블 취소 버튼
+	
 	
 	
 	//반납 장바구니 테이블 취소 버튼
@@ -618,20 +685,21 @@ public class ReturnPanel extends JPanel implements ActionListener{
 		}
 
 		public Object getCellEditorValue() {
-			if (isPushed) {
-				
-				try{
-					
-					int index = returncarttable.getSelectedRow();
-					System.out.println(index);
-					returncarttabledm.removeRow(index);
-	
-					
-					}
-				catch(Exception e){
-					// e.printStackTrace();
-				 }
+			int index = returncarttable.getSelectedRow();
 			
+			if (isPushed) {
+				returnbooks.remove(index); // 장바구니에 담긴 순서와 테이블에 표시되는 순서가 같으므로 인덱스로 삭제 가능
+				returncarttabledm.removeRow(index);		
+				Vector<Object> tempData = new Vector<Object>();
+				for(int i=0; i<temp.size(); i++) {
+					if(temp.get(i).get(1).equals(returncarttabledm.getValueAt(index, 0))) {
+						tempData = temp.get(i-1);
+						temp.remove(i-1);
+						break;
+					}
+				}
+				retrievetabledm.addRow(tempData);
+				
 			}
 			isPushed = false;
 			return new String(label);

@@ -1,5 +1,6 @@
 package dao;
 
+import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -57,7 +58,7 @@ public class MemberDAO {
 
 			StringBuilder sql = new StringBuilder();
 			sql.append("update member         ");
-			sql.append("set name = ? , phoneNum = ? , birthDay = ? , withdraw = ? ");
+			sql.append("set name = ? , phoneNum = ? , birthDay = ? ");
 			sql.append("where id = ?    ");
 
 			pstm = conn.prepareStatement(sql.toString());
@@ -65,17 +66,20 @@ public class MemberDAO {
 			pstm.setString(1, member.getName());
 			pstm.setString(2, member.getPhoneNum());
 			pstm.setString(3, member.getBirthDay());
-			pstm.setString(4, member.getWithdraw());
-			pstm.setString(5, member.getId());
+			pstm.setString(4, member.getId());
 
 			pstm.executeUpdate();
-
-		} finally {
+			
+			conn.commit();
+			
+		} catch (Exception e) {
+			conn.rollback();
+			throw e;
+		}finally {
 			if (pstm != null)
 				pstm.close();
 			if (conn != null)
 				conn.close();
-
 		}
 	}
 
@@ -87,7 +91,6 @@ public class MemberDAO {
 		ResultSet rs = null;
 		try {
 			conn = DBconn.getConnection();
-
 			stmt = conn.createStatement();
 
 			StringBuilder sql = new StringBuilder();
@@ -98,13 +101,12 @@ public class MemberDAO {
 			rs = stmt.executeQuery(sql.toString());
 
 			while (rs.next()) {
-
 				Vector<Object> mem = new Vector<Object>();
 				mem.addElement(false);
 				mem.addElement(rs.getString(1));
 				mem.addElement(rs.getString(2));
 				mem.addElement(rs.getString(3));
-				mem.addElement(rs.getString(4));
+				mem.addElement(rs.getDate(4));
 				mem.addElement(rs.getString(5));
 				memall.add(mem);
 			}
@@ -128,8 +130,8 @@ public class MemberDAO {
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
 
-		//System.out.println("keyfield: " + keyField);
-		//System.out.println("keyWord: " + keyWord);
+		System.out.println("keyfield: " + keyField);
+		System.out.println("keyWord: " + keyWord);
 
 		try {
 			conn = DBconn.getConnection();
@@ -154,17 +156,18 @@ public class MemberDAO {
 			rs = pstmt.executeQuery();
 			while (rs.next()) {
 				Vector<Object> member = new Vector<Object>();
-
+				
 				member.addElement(false);
 				member.addElement(rs.getString(1));
 				member.addElement(rs.getString(2));
 				member.addElement(rs.getString(3));
-				member.addElement(rs.getString(4));
+				member.addElement(rs.getDate(4));
 				member.addElement(rs.getString(5));
 
 				memberList.addElement(member);
 			}
 
+			return memberList;
 		} finally {
 			if (rs != null)
 				rs.close();
@@ -173,15 +176,6 @@ public class MemberDAO {
 			if (conn != null)
 				conn.close();
 		}
-
-		return memberList;
-	}
-
-	// 회원상세 조회
-	public MemberVO retrieveMember(String id) {
-		MemberVO member = null; // 이거 고치세요.
-
-		return member;
 	}
 
 	// 회원탈퇴처리
@@ -191,6 +185,7 @@ public class MemberDAO {
 		PreparedStatement pstmt = null;
 		try {
 			conn = DBconn.getConnection();
+			conn.setAutoCommit(false);
 
 			StringBuffer sql = new StringBuffer();
 
@@ -206,11 +201,19 @@ public class MemberDAO {
 				pstmt.addBatch();
 				pstmt.clearParameters();
 			}
-
 			pstmt.executeBatch(); // 이줄이 실행이 안됨.
+			conn.commit();
 
 			return true;
 
+		} catch (SQLException sqle) {
+			System.out.println(sqle.getErrorCode());
+			System.out.println(sqle.getMessage());
+			conn.rollback();
+			throw sqle;
+		} catch (Exception e) {
+			conn.rollback();
+			throw e;			
 		} finally {
 			if (pstmt != null)
 				pstmt.close();

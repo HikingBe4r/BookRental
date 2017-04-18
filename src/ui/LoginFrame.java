@@ -16,11 +16,12 @@ import javax.swing.JTextField;
 
 import dao.AdminDAO;
 import domain.AdminVO;
+import javax.swing.JPasswordField;
 
 public class LoginFrame extends JFrame {
-	private JTextField passwordTF;
 	private JTextField idTF;
 	private AdminDAO dao = new AdminDAO();
+	private JPasswordField passwordTF;
 
 	/**
 	 * Launch the application.
@@ -51,11 +52,6 @@ public class LoginFrame extends JFrame {
 		getContentPane().setForeground(Color.PINK);
 		setTitle("Login");
 		getContentPane().setLayout(null);
-
-		passwordTF = new JTextField();
-		passwordTF.setBounds(222, 124, 116, 21);
-		getContentPane().add(passwordTF);
-		passwordTF.setColumns(10);
 
 		idTF = new JTextField();
 		idTF.setBounds(222, 73, 116, 21);
@@ -93,26 +89,24 @@ public class LoginFrame extends JFrame {
 
 		lblNewLabel_1.setBounds(12, 42, 116, 172);
 		getContentPane().add(lblNewLabel_1);
+		
+		passwordTF = new JPasswordField();
+		passwordTF.setBounds(222, 124, 116, 21);
+		getContentPane().add(passwordTF);
 
 	}
 
 	private void confirmLogin(String id, String password) {
 		try {
 			if (dao.loginAdmin(new AdminVO(id, password))) {
-				// 로그인 성공 alert
 				JOptionPane.showMessageDialog(this, "로그인 성공");
-				// -> 확인버튼 누르면 mainframe 띄우기.
-				
 				new MainFrame();
 				this.setVisible(false);
-				
 			} else {
-				// 로그인 실패 alert
 				JOptionPane.showMessageDialog(this, "로그인 실패");
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
-
 }

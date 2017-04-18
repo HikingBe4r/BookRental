@@ -6,6 +6,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Vector;
 
@@ -154,27 +155,22 @@ public class MemberPanel extends JPanel {
 			// 버튼
 			if (e.getSource() instanceof JButton) {
 				if ((JButton) (e.getSource()) == retrieveMemberListBtn) {
-					idList = new ArrayList<String>();
+					
 					deleteTableRows();
-					if (searchMemberList(keyfieldCB.getSelectedIndex(), keywordTF.getText())) {
-						// alert
-					}
+					searchMemberList(keyfieldCB.getSelectedIndex(), keywordTF.getText());
 				} else if (e.getSource() == withdrawBtn) {
+					idList = new ArrayList<String>();
 					for (int i = 0; i < dtm.getRowCount(); i++) {
-						System.out.println("i번째: " + dtm.getValueAt(i, 0));
-						if ((boolean) dtm.getValueAt(i, 0) == true) {
-							idList.add((String) dtm.getValueAt(i, 1));
+						
+						if ((Boolean)dtm.getValueAt(i, 0) == true) {
+							idList.add(dtm.getValueAt(i, 1).toString());
 							removeMember(idList);
-							// alert
 						}
 					}
 				} else if (e.getSource() == retrieveAllMemberBtn) {
-
 					searchAllmemberList();
-
 				} else if (e.getSource() == registerBtn) {
 					registerMemberlist();
-
 				} else if (e.getSource() == updateBtn) {
 					updateMemberInfo();
 				} else if (e.getSource() == initBtn) {
@@ -182,14 +178,11 @@ public class MemberPanel extends JPanel {
 				}
 			} else if (e.getSource() instanceof JCheckBox) {
 				if ((JCheckBox) (e.getSource()) == box) {
-
+					int index = table.getSelectedRow(); // 선택한 칼럼
 					if (box.isSelected()) {
-						int index = table.getSelectedRow(); // 선택한 칼럼
 						dtm.setValueAt(true, index, 0);
 					} else {
-						int index = table.getSelectedRow(); // 선택한 칼럼
 						dtm.setValueAt(false, index, 0);
-
 					}
 				}
 			}
@@ -222,8 +215,7 @@ public class MemberPanel extends JPanel {
 		northPanel.setLayout(null);
 
 		keyfieldCB = new JComboBox();
-		keyfieldCB
-				.setModel(new DefaultComboBoxModel(new String[] { "\uC774\uB984", "ID", "\uC804\uD654\uBC88\uD638" }));
+		keyfieldCB.setModel(new DefaultComboBoxModel(new String[] { "\uC774\uB984", "ID", "\uC804\uD654\uBC88\uD638" }));
 		keyfieldCB.setBounds(20, 20, 80, 20);
 		northPanel.add(keyfieldCB);
 
@@ -327,6 +319,8 @@ public class MemberPanel extends JPanel {
 		table = new JTable(dtm);
 		table.setFillsViewportHeight(true);
 
+		table.getTableHeader().setReorderingAllowed(false);
+		table.getTableHeader().setResizingAllowed(false);
 		table.getColumnModel().getColumn(0).setResizable(false);
 		table.getColumnModel().getColumn(0).setPreferredWidth(35);
 		table.getColumnModel().getColumn(0).setCellEditor(new DefaultCellEditor(box));
@@ -388,9 +382,7 @@ public class MemberPanel extends JPanel {
 				keyfield = "phoneNum";
 			}
 			if (keyword.isEmpty()) {
-				System.out.println("검색어를 입력하세요.");
-				// alert 추가
-
+				JOptionPane.showMessageDialog(this, "검색어를 입력하세요");
 			} else {
 				Vector<Vector<Object>> rowData = dao.retrieveMemberListByCondition(keyfield, keyword);
 
@@ -411,10 +403,17 @@ public class MemberPanel extends JPanel {
 		try {
 			dao.withdrawMemberList(idList);
 			return true;
+		} catch (SQLException e) {
+			System.out.println(e.getErrorCode());
+			System.out.println(e.getMessage());
+			if(e.getErrorCode() == 20001) {
+				JOptionPane.showMessageDialog(this, "이미 탈퇴한 회원입니다.");
+			} else if (e.getErrorCode() == 20002) {
+				JOptionPane.showMessageDialog(this, "대여목록이 있는 회원입니다.");
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-
 		return false;
 	}
 
@@ -446,6 +445,7 @@ public class MemberPanel extends JPanel {
 	// 전체회원검색 
 	private void searchAllmemberList() {
 		deleteTableRows();
+		resetviewInfo();
 		try {
 
 			nameTF.setEditable(false);
@@ -464,8 +464,12 @@ public class MemberPanel extends JPanel {
 	// 회원등록
 	private void registerMemberlist() {
 		try {
-			dao.insertMember(new MemberVO("123456789", nameTF.getText(), phoneTF.getText(), birthdayTF.getText(), "0"));
-
+			dao.insertMember(new MemberVO(nameTF.getText(), phoneTF.getText(), birthdayTF.getText()));
+			JOptionPane.showMessageDialog(this, "회원이 등록되었습니다.");
+		} catch (SQLException e) {
+			if(e.getErrorCode() == 20011) {
+				JOptionPane.showMessageDialog(this, "이미 가입된 회원입니다.");
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -473,25 +477,24 @@ public class MemberPanel extends JPanel {
 	
 	//회원정보 수정
 	private void updateMemberInfo() {
-		int index = JOptionPane.showConfirmDialog(this, "수정하시겠습니까");
+		int index = JOptionPane.showConfirmDialog(this, "수정하시겠습니까", "수정", 2);
 		try {
 			if (index == 0) {
 				dao.updateMember(new MemberVO(idTF.getText(), nameTF.getText(), phoneTF.getText(), birthdayTF.getText(),
 						withdrawTF.getText()));
 				deleteTableRows();
 				searchMemberList(1, idTF.getText().toString());
-
+				
+				registerBtn.setVisible(true);
+				updateBtn.setVisible(false);
+				nameTF.setEditable(false);
+				phoneTF.setEditable(false);
+				birthdayTF.setEditable(false);
 			}
-			registerBtn.setVisible(true);
-			updateBtn.setVisible(false);
-			nameTF.setEditable(false);
-			phoneTF.setEditable(false);
-			birthdayTF.setEditable(false);
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
-	
-	
 
 }

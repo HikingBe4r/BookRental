@@ -2,7 +2,7 @@ package domain;
 
 public class MemberVO {
 	String id;
-	String name;
+        String name;
 	String phone;
 	String birthDay;
 	String withdraw;	// 탈퇴 or null

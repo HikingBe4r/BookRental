@@ -361,9 +361,9 @@ public class RentalDAO {
 				//대여현황확인 변경 sql문
 				StringBuilder sql2 = new StringBuilder();
 				sql2.append("update book ");
-				sql2.append("set status = 0 ");
+				sql2.append("set status = '0' ");
 				sql2.append("where book_id = ?");
-				pstmt2 = conn.prepareStatement(sql.toString());
+				pstmt2 = conn.prepareStatement(sql2.toString());
 				
 				
 				for(int i = 0; i<rentingBookId.size(); i++){

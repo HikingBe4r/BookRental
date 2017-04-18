@@ -441,11 +441,9 @@ public class RentalPanel extends JPanel implements ActionListener{
 
 		}
 
-		public Object getCellEditorValue() {
-			System.out.println(isPushed);
+		public Object getCellEditorValue() {	
 			int index = cartTable.getSelectedRow();	
-			System.out.println("index : " + index);
-				
+			
 			 if (isPushed) {					
 				rentCart.remove(index); // 어차피 리스트에 담긴 순서와 테이블에 보여지는 순서는 같으므로 index로 삭제 가능			
 				cartDm.removeRow(index); // 에러 남.... 이유 모름....★			

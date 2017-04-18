@@ -247,6 +247,7 @@ private boolean searchMemberList(int selectedKeyfield, String keyword) {
             System.out.println("검색어를 입력하세요.");
             // alert 추가
             
+            
          } else {
             Vector<Vector<Object>> rowData = dao.retrieveMemberListByCondition(keyfield, keyword);
             for(Vector<Object> rd: rowData) {

@@ -128,8 +128,8 @@ public class MemberDAO {
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
 
-		System.out.println("keyfield: " + keyField);
-		System.out.println("keyWord: " + keyWord);
+		//System.out.println("keyfield: " + keyField);
+		//System.out.println("keyWord: " + keyWord);
 
 		try {
 			conn = DBconn.getConnection();

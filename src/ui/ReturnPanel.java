@@ -413,7 +413,11 @@ public class ReturnPanel extends JPanel implements ActionListener{
 		}
 
 		protected void fireEditingStopped() {
-			super.fireEditingStopped();
+			try {
+				super.fireEditingStopped();
+			} catch (Exception e) {
+			}
+			
 		}
 	}	
 	
@@ -510,10 +514,6 @@ public class ReturnPanel extends JPanel implements ActionListener{
 						
 						returncarttabledm.addRow(rowData1);
 						
-						
-						//returncarttabledm.fireTableDataChanged();
-						//retrievetabledm.fireTableDataChanged();
-					
 					}
 					
 								
@@ -532,7 +532,11 @@ public class ReturnPanel extends JPanel implements ActionListener{
 		}
 
 		protected void fireEditingStopped() {
-			super.fireEditingStopped();
+			try {
+				super.fireEditingStopped();
+			} catch (Exception e) {
+			}
+			
 		}
 	}
 		
@@ -628,7 +632,11 @@ public class ReturnPanel extends JPanel implements ActionListener{
 		}
 
 		protected void fireEditingStopped() {
-			super.fireEditingStopped();
+			try {
+				super.fireEditingStopped();
+			} catch (Exception e) {
+			}
+			
 		}
 	}
 	
@@ -731,7 +739,11 @@ public class ReturnPanel extends JPanel implements ActionListener{
 		}
 
 		protected void fireEditingStopped() {
-			super.fireEditingStopped();
+			try {
+				super.fireEditingStopped();
+			} catch (Exception e) {
+			}
+			
 		}
 	}
 	

@@ -94,7 +94,7 @@ public class RentalHistoryPanel extends JPanel implements ActionListener {
 		pattern[0] = true; // 도서명 선택
 		
 		// 텍스트 필드
-		conditionTF = new JTextField(20);
+		conditionTF = new JTextField(30);
 		northPanel.add(conditionTF);
 		
 		// 체크박스

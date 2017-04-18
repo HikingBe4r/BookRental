@@ -372,7 +372,11 @@ public class RentalPanel extends JPanel implements ActionListener{
 		}
 
 		protected void fireEditingStopped() {
-			super.fireEditingStopped();
+			try {
+				super.fireEditingStopped();
+			} catch (Exception e) {
+			}
+			
 		}
 	}
 
@@ -458,7 +462,11 @@ public class RentalPanel extends JPanel implements ActionListener{
 		}
 
 		protected void fireEditingStopped() {
-			super.fireEditingStopped();
+			try {
+				super.fireEditingStopped();
+			} catch (Exception e) {
+			}
+			
 		}
 	}
 

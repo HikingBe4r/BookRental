@@ -19,32 +19,30 @@ public class MemberDAO {
 	public void insertMember(MemberVO member) throws SQLException {
 
 		Connection conn = null;
-		PreparedStatement pstm = null;
+		CallableStatement stmt = null;
 
 		try {
-			conn = DBconn.getConnection();
-			conn.setAutoCommit(false);
+		    conn = DBconn.getConnection();
+		    conn.setAutoCommit(false);
 
-			StringBuilder sql = new StringBuilder();
-			sql.append("insert into member(id,name,phoneNum,birthDay,withdraw) ");
-			sql.append("values (sysdate,?,?,?,0)");
+		    String sql = "{ call registerMember(?, ?, ?) }";
+		    stmt = conn.prepareCall(sql);
+		    stmt.setString(1, member.getName());
+		    stmt.setString(2, member.getPhoneNum());
+		    stmt.setString(3, member.getBirthDay());
 
-			pstm = conn.prepareStatement(sql.toString());
-
-			pstm.setString(1, member.getName());
-			pstm.setString(2, member.getPhoneNum());
-			pstm.setString(3, member.getBirthDay());
-
-			pstm.executeUpdate();
+		    stmt.execute();
 
 		} finally {
-			if (pstm != null)
-				pstm.close();
-			if (conn != null)
-				conn.close();
+		    if (stmt != null)
+			stmt.close();
+		    if (conn != null)
+			conn.close();
 
 		}
-	}
+	    }
+
+
 
 	// 회원정보수정
 	public void updateMember(MemberVO member) throws SQLException {

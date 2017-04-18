@@ -12,6 +12,7 @@ import javax.swing.DefaultCellEditor;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -39,9 +40,9 @@ public class ReturnPanel extends JPanel implements ActionListener{
 	private JButton search;
 	private JButton renewalbutton;
 	private JButton returnbutton;
-	Vector<Vector<Object>> rowData = new Vector<Vector<Object>>();
-	ArrayList<String> returnbooks = new ArrayList<String>();
-	ArrayList<String> renewalbooks = new ArrayList<String>();
+	
+	Vector<Object> returnbooks;
+	Vector<Object> renewalbooks;
 	SearchMemberFrame smf = new SearchMemberFrame(this);
 	RentalDAO rental = new RentalDAO();
 	MemberVO member = new MemberVO();
@@ -130,11 +131,11 @@ public class ReturnPanel extends JPanel implements ActionListener{
 		
 
 		try{
-		
-			rowData = rental.selectRentingBooksByMember(memberidtf.getText());
+		 
+			smf.rowData = rental.selectRentingBooksByMember(memberidtf.getText());
 			
-			for(int i = 0; i<rowData.size(); i++){
-				retrievetabledm.addRow(rowData.elementAt(i));
+			for(int i = 0; i<smf.rowData.size(); i++){
+				retrievetabledm.addRow(smf.rowData.elementAt(i));
 			}
 		
 		}catch(Exception e){
@@ -230,7 +231,16 @@ public class ReturnPanel extends JPanel implements ActionListener{
 					
 			} else if(target == renewalbutton){
 				try{
-					rental.renewalBooksFromBasket(renewalbooks);	
+					Vector<Object> renewal = new Vector<Object>();
+					if(renewalbooks == null){
+						JOptionPane.showMessageDialog(this, "연장 장바구니에 책 목록이 없습니다.");
+					}
+					for(int i = 0; i<renewalbooks.size(); i++){
+						renewalbooks.get(i);
+						renewal.addElement(renewalbooks.get(i));
+					}
+					rental.renewalBooksFromBasket(renewal);
+										
 				}catch(Exception e2){
 					e2.printStackTrace();
 				}
@@ -238,10 +248,11 @@ public class ReturnPanel extends JPanel implements ActionListener{
 				
 			}else if(target == returnbutton){
 				try {
-				
-				
-				rental.renewalBooksFromBasket(renewalbooks);	
-									
+					if(returnbooks == null){
+						JOptionPane.showMessageDialog(this, "반납 장바구니에 책 목록이 없습니다.");
+					}
+					rental.returnBooksFromBasket(renewalbooks);	
+					
 				} catch (Exception e2) {
 					e2.printStackTrace();
 				}
@@ -322,10 +333,10 @@ public class ReturnPanel extends JPanel implements ActionListener{
 										
 					int index = retrievetable.getSelectedRow();
 					Vector<Object> renewalb = new Vector<Object>();
-					rowData = rental.selectRentingBooksByMember(memberidtf.getText());
-					renewalb.addElement(rowData.get(index).elementAt(1));
-					renewalb.addElement(rowData.get(index).elementAt(2));
-					renewalb.addElement(rowData.get(index).elementAt(3));
+					smf.rowData = rental.selectRentingBooksByMember(memberidtf.getText());
+					renewalb.addElement(smf.rowData.get(index).elementAt(1));
+					renewalb.addElement(smf.rowData.get(index).elementAt(2));
+					renewalb.addElement(smf.rowData.get(index).elementAt(3));
 															
 						
 					renewalcarttabledm.addRow(renewalb);
@@ -421,10 +432,10 @@ public class ReturnPanel extends JPanel implements ActionListener{
 					
 					int index = retrievetable.getSelectedRow();
 					Vector<Object> returnb = new Vector<Object>();
-					rowData = rental.selectRentingBooksByMember(memberidtf.getText());
-					returnb.addElement(rowData.get(index).elementAt(1));
-					returnb.addElement(rowData.get(index).elementAt(2));
-					returnb.addElement(rowData.get(index).elementAt(3));
+					smf.rowData = rental.selectRentingBooksByMember(memberidtf.getText());
+					returnb.addElement(smf.rowData.get(index).elementAt(1));
+					returnb.addElement(smf.rowData.get(index).elementAt(2));
+					returnb.addElement(smf.rowData.get(index).elementAt(3));
 					
 					
 					
@@ -550,10 +561,7 @@ public class ReturnPanel extends JPanel implements ActionListener{
 		}
 	}
 	
-	
-	//반납 장바구니 테이블 취소 버튼
-	
-	
+		
 	//반납 장바구니 테이블 취소 버튼
 	class ButtonRenderer02 extends JButton implements TableCellRenderer {
 		public ButtonRenderer02() {

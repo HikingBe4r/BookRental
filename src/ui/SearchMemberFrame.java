@@ -43,6 +43,7 @@ public class SearchMemberFrame extends JFrame {
    private MemberVO member = new MemberVO();
    private RentalPanel rentalPanel;
    private ReturnPanel returnPanel;
+   Vector<Vector<Object>> rowData = new Vector<Vector<Object>>(); 
    
    public SearchMemberFrame(ReturnPanel returnPanel) {
 		  this.returnPanel = returnPanel;
@@ -91,7 +92,7 @@ public class SearchMemberFrame extends JFrame {
 				}            
 	            setVisible(false);
 	            try {
-	            	Vector<Vector<Object>>rowData = dao.selectRentingBooksByMember(member.getId());
+	            	rowData = dao.selectRentingBooksByMember(member.getId());
 	            	
 	            	for(int i = 0; i<rowData.size(); i++){
 						returnPanel.retrievetabledm.addRow(rowData.elementAt(i));

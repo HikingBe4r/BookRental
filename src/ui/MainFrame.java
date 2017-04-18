@@ -13,7 +13,7 @@ import ui.RentalHistoryPanel;
 import ui.RentalPanel;
 
 public class MainFrame extends JFrame implements ActionListener{
-	private JButton hButton, rentalBtn;
+	private JButton hButton, rentalBtn, returnBtn;
 	private JPanel centerPanel;
 	private CardLayout card = new CardLayout(0, 0);
 	int btnWidth = 180;
@@ -36,9 +36,9 @@ public class MainFrame extends JFrame implements ActionListener{
 		
 		leftPanel.add(rentalBtn);
 		
-		JButton button_1 = new JButton("반납 / 연장");
-		button_1.setBounds(10, 290+15, btnWidth, btnHeight);
-		leftPanel.add(button_1);
+		returnBtn = new JButton("반납 / 연장");
+		returnBtn.setBounds(10, 290+15, btnWidth, btnHeight);
+		leftPanel.add(returnBtn);
 		
 		JButton button_2 = new JButton("도서관리");
 		button_2.setBounds(10, 430+20, btnWidth, btnHeight);
@@ -60,12 +60,15 @@ public class MainFrame extends JFrame implements ActionListener{
 		
 		RentalHistoryPanel hPanel = new RentalHistoryPanel();
 		RentalPanel rentalPanel = new RentalPanel();
+		ReturnPanel returnPanel = new ReturnPanel();
 		centerPanel.add("h", hPanel);	
 		centerPanel.add("rental", rentalPanel);
+		centerPanel.add("return", returnPanel);
 	}
 	private void addEventListner() {
 		hButton.addActionListener(this);
 		rentalBtn.addActionListener(this);
+		returnBtn.addActionListener(this);
 	}
 	
 	
@@ -76,6 +79,8 @@ public class MainFrame extends JFrame implements ActionListener{
 			card.show(centerPanel, "h");
 		} else if (target == rentalBtn) {
 			card.show(centerPanel, "rental");
+		} else if (target == returnBtn){
+			card.show(centerPanel, "return");
 		}
 		
 	}

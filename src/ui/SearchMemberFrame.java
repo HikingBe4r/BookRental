@@ -42,8 +42,107 @@ public class SearchMemberFrame extends JFrame {
    private MemberDAO dao = new MemberDAO();
    private MemberVO member = new MemberVO();
    private RentalPanel rentalPanel;
+   private ReturnPanel returnPanel;
    
-   
+   public SearchMemberFrame(ReturnPanel returnPanel) {
+		  this.returnPanel = returnPanel;
+	      setTitle("\uD68C\uC6D0\uAC80\uC0C9");
+	      setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+	      setBounds(400, 200, 600, 400);
+	      contentPane = new JPanel();
+	      contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
+	      setContentPane(contentPane);
+	      contentPane.setLayout(null);
+
+	      keyfieldCB = new JComboBox();
+	      keyfieldCB.setModel(new DefaultComboBoxModel(new String[] {"\uC774\uB984", "ID", "\uC804\uD654\uBC88\uD638"}));
+	      keyfieldCB.setBounds(12, 10, 74, 21);
+	      contentPane.add(keyfieldCB);
+
+	      keywordTF = new JTextField();
+	      keywordTF.setBounds(98, 10, 232, 21);
+	      contentPane.add(keywordTF);
+	      keywordTF.setColumns(10);
+
+	      searchBtn = new JButton("\uAC80\uC0C9");
+	      searchBtn.addActionListener(new ActionListener() {
+	         public void actionPerformed(ActionEvent e) {
+	            dtm.setRowCount(0);
+	            searchMemberList(keyfieldCB.getSelectedIndex(), keywordTF.getText());
+	         }
+	      });
+	      searchBtn.setFont(new Font("굴림", Font.PLAIN, 12));
+	      searchBtn.setBounds(342, 9, 64, 23);
+	      contentPane.add(searchBtn);
+
+	      acceptBtn = new JButton("\uC120\uD0DD");
+	      acceptBtn.addActionListener(new ActionListener() {
+	         public void actionPerformed(ActionEvent e) {
+	        	MemberVO member = selectedMember(table.getSelectedRow());
+	        	returnPanel.memberidtf.setText(member.getId());
+	            returnPanel.membernametf.setText(member.getName());
+	            returnPanel.phonenumbertf.setText(member.getPhoneNum());
+	            RentalDAO dao = new RentalDAO();
+	            try {        	
+	                returnPanel.rentalbooktf.setText(""+dao.rentableBookNum(member.getId())); // 연체자면 대여가능권수 0
+	            
+				} catch (Exception e2) {
+					e2.printStackTrace();
+				}            
+	            setVisible(false);
+	            try {
+	            	Vector<Vector<Object>>rowData = dao.selectRentingBooksByMember(member.getId());
+	            	
+	            	for(int i = 0; i<rowData.size(); i++){
+						returnPanel.retrievetabledm.addRow(rowData.elementAt(i));
+						
+					}
+				} catch (Exception e2) {
+				}
+	            
+				
+				
+	            
+	            
+	            
+	         }
+	      });
+	      acceptBtn.setFont(new Font("굴림", Font.PLAIN, 12));
+	      acceptBtn.setBounds(432, 329, 64, 23);
+	      contentPane.add(acceptBtn);
+
+	      cancelBtn = new JButton("\uCDE8\uC18C");
+	      cancelBtn.addActionListener(new ActionListener() {
+	         public void actionPerformed(ActionEvent e) {
+	            setVisible(false);
+	         }
+	      });
+	      cancelBtn.setFont(new Font("굴림", Font.PLAIN, 12));
+	      cancelBtn.setBounds(508, 329, 64, 23);
+	      contentPane.add(cancelBtn);
+
+	      scrollPane = new JScrollPane();
+	      scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER);
+	      scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+	      scrollPane.setBounds(12, 49, 560, 270);
+	      contentPane.add(scrollPane);
+
+	      dtm = new DefaultTableModel(new Object[][] {}, new String[] {"ID", "\uC774\uB984",
+	            "\uC804\uD654\uBC88\uD638", "\uC0DD\uB144\uC6D4\uC77C" });
+	      
+	      
+	      table = new JTable(dtm);
+	      table.setFillsViewportHeight(true);
+	      table.setBounds(0, 0, 499, 160);
+	      scrollPane.setViewportView(table);
+	      table.getColumnModel().getColumn(0).setResizable(false);
+	      table.getColumnModel().getColumn(1).setResizable(false);
+	      table.getColumnModel().getColumn(1).setPreferredWidth(86);
+	      table.getColumnModel().getColumn(2).setResizable(false);
+	      table.getColumnModel().getColumn(2).setPreferredWidth(142);
+	      table.getColumnModel().getColumn(3).setResizable(false);
+	      table.getColumnModel().getColumn(3).setPreferredWidth(121);
+	   }
    
    public SearchMemberFrame(RentalPanel rentalPanel) {
 	  this.rentalPanel = rentalPanel;
@@ -85,7 +184,8 @@ public class SearchMemberFrame extends JFrame {
             rentalPanel.phoneTF.setText(member.getPhoneNum());
             RentalDAO dao = new RentalDAO();
             try {        	
-                rentalPanel.rentableBookNumTF.setText(""+dao.rentableBookNum(member.getId())); // 연체자면 대여가능권수 0   	
+                rentalPanel.rentableBookNumTF.setText(""+dao.rentableBookNum(member.getId())); // 연체자면 대여가능권수 0
+          
 			} catch (Exception e2) {
 				e2.printStackTrace();
 			}            

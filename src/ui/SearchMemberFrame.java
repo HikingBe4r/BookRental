@@ -13,6 +13,7 @@ import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -78,6 +79,10 @@ public class SearchMemberFrame extends JFrame {
 	      acceptBtn = new JButton("\uC120\uD0DD");
 	      acceptBtn.addActionListener(new ActionListener() {
 	         public void actionPerformed(ActionEvent e) {
+	        	 if(table.getSelectedRow() == -1) {
+	        		 JOptionPane.showMessageDialog(acceptBtn, "선택된 회원이 없습니다.");
+	        		 return;
+	        	 }
 	        	MemberVO member = selectedMember(table.getSelectedRow());
 	        	returnPanel.memberidtf.setText(member.getId());
 	            returnPanel.membernametf.setText(member.getName());
@@ -177,6 +182,10 @@ public class SearchMemberFrame extends JFrame {
       acceptBtn = new JButton("\uC120\uD0DD");
       acceptBtn.addActionListener(new ActionListener() {
          public void actionPerformed(ActionEvent e) {
+        	 if(table.getSelectedRow() == -1) {
+        		 JOptionPane.showMessageDialog(acceptBtn, "선택된 회원이 없습니다.");
+        		 return;
+        	 }
         	MemberVO member = selectedMember(table.getSelectedRow());
             rentalPanel.memberIdTF.setText(member.getId());
             rentalPanel.memberNameTF.setText(member.getName());

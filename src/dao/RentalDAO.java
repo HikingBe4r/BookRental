@@ -27,7 +27,9 @@ public class RentalDAO {
 			rs = pstmt.executeQuery();
 			if(rs.next()) {
 				String penalty = rs.getString(1);
-				if(penalty != null) return penalty;
+				if(penalty != null) {
+					return penalty;
+				}
 			}
 					
 		} catch (Exception e) {

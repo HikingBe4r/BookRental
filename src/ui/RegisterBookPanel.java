@@ -198,7 +198,7 @@ public class RegisterBookPanel extends JPanel implements ActionListener {
 
 		spinner = new JSpinner();
 		spinner.setBounds(294, 185, 66, 21);
-		spinner.setModel(new SpinnerNumberModel(new Integer(1), new Integer(0), null, new Integer(1)));
+		spinner.setModel(new SpinnerNumberModel(1, 1, 999, 1));
 		panel_1.add(spinner);
 
 		JTextPane publishPane = new JTextPane();
@@ -262,7 +262,7 @@ public class RegisterBookPanel extends JPanel implements ActionListener {
 				" 장 르 ", "   I  S  B  N   ", " 수 량 ", " 관 리 " }, 0) {
 			@Override
 			public boolean isCellEditable(int row, int column) {
-				if (column == 0) {
+				if (column == 0 || column == 8) { 
 					return true;
 				}
 				return false;
@@ -386,7 +386,7 @@ public class RegisterBookPanel extends JPanel implements ActionListener {
 
 			} else if (target == enterbutton) { // 등록
 
-				String regex = "^(18[7-9][0-9]|20\\d{2})\\/(0[0-9]|1[0-2])\\/(0[1-9]|[1-2][0-9]|3[0-1])$";
+				String regex = "^(18[0-9][0-9]|19[0-9][0-9]|20\\d{2})\\/(0[0-9]|1[0-2])\\/(0[1-9]|[1-2][0-9]|3[0-1])$";
 				if (!dTF.getText().matches(regex)) {
 					JOptionPane.showMessageDialog(this, "출판일에 올바른 정보를 입력해주십시오.");
 					return;
@@ -437,10 +437,15 @@ public class RegisterBookPanel extends JPanel implements ActionListener {
 				if (index == JOptionPane.OK_OPTION) {
 					BookDAO dao = new BookDAO();
 					List<Integer> selectList = new ArrayList<Integer>();
+
 					for (int i = 0; i < dm.getRowCount(); i++) {
 						if ((Boolean) dm.getValueAt(i, 0) == true) {
 							selectList.add(i);
 						}
+					}
+					if (selectList.size() == 0) {
+						JOptionPane.showMessageDialog(this, "선택된 도서가 없습니다.");
+						return;
 					}
 					dao.insertBook(rowData);
 					JOptionPane.showMessageDialog(this, "등록완료되었습니다.");
@@ -473,6 +478,7 @@ public class RegisterBookPanel extends JPanel implements ActionListener {
 						|| ISBNTF.getText().length() <= 12) {
 					JOptionPane.showMessageDialog(this, "ISBN에 올바른 정보를 입력해주십시오.");
 				} else {
+
 					int index = JOptionPane.showConfirmDialog(this, "수정하시겠습니까?", "수정", 2);
 
 					if (index == 0) {
@@ -506,11 +512,13 @@ public class RegisterBookPanel extends JPanel implements ActionListener {
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
+
 	}
 
 	public void init() {
 		addComponent();
 		addEventListener();
+
 	}
 
 	public RegisterBookPanel() {

@@ -74,6 +74,7 @@ public class MainFrame extends JFrame implements ActionListener{
 		centerPanel.add("return", returnPanel);
 		centerPanel.add("book", retrieveBookPanel);
 	}
+	
 	private void addEventListner() {
 		historyBtn.addActionListener(this);
 		rentalBtn.addActionListener(this);
@@ -91,6 +92,7 @@ public class MainFrame extends JFrame implements ActionListener{
 			if(e.getSource() == historyBtn) {
 				card.show(centerPanel, "history");
 			} else if (e.getSource() == rentalBtn) {
+				rentalPanel.viewAllBooks();
 				card.show(centerPanel, "rental");
 			} else if (e.getSource() == memberBtn) {
 				card.show(centerPanel, "member");

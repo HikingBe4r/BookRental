@@ -43,7 +43,10 @@ public class RentalPanel extends JPanel implements ActionListener{
 	private DefaultTableModel bookDm, cartDm;
 	private List<String> rentCart = new ArrayList<String>();
 	public static MemberVO member = new MemberVO();
-	private void viewAllBooks() {
+	public void viewAllBooks() {
+		for(int i=bookDm.getRowCount()-1; i>=0; i--) {
+			bookDm.removeRow(i);
+		}
 		BookDAO bDAO = new BookDAO();
 		bookKeyword = bookSearchConditionTF.getText();
 		Vector<Vector<Object>> books = new Vector<Vector<Object>>();
@@ -220,7 +223,9 @@ public class RentalPanel extends JPanel implements ActionListener{
 	public void actionPerformed(ActionEvent e) {
 		Object target = e.getSource();
 		if(target == memberSearchBtn) { // 회원 검색 버튼
-			
+			for(int i=cartDm.getRowCount()-1; i>=0; i--) {
+				cartDm.removeRow(i);
+			}
 			SearchMemberFrame frame = new SearchMemberFrame(this);
             frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
             frame.setLocationRelativeTo(null);                                 
@@ -254,18 +259,12 @@ public class RentalPanel extends JPanel implements ActionListener{
 				cartDm.removeRow(i);
 			}
 			// 도서 목록 상태 최신화
-			for(int i=bookDm.getRowCount()-1; i>=0; i--) {
-				bookDm.removeRow(i);
-			}
 			viewAllBooks();
 			JOptionPane.showMessageDialog(rentBtn, "도서가 정상 대여되었습니다.");
 			
 				
 			
-		} else if(target == bookSearchBtn) { // 도서 검색 버튼
-			for(int i=bookDm.getRowCount()-1; i>=0; i--) {
-				bookDm.removeRow(i);
-			}
+		} else if(target == bookSearchBtn) { // 도서 검색 버튼		
 			viewAllBooks();
 		}	
 	}

@@ -264,11 +264,7 @@ public class ReturnPanel extends JPanel implements ActionListener{
 				JOptionPane.showMessageDialog(renewalbutton, "도서가 정상 연장되었습니다.");		
 				
 				
-				
-				
-				
-				
-				
+								
 				
 			} else if(target == returnbutton){ // 반납하기 버튼
 				if(memberidtf.getText().length() == 0) { 
@@ -287,13 +283,25 @@ public class ReturnPanel extends JPanel implements ActionListener{
 				} catch (Exception e2) {
 					e2.printStackTrace();
 				}
-				
-				returnbooks.clear();
+							
 				for(int i=returncarttabledm.getRowCount()-1; i>=0; i--) {
 					returncarttabledm.removeRow(i);
 				}
-				JOptionPane.showMessageDialog(returnbutton, "도서가 정상 반납되었습니다.");
-						
+				
+				// 도서 대여가능권수 갱신
+				Integer rentableBookNum = Integer.parseInt(rentalbooktf.getText()) + returnbooks.size();
+				rentalbooktf.setText(rentableBookNum.toString());
+				
+				// 장바구니 비우기
+				returnbooks.clear();
+				
+				// 대여패널 도서상태 최신화
+	
+				
+				
+				
+				
+				JOptionPane.showMessageDialog(returnbutton, "도서가 정상 반납되었습니다.");		
 				
 				
 			}

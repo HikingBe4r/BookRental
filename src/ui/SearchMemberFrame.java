@@ -7,6 +7,7 @@ package ui;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyListener;
 import java.util.Vector;
 
 import javax.swing.DefaultComboBoxModel;
@@ -20,6 +21,8 @@ import javax.swing.JTextField;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
+
+import com.sun.glass.events.KeyEvent;
 
 import dao.MemberDAO;
 import dao.RentalDAO;
@@ -44,6 +47,31 @@ public class SearchMemberFrame extends JFrame {
    private RentalPanel rentalPanel;
    private ReturnPanel returnPanel;
    
+   KeyListener kListener = new KeyListener() {
+
+		@Override
+		public void keyTyped(java.awt.event.KeyEvent e) {
+			// TODO Auto-generated method stub
+
+		}
+
+		@Override
+		public void keyReleased(java.awt.event.KeyEvent e) {
+			// TODO Auto-generated method stub
+
+		}
+
+		@Override
+		public void keyPressed(java.awt.event.KeyEvent e) {
+			// TODO Auto-generated method stub
+			if (e.getSource() == keywordTF) {
+				if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+					searchMemberList(keyfieldCB.getSelectedIndex(), keywordTF.getText());
+				}
+			}
+		}
+	};
+   
    public SearchMemberFrame(ReturnPanel returnPanel) {
 		  this.returnPanel = returnPanel;
 	      setTitle("\uD68C\uC6D0\uAC80\uC0C9");
@@ -63,6 +91,7 @@ public class SearchMemberFrame extends JFrame {
 	      keywordTF.setBounds(98, 10, 232, 21);
 	      contentPane.add(keywordTF);
 	      keywordTF.setColumns(10);
+	      //keywordTF.addKeyListener(kListener);
 
 	      searchBtn = new JButton("\uAC80\uC0C9");
 	      searchBtn.addActionListener(new ActionListener() {

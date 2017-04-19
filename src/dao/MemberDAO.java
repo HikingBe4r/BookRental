@@ -105,7 +105,11 @@ public class MemberDAO {
 				mem.addElement(rs.getString(2));
 				mem.addElement(rs.getString(3));
 				mem.addElement(rs.getDate(4));
-				mem.addElement(rs.getString(5));
+				if(rs.getString(5).equals("0")) {
+					mem.addElement("");
+				} else {
+					mem.addElement("탈퇴");
+				}
 				memall.add(mem);
 			}
 
@@ -127,10 +131,6 @@ public class MemberDAO {
 		Connection conn = null; // DBconn.getConnection();
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
-
-		System.out.println("keyfield: " + keyField);
-		System.out.println("keyWord: " + keyWord);
-
 		try {
 			conn = DBconn.getConnection();
 
@@ -160,7 +160,11 @@ public class MemberDAO {
 				member.addElement(rs.getString(2));
 				member.addElement(rs.getString(3));
 				member.addElement(rs.getDate(4));
-				member.addElement(rs.getString(5));
+				if(rs.getString(5).equals("0")) {
+					member.addElement("");
+				} else {
+					member.addElement("탈퇴");
+				}
 
 				memberList.addElement(member);
 			}
@@ -199,14 +203,14 @@ public class MemberDAO {
 				pstmt.addBatch();
 				pstmt.clearParameters();
 			}
+			
 			pstmt.executeBatch(); // 이줄이 실행이 안됨.
+			
 			conn.commit();
 
 			return true;
 
 		} catch (SQLException sqle) {
-			System.out.println(sqle.getErrorCode());
-			System.out.println(sqle.getMessage());
 			conn.rollback();
 			throw sqle;
 		} catch (Exception e) {

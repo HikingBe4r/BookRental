@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.sql.SQLException;
@@ -28,11 +29,13 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 
+import com.sun.glass.events.KeyEvent;
+
 import dao.MemberDAO;
 import domain.MemberVO;
 
 public class MemberPanel extends JPanel {
-	private JPanel northPanel, centerPanel;
+	private JPanel northPanel, centerPanel, thisPanel = this;
 	private JButton retrieveMemberListBtn, retrieveAllMemberBtn, registerBtn, initBtn, withdrawBtn, updateBtn;
 	private JLabel idLabel, nameLabel, phoneLabel, birthdayLabel, withDrawLabel;
 	private JScrollPane scrollPane;
@@ -40,6 +43,7 @@ public class MemberPanel extends JPanel {
 	private JTextField keywordTF, idTF, nameTF, phoneTF, birthdayTF, withdrawTF;
 	private JTable table;
 	private JCheckBox box;
+	
 
 	private DefaultTableModel dtm;
 
@@ -107,19 +111,18 @@ public class MemberPanel extends JPanel {
 		}
 
 		public Object getCellEditorValue() {
-			if (isPushed) {
+			if (isPushed) { // 작은 수정버튼
 				int index = table.getSelectedRow();
-				/*
-				 * updateBtn = new JButton("수정"); updateBtn.setBounds(641, 196,
-				 * 97, 23); northPanel.add(updateBtn);
-				 */
-				JOptionPane.showMessageDialog(button, index + ": Ouch!");
-				registerBtn.setVisible(false);
-				updateBtn.setVisible(true);
-				nameTF.setEditable(true);
-				phoneTF.setEditable(true);
-				birthdayTF.setEditable(true);
-
+				
+				if(table.getValueAt(index, 5).equals("탈퇴")) {
+					JOptionPane.showMessageDialog(thisPanel, "탈퇴한 회원입니다.");
+				} else {
+					registerBtn.setVisible(false);
+					updateBtn.setVisible(true);
+					nameTF.setEditable(true);
+					phoneTF.setEditable(true);
+					birthdayTF.setEditable(true);
+				}
 			}
 			isPushed = false;
 			return new String(label);
@@ -144,6 +147,7 @@ public class MemberPanel extends JPanel {
 		registerBtn.addActionListener(listener);
 		updateBtn.addActionListener(listener);
 		initBtn.addActionListener(listener);
+		keywordTF.addKeyListener(kListener);
 	}
 
 	ArrayList<String> idList = null;
@@ -155,8 +159,6 @@ public class MemberPanel extends JPanel {
 			// 버튼
 			if (e.getSource() instanceof JButton) {
 				if ((JButton) (e.getSource()) == retrieveMemberListBtn) {
-
-					deleteTableRows();
 					searchMemberList(keyfieldCB.getSelectedIndex(), keywordTF.getText());
 				} else if (e.getSource() == withdrawBtn) {
 					idList = new ArrayList<String>();
@@ -206,6 +208,31 @@ public class MemberPanel extends JPanel {
 				viewSelectedMember(index);
 			}
 		};
+	};
+	
+	KeyListener kListener = new KeyListener() {
+
+		@Override
+		public void keyTyped(java.awt.event.KeyEvent e) {
+			// TODO Auto-generated method stub
+
+		}
+
+		@Override
+		public void keyReleased(java.awt.event.KeyEvent e) {
+			// TODO Auto-generated method stub
+
+		}
+
+		@Override
+		public void keyPressed(java.awt.event.KeyEvent e) {
+			// TODO Auto-generated method stub
+			if (e.getSource() == keywordTF) {
+				if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+					searchMemberList(keyfieldCB.getSelectedIndex(), keywordTF.getText());
+				}
+			}
+		}
 	};
 
 	private void addComponent() {
@@ -315,7 +342,16 @@ public class MemberPanel extends JPanel {
 		// 테이블에 들어갈 체크박스, 버튼 추가
 		box = new JCheckBox();
 		dtm = new DefaultTableModel(new Object[][] {}, new String[] { "\uC120\uD0DD", "ID", "\uC774\uB984",
-				"\uC804\uD654\uBC88\uD638", "\uC0DD\uB144\uC6D4\uC77C", "\uD0C8\uD1F4\uC5EC\uBD80", "\uAD00\uB9AC" });
+				"\uC804\uD654\uBC88\uD638", "\uC0DD\uB144\uC6D4\uC77C", "\uD0C8\uD1F4\uC5EC\uBD80", "\uAD00\uB9AC" }) 
+			{
+				@Override
+	            public boolean isCellEditable(int row, int column) {
+	               if (column == 0) { 
+	                  return true;
+	               }
+	               return false;
+	            }
+			};
 
 		table = new JTable(dtm);
 		table.setFillsViewportHeight(true);
@@ -386,10 +422,7 @@ public class MemberPanel extends JPanel {
 				JOptionPane.showMessageDialog(this, "검색어를 입력하세요");
 			} else {
 				Vector<Vector<Object>> rowData = dao.retrieveMemberListByCondition(keyfield, keyword);
-
-				for (Vector<Object> rd : rowData) {
-					dtm.addRow(rd);
-				}
+				insertTableRows(rowData);
 			}
 			return true;
 		} catch (Exception e) {
@@ -403,13 +436,11 @@ public class MemberPanel extends JPanel {
 
 		try {
 			if(dao.withdrawMemberList(idList)) {
-				JOptionPane.showMessageDialog(this, "선택한 회원이 삭제되었습니다.");
+				JOptionPane.showMessageDialog(this, "선택한 회원이 탈퇴되었습니다.");
 				searchAllmemberList();
 			} 
 			return true;
 		} catch (SQLException e) {
-			System.out.println(e.getErrorCode());
-			System.out.println(e.getMessage());
 			if (e.getErrorCode() == 20001) {
 				JOptionPane.showMessageDialog(this, "이미 탈퇴한 회원입니다.");
 			} else if (e.getErrorCode() == 20002) {
@@ -448,7 +479,6 @@ public class MemberPanel extends JPanel {
 
 	// 전체회원검색
 	private void searchAllmemberList() {
-		deleteTableRows();
 		resetviewInfo();
 		try {
 
@@ -456,17 +486,14 @@ public class MemberPanel extends JPanel {
 			phoneTF.setEditable(false);
 			birthdayTF.setEditable(false);
 			Vector<Vector<Object>> rowData = dao.retrieveAllMemberList();
-
-			for (Vector<Object> rd : rowData) {
-				dtm.addRow(rd);
-			}
+			insertTableRows(rowData);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 
 	// 회원등록
-	private void registerMemberlist() {
+	private void registerMemberlist() {		
 		int index = JOptionPane.showConfirmDialog(this, "등록하시겠습니까?", "등록", 2);
 		try {
 			if (index == 0) {
@@ -476,16 +503,13 @@ public class MemberPanel extends JPanel {
 				searchMemberList(0, nameTF.getText().toString());
 			}
 
-			deleteTableRows();
 			resetviewInfo();
 			nameTF.setEditable(false);
 			phoneTF.setEditable(false);
 			birthdayTF.setEditable(false);
 
 			Vector<Vector<Object>> rowData = dao.retrieveAllMemberList();
-			for (Vector<Object> rd : rowData) {
-				dtm.addRow(rd);
-			}
+			insertTableRows(rowData);
 
 		} catch (SQLException e) {
 			if (e.getErrorCode() == 20011) {
@@ -499,11 +523,11 @@ public class MemberPanel extends JPanel {
 	// 회원정보 수정
 	private void updateMemberInfo() {
 		int index = JOptionPane.showConfirmDialog(this, "수정하시겠습니까", "수정", 2);
+		
 		try {
-			if (index == 0) {
+			if (index == JOptionPane.OK_OPTION) {
 				dao.updateMember(new MemberVO(idTF.getText(), nameTF.getText(), phoneTF.getText(), birthdayTF.getText(),
 						withdrawTF.getText()));
-				deleteTableRows();
 				searchMemberList(1, idTF.getText().toString());
 
 				registerBtn.setVisible(true);
@@ -515,6 +539,13 @@ public class MemberPanel extends JPanel {
 
 		} catch (Exception e) {
 			e.printStackTrace();
+		}
+	}
+	
+	private void insertTableRows(Vector<Vector<Object>> rowData) {
+		deleteTableRows();
+		for (Vector<Object> rd : rowData) {
+			dtm.addRow(rd);
 		}
 	}
 

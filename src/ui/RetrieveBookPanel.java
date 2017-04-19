@@ -560,7 +560,7 @@ public class RetrieveBookPanel extends JPanel implements ActionListener {
 			dm = new DefaultTableModel(new Object[][] {
 
 			}, new String[] { "no", "\uC81C\uBAA9", "\uC800\uC790", "\uCD9C\uD310\uC0AC", "\uC7A5\uB974",
-					"ISBN" }); /*
+					"ISBN" }) ; /*
 								 * { Class[] columnTypes = new Class[] {
 								 * boolean.class, Object.class, Object.class,
 								 * Object.class, Object.class, Object.class };

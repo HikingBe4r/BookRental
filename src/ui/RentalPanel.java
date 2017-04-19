@@ -345,15 +345,24 @@ public class RentalPanel extends JPanel implements ActionListener{
 
 		public Object getCellEditorValue() {
 			if (isPushed) {
+				RentalDAO rDAO = new RentalDAO();
+				String memberId = rentableBookNumTF.getText();
+				String penaltyDate = rDAO.overduePenalty(memberId);
+				
 				int index = booksTable.getSelectedRow();
 				
 				if(!booksTable.getValueAt(index, 5).equals("대여 가능")) { // 도서가 대여 불가능 상태일 때
 					JOptionPane.showMessageDialog(button, "대여가 불가능한 도서입니다.");				
 				} else if(memberIdTF.getText().length() == 0) {
 					JOptionPane.showMessageDialog(button, "회원을 선택하여 주십시오.");
-				} else if(Integer.parseInt(rentableBookNumTF.getText()) == 0) { // 대여가능권수가 0일 때 
-					JOptionPane.showMessageDialog(button, "현재 대여가 불가능한 회원입니다.");
-				} else if(Integer.parseInt(rentableBookNumTF.getText()) == rentCart.size()) { // 장바구니에 대여가능권수보다 책을 많이 담았을 때,
+				} else if(rDAO.hasOverdue(memberId)) { // 연체도서가 있을때
+					JOptionPane.showMessageDialog(button, "연체 중인 도서가 있는 회원입니다.");
+				} else if(Integer.parseInt(memberId) == 0) { // 대여가능권수가 0일 때 
+					JOptionPane.showMessageDialog(button, "대여가능권수가 0입니다.");
+				} else if(penaltyDate.length() != 0) {
+					JOptionPane.showMessageDialog(button, penaltyDate + "까지 대여가 불가능한 회원입니다.");
+				}
+				else if(Integer.parseInt(memberId) == rentCart.size()) { // 장바구니에 대여가능권수보다 책을 많이 담았을 때,
 					JOptionPane.showMessageDialog(button, "도서를 더 이상 장바구니에 담을 수 없습니다.");
 				} else {
 					if(rentCart.contains((String)booksTable.getValueAt(index, 0))){ // 장바구니에 이미 있을 때

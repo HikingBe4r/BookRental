@@ -10,11 +10,45 @@ import java.util.Vector;
 import conn.DBconn;
 
 public class RentalDAO {
+	// 연체 패널티
+	public String overduePenalty(String memberId) {
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		try {
+			conn = DBconn.getConnection();
+			StringBuilder sql = new StringBuilder();
+			sql.append("select to_char(max(return_date + (return_date - due_date) )) ");
+			sql.append("from rental ");
+			sql.append("where member_id = ? ");
+			sql.append("and (return_date + (return_date - due_date)) > sysdate ");
+			pstmt = conn.prepareStatement(sql.toString());
+			pstmt.setString(1, memberId);
+			rs = pstmt.executeQuery();
+			if(rs.next()) {
+				String penalty = rs.getString(1);
+				if(penalty != null) return penalty;
+			}
+					
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if(rs != null) rs.close();
+				if(pstmt != null) pstmt.close();
+				if(conn != null) conn.close();
+			} catch (Exception e2) {
+				e2.printStackTrace();
+			}
+		}
+		return "";
+	}
 	
 	// 대여 가능권수
 	public int rentableBookNum(String memberId) throws SQLException {
 		int num = 0;
-		if(isDelayer(memberId)) {
+		if(isDelayer(memberId) || hasOverdue(memberId)) {
+			// 연체자이거나 연체중인 도서를 가지고 있으면 대여가능권수 0
 			return 0;
 		} else {
 			Connection conn = null;
@@ -46,6 +80,47 @@ public class RentalDAO {
 			return num;
 		}
 	}
+	// 연체 중인 도서가 있는지(있으면 true)
+		public boolean hasOverdue(String memberId) {
+			Connection conn = null;
+			PreparedStatement pstmt = null;
+			ResultSet rs = null;
+			try {
+				conn = DBconn.getConnection();
+				StringBuilder sql = new StringBuilder();
+				sql.append("select count(rental_id) ");
+				sql.append("from rental ");
+				sql.append("where member_id = ? " );
+				sql.append("and sysdate > due_date ");
+				pstmt = conn.prepareStatement(sql.toString());
+				
+				pstmt.setString(1, memberId);
+				
+				rs = pstmt.executeQuery();
+				int count = 0;
+				
+				if(rs.next()) {
+					count = rs.getInt(1);
+				}
+				
+				if(count > 0) {
+					return true;
+				}
+				
+			} catch (Exception e) {
+				e.printStackTrace();
+			} finally {
+				try {
+					if(rs != null) rs.close();
+					if(pstmt != null) pstmt.close();
+					if(conn != null) conn.close();
+				} catch (Exception e2) {
+					e2.printStackTrace();
+				}
+			}
+			
+			return false;
+		}
 	
 	// 연체자인지 확인(맞으면 true)
 	public boolean isDelayer(String memberId) throws SQLException{

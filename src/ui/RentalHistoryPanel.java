@@ -34,10 +34,53 @@ public class RentalHistoryPanel extends JPanel implements ActionListener {
 	private JTextField conditionTF, startDateTF, endDateTF;
 	private Vector<String> condition = new Vector<String>();
 	private String keyword, startDate, endDate;
-	//private Cal start, end;
 	boolean[] pattern = new boolean[4];	// String 배열에서 boolean 배열로 바꿈
 										// [0] : 도서명 or 회원명, [1]:대여, [2]:반납, [3]:연장
 	
+	
+	// 대여/반납/연장 기록 검색
+	public void retrieveHistorys() {
+		for(int i=dm.getRowCount()-1; i>=0; i--) {
+			dm.removeRow(i);
+		}
+		
+		RentalDAO dao = new RentalDAO();
+		keyword = conditionTF.getText();		
+		startDate = startDateTF.getText();
+		endDate = endDateTF.getText();
+		try {
+			Vector<Vector<Object>> rowData = dao.selectRentalHistoryList(keyword, pattern, startDate, endDate);
+			for(int i=0; i<rowData.size(); i++) {
+				dm.addRow(rowData.elementAt(i));
+			}
+		} catch (Exception e2) {
+			e2.printStackTrace();
+		}	
+	}
+	
+	// 날짜 선택
+	private void selectDate() {
+		JFrame f = new JFrame("Cal");          	
+        Container c = f.getContentPane();
+        c.setLayout(new FlowLayout());      
+        Cal start = new Cal(2017, 1 - 1, 01);
+        Cal end = new Cal();
+        c.add(start);
+        c.add(end);
+        JButton finalChoice = new JButton("선택");
+        
+        finalChoice.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent ae)
+            {
+                startDateTF.setText(start.getDate());
+                endDateTF.setText(end.getDate());
+                f.setVisible(false);
+            }
+        });
+        c.add(finalChoice);
+        f.pack();
+        f.setVisible(true);
+	}
 	
 	
 	private JTable createTable() {
@@ -55,16 +98,6 @@ public class RentalHistoryPanel extends JPanel implements ActionListener {
 			RentalDAO dao = new RentalDAO();
 			keyword = conditionTF.getText();		
 			startDate = startDateTF.getText();
-			if(startDate.length() != 10 || startDate.charAt(4) != '/' || startDate.charAt(7) != '/') {
-				// 날짜 포맷 맞는지 확인
-				JOptionPane.showMessageDialog(this, "YYYY/MM/DD 형태로 날짜를 입력하시오.");
-				return null;
-			}
-			endDate = endDateTF.getText();
-			if(endDate.length() != 10 || endDate.charAt(4) != '/' || endDate.charAt(7) != '/') {
-				JOptionPane.showMessageDialog(this, "YYYY/MM/DD 형태로 날짜를 입력하시오.");
-				return null;
-			}
 					
 			Vector<Vector<Object>> rowData = dao.selectRentalHistoryList(keyword, pattern, startDate, endDate);
 			for(int i=0; i<rowData.size(); i++) {
@@ -172,53 +205,9 @@ public class RentalHistoryPanel extends JPanel implements ActionListener {
 			if(checkRenewal.isSelected()) pattern[3] = true;
 			else pattern[3] = false;		
 		} else if (target == setDate) { // 날짜 설정
-			JFrame f = new JFrame("Cal");          	
-            Container c = f.getContentPane();
-            c.setLayout(new FlowLayout());      
-            Cal start = new Cal(2017, 1 - 1, 01);
-            Cal end = new Cal();
-            c.add(start);
-            c.add(end);
-            JButton finalChoice = new JButton("선택");
-            
-            finalChoice.addActionListener(new ActionListener() {
-                public void actionPerformed(ActionEvent ae)
-                {
-                    startDateTF.setText(start.getDate());
-                    endDateTF.setText(end.getDate());
-                    f.setVisible(false);
-                }
-            });
-            c.add(finalChoice);
-            f.pack();
-            f.setVisible(true);
-			
+			selectDate(); // 캘린더 팝업 후 날짜 선택
 		} else if (target == retrieveBtn) { // 조회버튼
-			for(int i=dm.getRowCount()-1; i>=0; i--) {
-				dm.removeRow(i);
-			}
-			
-			RentalDAO dao = new RentalDAO();
-			keyword = conditionTF.getText();		
-			startDate = startDateTF.getText();
-			endDate = endDateTF.getText();
-			/*if(startDate.length() != 10 || startDate.charAt(4) != '/' || startDate.charAt(7) != '/') {
-				// 날짜 포맷 맞는지 확인
-				JOptionPane.showMessageDialog(this, "YYYY/MM/DD 형태로 날짜를 입력하시오.");
-				return;
-			}		
-			if(endDate.length() != 10 || endDate.charAt(4) != '/' || endDate.charAt(7) != '/') {
-				JOptionPane.showMessageDialog(this, "YYYY/MM/DD 형태로 날짜를 입력하시오.");
-				return;
-			}*/
-			try {
-				Vector<Vector<Object>> rowData = dao.selectRentalHistoryList(keyword, pattern, startDate, endDate);
-				for(int i=0; i<rowData.size(); i++) {
-					dm.addRow(rowData.elementAt(i));
-				}
-			} catch (Exception e2) {
-				e2.printStackTrace();
-			}	
+			retrieveHistorys(); // 검색
 		}
 		
 		

@@ -90,6 +90,7 @@ public class MainFrame extends JFrame implements ActionListener{
 		if(e.getSource() instanceof JButton) {
 			//historyBtn, rentalBtn, memberBtn, returnBtn, bookBtn
 			if(e.getSource() == historyBtn) {
+				historyPanel.retrieveHistorys();
 				card.show(centerPanel, "history");
 			} else if (e.getSource() == rentalBtn) {
 				rentalPanel.viewAllBooks();
@@ -98,7 +99,7 @@ public class MainFrame extends JFrame implements ActionListener{
 				card.show(centerPanel, "member");
 			} else if (e.getSource() == returnBtn) {
 				card.show(centerPanel, "return");
-			} else if (e.getSource() == bookBtn) {
+			} else if (e.getSource() == bookBtn) {			
 				card.show(centerPanel, "book");
 			}
 		}

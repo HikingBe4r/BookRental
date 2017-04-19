@@ -258,10 +258,16 @@ public class RentalPanel extends JPanel implements ActionListener{
 			for(int i=cartDm.getRowCount()-1; i>=0; i--) {
 				cartDm.removeRow(i);
 			}
+			
 			// 도서 목록 상태 최신화
 			viewAllBooks();
 			JOptionPane.showMessageDialog(rentBtn, "도서가 정상 대여되었습니다.");
 			
+			// 회원 선택 해제
+			memberIdTF.setText("");
+			memberNameTF.setText("");
+			phoneTF.setText("");
+			rentableBookNumTF.setText("");
 				
 			
 		} else if(target == bookSearchBtn) { // 도서 검색 버튼		

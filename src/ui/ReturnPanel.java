@@ -27,25 +27,16 @@ import dao.RentalDAO;
 
 public class ReturnPanel extends JPanel implements ActionListener{
 		
-	public JTextField memberidtf;
-	public JTextField membernametf;
-	public JTextField phonenumbertf;
-	public JTextField rentalbooktf;
-	private JTable retrievetable;
-	private JTable renewalcarttable;
-	private JTable returncarttable;
+	public JTextField memberidtf, membernametf, phonenumbertf, rentalbooktf;
+	private JTable retrievetable, renewalcarttable, returncarttable;
 	public DefaultTableModel retrievetabledm;
-	private DefaultTableModel renewalcarttabledm;
-	private DefaultTableModel returncarttabledm;
-	private JButton search;
-	private JButton renewalbutton;
-	private JButton returnbutton;
+	private DefaultTableModel renewalcarttabledm, returncarttabledm;
+	private JButton search, renewalbutton, returnbutton;
 	public Vector<Vector<Object>> rowData = new Vector<Vector<Object>>();
 	private List<String> returnbooks = new ArrayList<String>();
 	private List<String> renewalbooks = new ArrayList<String>();
 	private SearchMemberFrame smf = new SearchMemberFrame(this);
 	private RentalDAO rental = new RentalDAO();
-	
 	
 	
 	public ReturnPanel() {
@@ -246,6 +237,8 @@ public class ReturnPanel extends JPanel implements ActionListener{
 				}
 				
 				renewalbooks.clear();
+				
+				// 연장된 도서 상태 최신화시켜서 반납/연장 목록으로 다시 올리기 
 				for(int i=renewalcarttabledm.getRowCount()-1; i>=0; i--) {
 					Vector<Object> rowData1 = new Vector<Object>();
 					
@@ -260,7 +253,6 @@ public class ReturnPanel extends JPanel implements ActionListener{
 					
 					renewalcarttabledm.removeRow(i);
 				}
-				Vector<Object> rowData1 = new Vector<Object>();
 				JOptionPane.showMessageDialog(renewalbutton, "도서가 정상 연장되었습니다.");		
 				
 				

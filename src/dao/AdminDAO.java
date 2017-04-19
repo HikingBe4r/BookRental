@@ -25,14 +25,7 @@ public class AdminDAO {
 			//sql.append("where admin_id = ? and admin_pw = ? ");
 			
 			rs = stmt.executeQuery(sql.toString());
-			
-			System.out.println(admin.getId());
-			System.out.println(admin.getPassword());
-			
 			if(rs.next()) {
-				
-				System.out.println(rs.getString(1));
-				System.out.println(rs.getString(2));
 				if( rs.getString(1).equals(admin.getId()) &&
 						rs.getString(2).equals(admin.getPassword()) ) {
 					return true;

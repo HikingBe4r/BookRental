@@ -54,9 +54,10 @@ public class RetrieveBookPanel extends JPanel implements ActionListener {
 	private JSpinner spinner;
 	public List<String> isbnList = new ArrayList<String>(); // 도서 삭제 시 isbn리스트
 	public List<String> idList = new ArrayList<String>(); // 도서 삭제 시 고유 isbn리스트
-	Vector<Vector<Object>> removeLists = new Vector<Vector<Object>>(); // 도서 삭제시
-																		// 도서리스트
+	Vector<Vector<Object>> removeLists = new Vector<Vector<Object>>(); // 도서 삭제시 도서리스트
 
+	
+	
 	class ButtonRenderer extends JButton implements TableCellRenderer {
 		public ButtonRenderer() {
 			setOpaque(true);
@@ -155,6 +156,7 @@ public class RetrieveBookPanel extends JPanel implements ActionListener {
 						writerTF.setText((String) dm.getValueAt(row, 2));
 						genreBox.setSelectedIndex((int) book.get(i).get(7) - 1);
 						isbnTF.setText((String) dm.getValueAt(row, 5));
+						isbnTF.setEditable(false);
 						publishDateTF.setText(((String) book.get(i).get(6)).substring(0, 10));
 						spinner.setValue(book.size());
 					}
@@ -301,8 +303,8 @@ public class RetrieveBookPanel extends JPanel implements ActionListener {
 			scrollPane.setBounds(12, 303, 946, 390);
 			panel_1.add(scrollPane);
 
-			dm = new DefaultTableModel(new Object[][] {}, new String[] { "no", "\uC81C\uBAA9", "\uC800\uC790",
-					"\uCD9C\uD310\uC0AC", "\uC7A5\uB974", "ISBN" }) {
+			dm = new DefaultTableModel(new Object[][] { 			}, new String[] { "no", "\uC81C\uBAA9", "\uC800\uC790", "\uCD9C\uD310\uC0AC", "\uC7A5\uB974", "ISBN" })
+			{
 				@Override
 				public boolean isCellEditable(int row, int column) {
 					if (column == 0) {
@@ -311,17 +313,20 @@ public class RetrieveBookPanel extends JPanel implements ActionListener {
 					return false;
 				}
 			}; /*
-				 * { Class[] columnTypes = new Class[] { boolean.class,
-				 * Object.class, Object.class, Object.class, Object.class,
-				 * Object.class }; public Class getColumnClass(int columnIndex)
-				 * { return columnTypes[columnIndex]; } boolean[]
-				 * columnEditables = new boolean[] { false, false, false, false,
-				 * false, false, false }; public boolean isCellEditable(int row,
-				 * int column) { return columnEditables[column]; } }
-				 */
+								 * { Class[] columnTypes = new Class[] {
+								 * boolean.class, Object.class, Object.class,
+								 * Object.class, Object.class, Object.class };
+								 * public Class getColumnClass(int columnIndex)
+								 * { return columnTypes[columnIndex]; }
+								 * boolean[] columnEditables = new boolean[] {
+								 * false, false, false, false, false, false,
+								 * false }; public boolean isCellEditable(int
+								 * row, int column) { return
+								 * columnEditables[column]; } }
+								 */
 
-			dm2 = new DefaultTableModel(new Object[][] {}, new String[] { "no", "\uC81C\uBAA9", "\uC800\uC790",
-					"\uCD9C\uD310\uC0AC", "\uC7A5\uB974", "도서 ID" }) {
+			dm2 = new DefaultTableModel(new Object[][] { }, new String[] { "no", "\uC81C\uBAA9", "\uC800\uC790", "\uCD9C\uD310\uC0AC", "\uC7A5\uB974", "도서 ID" } ) 
+			{
 				@Override
 				public boolean isCellEditable(int row, int column) {
 					if (column == 0) { // ù��° ĭ�� ���� ���� �������� �Ұ���
@@ -358,8 +363,9 @@ public class RetrieveBookPanel extends JPanel implements ActionListener {
 			deleteButton2.setBounds(834, 715, 124, 35);
 			panel_1.add(deleteButton2);
 			deleteButton2.setVisible(false);
-
+			
 			add("second", new RegisterBookPanel());
+			
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -393,8 +399,8 @@ public class RetrieveBookPanel extends JPanel implements ActionListener {
 			Object target = e.getSource();
 
 			if (target == registerBookButton) { // 도서 등록 화면 이동
-				card.show(this, "second");
-
+				card.show(this, "second"); 
+				
 			}
 
 			else if (target == modifyButton) { // 수정
@@ -409,8 +415,7 @@ public class RetrieveBookPanel extends JPanel implements ActionListener {
 					isbnList = new ArrayList<String>(); // 리스트에 정보가 있으면 지운다
 				}
 				if (removeLists.isEmpty() == false) {
-					removeLists = new Vector<Vector<Object>>(); // 리스트에 정보가 있으면
-																// 지운다
+					removeLists = new Vector<Vector<Object>>(); // 리스트에 정보가 있으면 지운다
 				}
 
 				String regex = "^(18[7-9][0-9]|20\\d{2})\\-(0[0-9]|1[0-2])\\-(0[1-9]|[1-2][0-9]|3[0-1])$";
@@ -418,13 +423,13 @@ public class RetrieveBookPanel extends JPanel implements ActionListener {
 					JOptionPane.showMessageDialog(this, "출판일에 올바른 정보를 입력해주십시오.");
 					return;
 				}
-
+/*
 				regex = "\\D";
 				if (isbnTF.getText().matches(regex) || isbnTF.getText().length() >= 14
 						|| isbnTF.getText().length() <= 12) {
 					JOptionPane.showMessageDialog(this, "ISBN에 올바른 정보를 입력해주십시오.");
 					return;
-				}
+				}*/
 
 				if (subjectTF.getText().length() == 0 || writerTF.getText().length() == 0
 						|| publisherTF.getText().length() == 0 || publishDateTF.getText().length() == 0
@@ -432,33 +437,41 @@ public class RetrieveBookPanel extends JPanel implements ActionListener {
 					JOptionPane.showMessageDialog(this, "정보를 입력하세요.");
 					return;
 				}
+				
+				int index = JOptionPane.showConfirmDialog(this, "수정하시겠습니까?", "수정", 2);
+				
+				if(index==0) {
 
-				Vector<Vector<Object>> book = new Vector<Vector<Object>>();
-				BookDAO dao = new BookDAO();
-				// book_id, title, writer, publisher, isbn, status,
-				// publish_date, genre_id
-				book = dao.selectBookById((String) dm.getValueAt(row, 5));
-
-				// String bookId, String subject, String writer, String
-				// publisher, String publishDate, String isbn, String isRent,
-				// int genre1
-
-				List<BookVO> books = new ArrayList<BookVO>();
-				for (int i = 0; i < (int) spinner.getValue(); i++) {
-					BookVO mbook = new BookVO((String) book.get(i).get(0), subjectTF.getText(), writerTF.getText(),
-							publisherTF.getText(), publishDateTF.getText(), isbnTF.getText(), "0",
-							genreBox.getSelectedIndex() + 1);
-
-					books.add(mbook);
+					Vector<Vector<Object>> book = new Vector<Vector<Object>>();
+					BookDAO dao = new BookDAO();
+					// book_id, title, writer, publisher, isbn, status,
+					// publish_date, genre_id
+					book = dao.selectBookById((String) dm.getValueAt(row, 5));
+	
+					// String bookId, String subject, String writer, String
+					// publisher, String publishDate, String isbn, String isRent,
+					// int genre1
+					
+					//List<BookVO> books = new ArrayList<BookVO>();
+					//for(int i=0; i< (int)spinner.getValue(); i++) {
+						BookVO mbook = new BookVO((String) book.get(0).get(0), subjectTF.getText(), writerTF.getText(),
+								publisherTF.getText(), publishDateTF.getText(), isbnTF.getText(), "0",
+								genreBox.getSelectedIndex() + 1);
+						
+						//books.add(mbook);
+					//}
+					dao.updateBook(mbook);
+					
+					table.setValueAt(subjectTF.getText(), table.getSelectedRow(), 1);
+	                table.setValueAt(writerTF.getText(), table.getSelectedRow(), 2);
+	                table.setValueAt(publisherTF.getText(), table.getSelectedRow(), 3);
+	                table.setValueAt(genreBox.getSelectedItem(), table.getSelectedRow(), 4);
+	                table.setValueAt(isbnTF.getText(), table.getSelectedRow(), 5);
+	                // table에 변경된 데이터 적용				
 				}
-				dao.updateBook(books);
-
-				table.setValueAt(subjectTF.getText(), table.getSelectedRow(), 1);
-				table.setValueAt(writerTF.getText(), table.getSelectedRow(), 2);
-				table.setValueAt(publisherTF.getText(), table.getSelectedRow(), 3);
-				table.setValueAt(genreBox.getSelectedItem(), table.getSelectedRow(), 4);
-				table.setValueAt(isbnTF.getText(), table.getSelectedRow(), 5);
-				// table에 변경된 데이터 적용
+				else
+					return;
+				
 
 			}
 
@@ -471,12 +484,10 @@ public class RetrieveBookPanel extends JPanel implements ActionListener {
 				setTable();
 
 				if (isbnList.isEmpty() == false) {
-					isbnList = new ArrayList<String>();
-					; // 리스트에 정보가 있으면 지운다
+					isbnList = new ArrayList<String>(); ; // 리스트에 정보가 있으면 지운다
 				}
 				if (removeLists.isEmpty() == false) {
-					removeLists = new Vector<Vector<Object>>(); // 리스트에 정보가 있으면
-																// 지운다
+					removeLists = new Vector<Vector<Object>>(); // 리스트에 정보가 있으면 지운다
 				}
 
 				System.out.println("취소 버튼");
@@ -661,6 +672,7 @@ public class RetrieveBookPanel extends JPanel implements ActionListener {
 			ex.printStackTrace();
 		}
 	}
+
 
 	public void init() {
 		addComponent();

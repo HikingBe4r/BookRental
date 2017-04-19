@@ -9,9 +9,6 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
-import ui.RentalHistoryPanel;
-import ui.RentalPanel;
-
 public class MainFrame extends JFrame implements ActionListener{
 	private JButton historyBtn, rentalBtn, memberBtn, returnBtn, bookBtn;
 	private JPanel centerPanel;

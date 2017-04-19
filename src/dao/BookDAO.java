@@ -233,16 +233,33 @@ public class BookDAO {
 
 	   }
 	
-	public void updateBook(List<BookVO> book) throws SQLException { // 도서 정보 수정(수정이 필요)
+	public void updateBook(BookVO book) throws SQLException { // 도서 정보 수정(수정이 필요)
 		Connection conn = null;
 		PreparedStatement pstmt = null;
-		CallableStatement cstmt = null;
+		//CallableStatement cstmt = null;
 
 		try {
 			conn = DBconn.getConnection();
 
 			StringBuilder sql = new StringBuilder();
 			
+			sql.append("update book																				");
+			sql.append("set title=?, writer=?, publisher=?, status=?,	genre_id=?, publish_date=TO_DATE(SUBSTR(?,0,10), 'YYYY-MM-DD')			");
+			sql.append("where isbn = ?                                            ");
+	
+			pstmt = conn.prepareStatement(sql.toString());
+	
+			pstmt.setString(1, book.getSubject());
+			pstmt.setString(2, book.getWriter());
+			pstmt.setString(3, book.getPublisher());
+			pstmt.setString(4, book.getIsRent());
+			pstmt.setInt(5, book.getGenre1());
+			pstmt.setString(6, book.getPublishDate());
+			pstmt.setString(7, book.getIsbn());
+			
+			pstmt.executeUpdate();
+			
+			/*
 			for(int i=0; i<book.size(); i++) {
 				cstmt = conn.prepareCall("{ call modifyBook(?, ?, ?, ?, ?, ?, ?) }");
 	            System.out.println(book.get(i).getBookId());
@@ -290,8 +307,8 @@ public class BookDAO {
 			
 
 		} finally {
-			if(cstmt != null)
-				cstmt.close();
+			//if(cstmt != null)
+			//	cstmt.close();
 			if (pstmt != null)
 				pstmt.close();
 			if (conn != null)

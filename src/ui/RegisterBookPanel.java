@@ -241,12 +241,8 @@ public class RegisterBookPanel extends JPanel implements ActionListener {
 		ISBNTF.setColumns(10);
 		panel_1.add(ISBNTF);
 
-		/* JButton btnNewButton_1 = new JButton("\uB3C4\uC11C\uAD00\uB9AC"); */
+		
 		manageButton.setBounds(830, 30, 90, 40);
-		/*
-		 * btnNewButton_1.addActionListener(new ActionListener() { public void
-		 * actionPerformed(ActionEvent e) { } });
-		 */
 		panel_1.add(manageButton);
 
 		resetbutton.setBounds(830, 110, 90, 40);
@@ -261,12 +257,7 @@ public class RegisterBookPanel extends JPanel implements ActionListener {
 		panel_1.add(scrollPane);
 
 		table = new JTable();
-		/*
-		 * table.addMouseListener(new MouseAdapter() {
-		 * 
-		 * @Override public void mouseClicked(MouseEvent e) {
-		 * System.out.println("mouse call"); row = table.getSelectedRow(); } });
-		 */
+		
 
 		table.setRowHeight(21);
 		dm = new DefaultTableModel(new String[] { "no", "    제                    목  ", " 저  자  ", " 출 판 사 ", " 출 판 일 ",
@@ -310,7 +301,7 @@ public class RegisterBookPanel extends JPanel implements ActionListener {
 							book.setPublishDate(publishDate);
 							book.setGenre1(genreId);
 							book.setIsbn(isbn);
-						/* book.setQuantity(quantity); */
+						
 
 							rowData.add(book);
 						}
@@ -430,10 +421,7 @@ public class RegisterBookPanel extends JPanel implements ActionListener {
 				dm.addRow(rowData2);
 
 			} else if (target == choiceButton) {
-				// 선택한 리스트를 알아야해.
-				
-				
-				
+							
 				int index = 1;
 				if(dm.getRowCount() == 0) {
 					JOptionPane.showMessageDialog(this, "등록할 도서가 없습니다.");
@@ -443,19 +431,15 @@ public class RegisterBookPanel extends JPanel implements ActionListener {
 
 				if (index == JOptionPane.OK_OPTION) {
 					BookDAO dao = new BookDAO();
-					List<Integer> selectList = new ArrayList<Integer>();	// 선택한 리스트.
+					List<Integer> selectList = new ArrayList<Integer>();
 					for (int i = 0; i < dm.getRowCount(); i++) {
 						if ((Boolean) dm.getValueAt(i, 0) == true) {
-							selectList.add(i);	// 선택한 row를 넣고, column(0)== true인 row를 삭제.
+							selectList.add(i);	
 						}
 					}
 					dao.insertBook(rowData);
 					JOptionPane.showMessageDialog(this, "등록완료되었습니다.");
-					/*if(체크안된목록들남겨놓기){}*/
-
-					//dm.setRowCount(0);
-					//dm.
-					//dm.removeRow(index);
+					
 					for(int i=selectList.size()-1; i>=0; i--) {
 						dm.removeRow(selectList.get(i));
 					}
@@ -494,7 +478,6 @@ public class RegisterBookPanel extends JPanel implements ActionListener {
 
 					if (index == 0) {
 						BookDAO dao = new BookDAO();
-						//dao.insertBook(rowData);
 						JOptionPane.showMessageDialog(this, "수정완료되었습니다.");
 						
 						table.setValueAt(idTF.getText(), table.getSelectedRow(), 1);

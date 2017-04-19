@@ -241,7 +241,6 @@ public class RegisterBookPanel extends JPanel implements ActionListener {
 		ISBNTF.setColumns(10);
 		panel_1.add(ISBNTF);
 
-		
 		manageButton.setBounds(830, 30, 90, 40);
 		panel_1.add(manageButton);
 
@@ -257,11 +256,18 @@ public class RegisterBookPanel extends JPanel implements ActionListener {
 		panel_1.add(scrollPane);
 
 		table = new JTable();
-		
 
 		table.setRowHeight(21);
 		dm = new DefaultTableModel(new String[] { "no", "    제                    목  ", " 저  자  ", " 출 판 사 ", " 출 판 일 ",
-				" 장 르 ", "   I  S  B  N   ", " 수 량 ", " 관 리 " }, 0);
+				" 장 르 ", "   I  S  B  N   ", " 수 량 ", " 관 리 " }, 0) {
+			@Override
+			public boolean isCellEditable(int row, int column) {
+				if (column == 0) {
+					return true;
+				}
+				return false;
+			}
+		};
 		table.setModel(dm);
 
 		JCheckBox box = new JCheckBox();
@@ -270,11 +276,13 @@ public class RegisterBookPanel extends JPanel implements ActionListener {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				try {
-					row = table.getSelectedRow(); // int index = table.getSelectedRow(); // 선택한 칼럼
+					row = table.getSelectedRow(); // int index =
+													// table.getSelectedRow();
+													// // 선택한 칼럼
 
 					if (box.isSelected()) {
-						
-						dm.setValueAt(true, row, 0); 
+
+						dm.setValueAt(true, row, 0);
 						System.out.println(row);
 
 						String title = (String) dm.getValueAt(row, 1);
@@ -293,7 +301,7 @@ public class RegisterBookPanel extends JPanel implements ActionListener {
 							if (genres.get(i).getGenre_name().equals(genreName))
 								genreId = genres.get(i).getGenre_id();
 
-						for(int i=0; i<quantity;i++) {
+						for (int i = 0; i < quantity; i++) {
 							BookVO book = new BookVO();
 							book.setSubject(title);
 							book.setWriter(writer);
@@ -301,7 +309,6 @@ public class RegisterBookPanel extends JPanel implements ActionListener {
 							book.setPublishDate(publishDate);
 							book.setGenre1(genreId);
 							book.setIsbn(isbn);
-						
 
 							rowData.add(book);
 						}
@@ -352,8 +359,6 @@ public class RegisterBookPanel extends JPanel implements ActionListener {
 		updatebutton.setBounds(830, 190, 90, 40);
 		panel_1.add(updatebutton);
 		updatebutton.setVisible(false);
-
-		
 
 	}
 
@@ -421,9 +426,9 @@ public class RegisterBookPanel extends JPanel implements ActionListener {
 				dm.addRow(rowData2);
 
 			} else if (target == choiceButton) {
-							
+
 				int index = 1;
-				if(dm.getRowCount() == 0) {
+				if (dm.getRowCount() == 0) {
 					JOptionPane.showMessageDialog(this, "등록할 도서가 없습니다.");
 				} else {
 					index = JOptionPane.showConfirmDialog(this, "등록하시겠습니까?", "등록", 2);
@@ -434,13 +439,13 @@ public class RegisterBookPanel extends JPanel implements ActionListener {
 					List<Integer> selectList = new ArrayList<Integer>();
 					for (int i = 0; i < dm.getRowCount(); i++) {
 						if ((Boolean) dm.getValueAt(i, 0) == true) {
-							selectList.add(i);	
+							selectList.add(i);
 						}
 					}
 					dao.insertBook(rowData);
 					JOptionPane.showMessageDialog(this, "등록완료되었습니다.");
-					
-					for(int i=selectList.size()-1; i>=0; i--) {
+
+					for (int i = selectList.size() - 1; i >= 0; i--) {
 						dm.removeRow(selectList.get(i));
 					}
 					idTF.setText("");
@@ -450,16 +455,14 @@ public class RegisterBookPanel extends JPanel implements ActionListener {
 					ISBNTF.setText("");
 					comboBox.setSelectedIndex(0);
 					spinner.setValue(1);
-					
-					
-				}
-				else if(index == JOptionPane.CANCEL_OPTION){
+
+				} else if (index == JOptionPane.CANCEL_OPTION) {
 					JOptionPane.showMessageDialog(this, "취소되었습니다..");
-					
+
 				}
 
-			} else if (target == updatebutton) {	// 큰수정 버튼
-				
+			} else if (target == updatebutton) { // 큰수정 버튼
+
 				String regex = "^(18[7-9][0-9]|20\\d{2})\\/(0[0-9]|1[0-2])\\/(0[1-9]|[1-2][0-9]|3[0-1])$";
 				if (!dTF.getText().matches(regex)) {
 					JOptionPane.showMessageDialog(this, "출판일에 올바른 정보를 입력해주십시오.");
@@ -469,17 +472,13 @@ public class RegisterBookPanel extends JPanel implements ActionListener {
 				if (ISBNTF.getText().equals(regex) || ISBNTF.getText().length() >= 14
 						|| ISBNTF.getText().length() <= 12) {
 					JOptionPane.showMessageDialog(this, "ISBN에 올바른 정보를 입력해주십시오.");
-				}
-				else {
-					
-	
+				} else {
 					int index = JOptionPane.showConfirmDialog(this, "수정하시겠습니까?", "수정", 2);
-				
 
 					if (index == 0) {
 						BookDAO dao = new BookDAO();
 						JOptionPane.showMessageDialog(this, "수정완료되었습니다.");
-						
+
 						table.setValueAt(idTF.getText(), table.getSelectedRow(), 1);
 						table.setValueAt(pTF.getText(), table.getSelectedRow(), 2);
 						table.setValueAt(puTF.getText(), table.getSelectedRow(), 3);
@@ -487,7 +486,7 @@ public class RegisterBookPanel extends JPanel implements ActionListener {
 						table.setValueAt(comboBox.getSelectedItem(), table.getSelectedRow(), 5);
 						table.setValueAt(ISBNTF.getText(), table.getSelectedRow(), 6);
 						table.setValueAt(spinner.getValue(), table.getSelectedRow(), 7);
-						
+
 						idTF.setText("");
 						pTF.setText("");
 						puTF.setText("");
@@ -495,13 +494,10 @@ public class RegisterBookPanel extends JPanel implements ActionListener {
 						ISBNTF.setText("");
 						comboBox.setSelectedIndex(0);
 						spinner.setValue(1);
-						
-						
-						
+
 						enterbutton.setVisible(true);
 						updatebutton.setVisible(false);
-						
-						
+
 						return;
 					}
 				}
@@ -510,13 +506,11 @@ public class RegisterBookPanel extends JPanel implements ActionListener {
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
-
 	}
 
 	public void init() {
 		addComponent();
 		addEventListener();
-
 	}
 
 	public RegisterBookPanel() {

@@ -10,6 +10,7 @@ public class BookVO {
 	String isbn;
 	String isRent;
 	int genre1;
+	
 		
 	public BookVO() {
 		super();

@@ -22,27 +22,8 @@ public class LoginFrame extends JFrame {
 	private JTextField idTF;
 	private AdminDAO dao = new AdminDAO();
 	private JPasswordField passwordTF;
-
-	/**
-	 * Launch the application.
-	 */
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					LoginFrame frame = new LoginFrame();
-					frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}
-
-	/**
-	 * Create the frame
-	 */
-	public LoginFrame() {
+	
+	public void addComponent() {
 		setBounds(100, 100, 400, 300);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBackground(Color.BLACK);
@@ -71,9 +52,6 @@ public class LoginFrame extends JFrame {
 		JButton loginBtn = new JButton("Login");
 		loginBtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				// 로그인처리
-				// System.out.println(idTF.getText().toString());
-				// System.out.println(passwordTF.getText().toString());
 				confirmLogin(idTF.getText().toString(), passwordTF.getText().toString());
 			}
 		});
@@ -93,8 +71,25 @@ public class LoginFrame extends JFrame {
 		passwordTF = new JPasswordField();
 		passwordTF.setBounds(222, 124, 116, 21);
 		getContentPane().add(passwordTF);
+	}
+	
+	public void init() {
+		setDefaultCloseOperation(EXIT_ON_CLOSE);
+		
+		addComponent();
+		
+		setVisible(true);
+	}
+	
+	public LoginFrame() {
+		init();
 
 	}
+	
+	public static void main(String[] args) {
+		new LoginFrame();
+	}
+	
 
 	private void confirmLogin(String id, String password) {
 		try {

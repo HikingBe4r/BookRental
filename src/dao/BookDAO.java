@@ -206,12 +206,10 @@ public class BookDAO {
 
 	public void insertBook(List<BookVO> book) throws SQLException { // 도서 등록
 	      Connection conn = null;
-	      PreparedStatement pstmt = null;
 	      CallableStatement cstmt = null;
 
 	      try {
 	         conn = DBconn.getConnection();
-	         cstmt = conn.prepareCall("{ call registerBook(?, ?, ?, ?, ?, ?) }");
 
 	         for (int i = 0; i < book.size(); i++) {
 	            cstmt = conn.prepareCall("{ call registerBook(?, ?, ?, ?, ?, ?) }");
@@ -223,7 +221,7 @@ public class BookDAO {
 	            cstmt.setInt(5, book.get(i).getGenre1());
 	            cstmt.setString(6, book.get(i).getPublishDate());
 	            
-	            cstmt.executeUpdate();
+	            cstmt.execute();
 
 	         }
 	      } finally {
@@ -234,34 +232,66 @@ public class BookDAO {
 	      }
 
 	   }
-
-	public void updateBook(BookVO book) throws SQLException { // 도서 정보 수정(수정이 필요)
+	
+	public void updateBook(List<BookVO> book) throws SQLException { // 도서 정보 수정(수정이 필요)
 		Connection conn = null;
 		PreparedStatement pstmt = null;
+		CallableStatement cstmt = null;
 
 		try {
 			conn = DBconn.getConnection();
 
 			StringBuilder sql = new StringBuilder();
-
-			sql.append("update book																				");
-			sql.append("set title=?, writer=?, publisher=?, ISBN=?, status=?,	genre_id=?, publish_date=TO_DATE(SUBSTR(?,0,10), 'YYYY-MM-DD')			");
-			sql.append("where isbn = ?                                            ");
-
-			pstmt = conn.prepareStatement(sql.toString());
-
-			pstmt.setString(1, book.getSubject());
-			pstmt.setString(2, book.getWriter());
-			pstmt.setString(3, book.getPublisher());
-			pstmt.setString(4, book.getIsbn());
-			pstmt.setString(5, book.getIsRent());
-			pstmt.setInt(6, book.getGenre1());
-			pstmt.setString(7, book.getPublishDate());
-			pstmt.setString(8, book.getIsbn());
-
-			pstmt.executeUpdate();
+			
+			for(int i=0; i<book.size(); i++) {
+				cstmt = conn.prepareCall("{ call modifyBook(?, ?, ?, ?, ?, ?, ?) }");
+	            System.out.println(book.get(i).getBookId());
+				//title,writer,publisher,ISBN,genre_id,publish_date
+	            cstmt.setString(1, book.get(i).getBookId());
+	            cstmt.setString(2, book.get(i).getSubject());
+	            cstmt.setString(3, book.get(i).getWriter());
+	            cstmt.setString(4, book.get(i).getPublisher());
+	            cstmt.setString(5, book.get(i).getIsbn());
+	            cstmt.setInt(6, book.get(i).getGenre1());
+	            cstmt.setString(7, book.get(i).getPublishDate());
+	            
+	            cstmt.execute();
+			
+			}
+/*
+			if(!book.getIsbn().equals(book.getBookId().substring(0,13))) {		// book_id 13자리와 isbn 13자리가 다른 경우 프로시저로 수정
+				cstmt = conn.prepareCall("{ call modifyBook(?, ?) }");
+	            
+	            cstmt.setString(1, book.getIsbn());
+	            cstmt.setString(2, book.getBookId());	// 같은 isbn의 max(id)  바꾸기 전 isbn 추출.
+	            
+	            cstmt.execute();
+			}
+			
+			else {
+				sql.append("update book																				");
+				sql.append("set title=?, writer=?, publisher=?, status=?,	genre_id=?, publish_date=TO_DATE(SUBSTR(?,0,10), 'YYYY-MM-DD')			");
+				sql.append("where isbn = ?                                            ");
+		
+				pstmt = conn.prepareStatement(sql.toString());
+		
+				pstmt.setString(1, book.getSubject());
+				pstmt.setString(2, book.getWriter());
+				pstmt.setString(3, book.getPublisher());
+				pstmt.setString(4, book.getIsbn());
+				pstmt.setString(5, book.getIsRent());
+				pstmt.setInt(6, book.getGenre1());
+				pstmt.setString(7, book.getPublishDate());
+				pstmt.setString(8, book.getIsbn());
+				
+				pstmt.executeUpdate();
+			}
+*/
+			
 
 		} finally {
+			if(cstmt != null)
+				cstmt.close();
 			if (pstmt != null)
 				pstmt.close();
 			if (conn != null)

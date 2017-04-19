@@ -1,5 +1,6 @@
 package ui;
 
+import java.awt.CardLayout;
 import java.awt.Component;
 import java.awt.SystemColor;
 import java.awt.event.ActionEvent;
@@ -35,6 +36,7 @@ import domain.BookVO;
 import domain.GenreVO;
 
 public class RetrieveBookPanel extends JPanel implements ActionListener {
+	private CardLayout card = new CardLayout();
 	private JTextField subjectTF;
 	private JTextField writerTF;
 	private JTextField publisherTF;
@@ -52,8 +54,7 @@ public class RetrieveBookPanel extends JPanel implements ActionListener {
 	private JSpinner spinner;
 	public List<String> isbnList = new ArrayList<String>(); // 도서 삭제 시 isbn리스트
 	public List<String> idList = new ArrayList<String>(); // 도서 삭제 시 고유 isbn리스트
-	Vector<Vector<Object>> removeLists = new Vector<Vector<Object>>(); // 도서 삭제
-																		// 시
+	Vector<Vector<Object>> removeLists = new Vector<Vector<Object>>(); // 도서 삭제시
 																		// 도서리스트
 
 	class ButtonRenderer extends JButton implements TableCellRenderer {
@@ -135,13 +136,265 @@ public class RetrieveBookPanel extends JPanel implements ActionListener {
 		}
 	}
 
+	MouseAdapter listener = new MouseAdapter() {
+		@Override
+		public void mouseClicked(MouseEvent e) {
+			try {
+				if (dm.getRowCount() != 0) {
+					BookDAO dao = new BookDAO();
+					Vector<Vector<Object>> book = new Vector<Vector<Object>>();
+					row = table.getSelectedRow();
+
+					book = dao.selectBookById((String) dm.getValueAt(row, 5));
+
+					for (int i = 0; i < book.size(); i++) {
+						// book_id, title, writer, publisher, isbn, status,
+						// publish_date, genre_id
+						subjectTF.setText((String) dm.getValueAt(row, 1));
+						publisherTF.setText((String) dm.getValueAt(row, 3));
+						writerTF.setText((String) dm.getValueAt(row, 2));
+						genreBox.setSelectedIndex((int) book.get(i).get(7) - 1);
+						isbnTF.setText((String) dm.getValueAt(row, 5));
+						publishDateTF.setText(((String) book.get(i).get(6)).substring(0, 10));
+						spinner.setValue(book.size());
+					}
+				}
+
+			} catch (Exception ex) {
+				ex.printStackTrace();
+			}
+		}
+	};
+
+	private void addEventListener() {
+		registerBookButton.addActionListener(this);
+		modifyButton.addActionListener(this);
+		cancelButton.addActionListener(this);
+		searchButton.addActionListener(this);
+		table.addMouseListener(listener);
+		deleteButton.addActionListener(this);
+		deleteButton2.addActionListener(this);
+	}
+
+	private void addComponent() {
+		try {
+			setLayout(card);
+
+			JPanel panel_1 = new JPanel();
+			panel_1.setBackground(SystemColor.menu);
+			panel_1.setBounds(0, 0, 970, 762);
+			add(panel_1);
+			panel_1.setLayout(null);
+
+			JTextPane subject = new JTextPane();
+			subject.setEditable(false);
+			subject.setBackground(SystemColor.menu);
+			subject.setText("\uC81C\uBAA9");
+			subject.setBounds(26, 89, 47, 21);
+			panel_1.add(subject);
+
+			JTextPane writer = new JTextPane();
+			writer.setEditable(false);
+			writer.setBackground(SystemColor.menu);
+			writer.setText("\uC800\uC790");
+			writer.setBounds(26, 146, 47, 21);
+			panel_1.add(writer);
+
+			JTextPane genre_TP = new JTextPane();
+			genre_TP.setEditable(false);
+			genre_TP.setBackground(SystemColor.menu);
+			genre_TP.setText("\uC7A5\uB974");
+			genre_TP.setBounds(27, 200, 47, 21);
+			panel_1.add(genre_TP);
+
+			genreBox = new JComboBox();
+			BookDAO dao = new BookDAO();
+			List<GenreVO> genres = dao.retrieveGenreList();
+			Vector<String> genre = new Vector<String>();
+			for (int i = 0; i < genres.size(); i++)
+				genre.add(genres.get(i).getGenre_name());
+
+			subjectTF = new JTextField("");
+			subjectTF.setBounds(73, 89, 230, 21);
+			panel_1.add(subjectTF);
+			subjectTF.setColumns(10);
+			genreBox.setModel(new DefaultComboBoxModel(genre));
+			genreBox.setBounds(74, 200, 120, 21);
+			panel_1.add(genreBox); // 장르 검색해서 출력
+
+			JTextPane quantity = new JTextPane();
+			quantity.setEditable(false);
+			quantity.setBackground(SystemColor.menu);
+			quantity.setText("\uC218\uB7C9");
+			quantity.setBounds(718, 89, 47, 21);
+			panel_1.add(quantity);
+
+			spinner = new JSpinner();
+			spinner.setEnabled(false);
+			spinner.setModel(new SpinnerNumberModel(new Integer(1), new Integer(1), null, new Integer(1)));
+			spinner.setBounds(765, 89, 66, 21);
+			panel_1.add(spinner);
+
+			JTextPane publisher = new JTextPane();
+			publisher.setEditable(false);
+			publisher.setBackground(SystemColor.menu);
+			publisher.setText("\uCD9C\uD310\uC0AC");
+			publisher.setBounds(342, 89, 47, 21);
+			panel_1.add(publisher);
+
+			JTextPane publishDate = new JTextPane();
+			publishDate.setEditable(false);
+			publishDate.setBackground(SystemColor.menu);
+			publishDate.setText("\uCD9C\uD310\uC77C");
+			publishDate.setBounds(342, 146, 47, 21);
+			panel_1.add(publishDate);
+
+			JTextPane isbn = new JTextPane();
+			isbn.setEditable(false);
+			isbn.setBackground(SystemColor.menu);
+			isbn.setText("ISBN");
+			isbn.setBounds(342, 200, 47, 21);
+			panel_1.add(isbn);
+
+			registerBookButton = new JButton("도서등록");
+			registerBookButton.setBounds(830, 30, 90, 40);
+			panel_1.add(registerBookButton);
+
+			modifyButton = new JButton("\uC218    \uC815");
+			modifyButton.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+				}
+			});
+			modifyButton.setBounds(718, 190, 90, 40);
+			panel_1.add(modifyButton);
+
+			cancelButton = new JButton("\uCDE8    \uC18C");
+			cancelButton.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+				}
+			});
+			cancelButton.setBounds(830, 190, 90, 40);
+			panel_1.add(cancelButton);
+
+			writerTF = new JTextField("");
+			writerTF.setColumns(10);
+			writerTF.setBounds(73, 146, 230, 21);
+			panel_1.add(writerTF);
+
+			publisherTF = new JTextField("");
+			publisherTF.setColumns(10);
+			publisherTF.setBounds(401, 89, 287, 21);
+			panel_1.add(publisherTF);
+
+			publishDateTF = new JTextField("");
+			publishDateTF.setColumns(10);
+			publishDateTF.setBounds(401, 146, 287, 21);
+			panel_1.add(publishDateTF);
+
+			isbnTF = new JTextField("");
+			isbnTF.setColumns(10);
+			isbnTF.setBounds(401, 200, 287, 21);
+			panel_1.add(isbnTF);
+
+			scrollPane = new JScrollPane();
+			scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+			scrollPane.setBounds(12, 303, 946, 390);
+			panel_1.add(scrollPane);
+
+			dm = new DefaultTableModel(new Object[][] {}, new String[] { "no", "\uC81C\uBAA9", "\uC800\uC790",
+					"\uCD9C\uD310\uC0AC", "\uC7A5\uB974", "ISBN" }) {
+				@Override
+				public boolean isCellEditable(int row, int column) {
+					if (column == 0) {
+						return true;
+					}
+					return false;
+				}
+			}; /*
+				 * { Class[] columnTypes = new Class[] { boolean.class,
+				 * Object.class, Object.class, Object.class, Object.class,
+				 * Object.class }; public Class getColumnClass(int columnIndex)
+				 * { return columnTypes[columnIndex]; } boolean[]
+				 * columnEditables = new boolean[] { false, false, false, false,
+				 * false, false, false }; public boolean isCellEditable(int row,
+				 * int column) { return columnEditables[column]; } }
+				 */
+
+			dm2 = new DefaultTableModel(new Object[][] {}, new String[] { "no", "\uC81C\uBAA9", "\uC800\uC790",
+					"\uCD9C\uD310\uC0AC", "\uC7A5\uB974", "도서 ID" }) {
+				@Override
+				public boolean isCellEditable(int row, int column) {
+					if (column == 0) { // ù��° ĭ�� ���� ���� �������� �Ұ���
+						return true;
+					}
+					return false;
+				}
+			};
+
+			table = new JTable();
+			table.setRowHeight(21);
+			table.setModel(dm);
+			setTable();
+
+			categoryBox = new JComboBox();
+			categoryBox.setModel(new DefaultComboBoxModel(index));
+			categoryBox.setBounds(26, 40, 70, 21);
+			panel_1.add(categoryBox);
+
+			textTF = new JTextField(""); // 책 검색 필드
+			textTF.setColumns(10);
+			textTF.setBounds(108, 40, 287, 21);
+			panel_1.add(textTF);
+
+			searchButton = new JButton("\uAC80\uC0C9");
+			searchButton.setBounds(407, 39, 70, 23);
+			panel_1.add(searchButton);
+
+			deleteButton = new JButton("선택 도서 삭제");
+			deleteButton.setBounds(834, 715, 124, 35);
+			panel_1.add(deleteButton);
+
+			deleteButton2 = new JButton("선택 도서 삭제");
+			deleteButton2.setBounds(834, 715, 124, 35);
+			panel_1.add(deleteButton2);
+			deleteButton2.setVisible(false);
+
+			add("second", new RegisterBookPanel());
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+	}
+
+	public void setTable() {
+		table.getTableHeader().setReorderingAllowed(false);
+		table.getTableHeader().setResizingAllowed(false);
+		table.getColumnModel().getColumn(0).setResizable(false);
+		table.getColumnModel().getColumn(0).setPreferredWidth(30);
+		table.getColumnModel().getColumn(0).setCellEditor(new DefaultCellEditor(new JCheckBox()));
+		table.getColumnModel().getColumn(0).setCellRenderer(dcr);
+		table.getColumnModel().getColumn(1).setResizable(false);
+		table.getColumnModel().getColumn(1).setPreferredWidth(200);
+		table.getColumnModel().getColumn(2).setResizable(false);
+		table.getColumnModel().getColumn(2).setPreferredWidth(130);
+		table.getColumnModel().getColumn(3).setResizable(false);
+		table.getColumnModel().getColumn(3).setPreferredWidth(130);
+		table.getColumnModel().getColumn(4).setResizable(false);
+		table.getColumnModel().getColumn(4).setPreferredWidth(120);
+		table.getColumnModel().getColumn(5).setResizable(false);
+		table.getColumnModel().getColumn(5).setPreferredWidth(200);
+		scrollPane.setViewportView(table);
+	}
+
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		try {
 			Object target = e.getSource();
 
 			if (target == registerBookButton) { // 도서 등록 화면 이동
-				System.out.println("등록 화면 버튼");
+				card.show(this, "second");
+
 			}
 
 			else if (target == modifyButton) { // 수정
@@ -153,13 +406,14 @@ public class RetrieveBookPanel extends JPanel implements ActionListener {
 				setTable();
 
 				if (isbnList.isEmpty() == false) {
-					isbnList = null; // 리스트에 정보가 있으면 지운다
+					isbnList = new ArrayList<String>(); // 리스트에 정보가 있으면 지운다
 				}
 				if (removeLists.isEmpty() == false) {
-					removeLists = null; // 리스트에 정보가 있으면 지운다
+					removeLists = new Vector<Vector<Object>>(); // 리스트에 정보가 있으면
+																// 지운다
 				}
 
-				String regex = "\\d{4}\\-\\d{2}\\-\\d{2}";
+				String regex = "^(18[7-9][0-9]|20\\d{2})\\-(0[0-9]|1[0-2])\\-(0[1-9]|[1-2][0-9]|3[0-1])$";
 				if (!publishDateTF.getText().matches(regex)) {
 					JOptionPane.showMessageDialog(this, "출판일에 올바른 정보를 입력해주십시오.");
 					return;
@@ -188,10 +442,23 @@ public class RetrieveBookPanel extends JPanel implements ActionListener {
 				// String bookId, String subject, String writer, String
 				// publisher, String publishDate, String isbn, String isRent,
 				// int genre1
-				BookVO mbook = new BookVO((String) book.get(0).get(0), subjectTF.getText(), writerTF.getText(),
-						publisherTF.getText(), publishDateTF.getText(), isbnTF.getText(), "0",
-						genreBox.getSelectedIndex() + 1);
-				dao.updateBook(mbook);
+
+				List<BookVO> books = new ArrayList<BookVO>();
+				for (int i = 0; i < (int) spinner.getValue(); i++) {
+					BookVO mbook = new BookVO((String) book.get(i).get(0), subjectTF.getText(), writerTF.getText(),
+							publisherTF.getText(), publishDateTF.getText(), isbnTF.getText(), "0",
+							genreBox.getSelectedIndex() + 1);
+
+					books.add(mbook);
+				}
+				dao.updateBook(books);
+
+				table.setValueAt(subjectTF.getText(), table.getSelectedRow(), 1);
+				table.setValueAt(writerTF.getText(), table.getSelectedRow(), 2);
+				table.setValueAt(publisherTF.getText(), table.getSelectedRow(), 3);
+				table.setValueAt(genreBox.getSelectedItem(), table.getSelectedRow(), 4);
+				table.setValueAt(isbnTF.getText(), table.getSelectedRow(), 5);
+				// table에 변경된 데이터 적용
 
 			}
 
@@ -204,10 +471,12 @@ public class RetrieveBookPanel extends JPanel implements ActionListener {
 				setTable();
 
 				if (isbnList.isEmpty() == false) {
-					isbnList = null; // 리스트에 정보가 있으면 지운다
+					isbnList = new ArrayList<String>();
+					; // 리스트에 정보가 있으면 지운다
 				}
 				if (removeLists.isEmpty() == false) {
-					removeLists = null; // 리스트에 정보가 있으면 지운다
+					removeLists = new Vector<Vector<Object>>(); // 리스트에 정보가 있으면
+																// 지운다
 				}
 
 				System.out.println("취소 버튼");
@@ -351,6 +620,7 @@ public class RetrieveBookPanel extends JPanel implements ActionListener {
 				// 도서 리스트 저장
 
 				dm.setRowCount(0); // 새로 검색할때마다 0으로
+				removeLists = new Vector<Vector<Object>>();
 
 			}
 
@@ -390,245 +660,6 @@ public class RetrieveBookPanel extends JPanel implements ActionListener {
 		catch (Exception ex) {
 			ex.printStackTrace();
 		}
-	}
-
-	MouseAdapter listener = new MouseAdapter() {
-		@Override
-		public void mouseClicked(MouseEvent e) {
-			try {
-				if (dm.getRowCount() != 0) {
-					BookDAO dao = new BookDAO();
-					Vector<Vector<Object>> book = new Vector<Vector<Object>>();
-					row = table.getSelectedRow();
-
-					book = dao.selectBookById((String) dm.getValueAt(row, 5));
-
-					for (int i = 0; i < book.size(); i++) {
-						// book_id, title, writer, publisher, isbn, status,
-						// publish_date, genre_id
-						subjectTF.setText((String) dm.getValueAt(row, 1));
-						publisherTF.setText((String) dm.getValueAt(row, 3));
-						writerTF.setText((String) dm.getValueAt(row, 2));
-						genreBox.setSelectedIndex((int) book.get(i).get(7) - 1);
-						isbnTF.setText((String) dm.getValueAt(row, 5));
-						publishDateTF.setText(((String) book.get(i).get(6)).substring(0, 10));
-						spinner.setValue(book.size());
-					}
-				}
-
-			} catch (Exception ex) {
-				ex.printStackTrace();
-			}
-		}
-	};
-
-	private void addEventListener() {
-		registerBookButton.addActionListener(this);
-		modifyButton.addActionListener(this);
-		cancelButton.addActionListener(this);
-		searchButton.addActionListener(this);
-		table.addMouseListener(listener);
-		deleteButton.addActionListener(this);
-		deleteButton2.addActionListener(this);
-	}
-
-	private void addComponent() {
-		try {
-			setLayout(null);
-
-			JPanel panel_1 = new JPanel();
-			panel_1.setBackground(SystemColor.menu);
-			panel_1.setBounds(0, 0, 970, 760);
-			add(panel_1);
-			panel_1.setLayout(null);
-
-			JTextPane subject = new JTextPane();
-			subject.setEditable(false);
-			subject.setBackground(SystemColor.menu);
-			subject.setText("\uC81C\uBAA9");
-			subject.setBounds(26, 89, 47, 21);
-			panel_1.add(subject);
-
-			JTextPane writer = new JTextPane();
-			writer.setEditable(false);
-			writer.setBackground(SystemColor.menu);
-			writer.setText("\uC800\uC790");
-			writer.setBounds(26, 146, 47, 21);
-			panel_1.add(writer);
-
-			JTextPane genre_TP = new JTextPane();
-			genre_TP.setEditable(false);
-			genre_TP.setBackground(SystemColor.menu);
-			genre_TP.setText("\uC7A5\uB974");
-			genre_TP.setBounds(27, 200, 47, 21);
-			panel_1.add(genre_TP);
-
-			genreBox = new JComboBox();
-			BookDAO dao = new BookDAO();
-			List<GenreVO> genres = dao.retrieveGenreList();
-			Vector<String> genre = new Vector<String>();
-			for (int i = 0; i < genres.size(); i++)
-				genre.add(genres.get(i).getGenre_name());
-
-			subjectTF = new JTextField("");
-			subjectTF.setBounds(73, 89, 230, 21);
-			panel_1.add(subjectTF);
-			subjectTF.setColumns(10);
-			genreBox.setModel(new DefaultComboBoxModel(genre));
-			genreBox.setBounds(74, 200, 120, 21);
-			panel_1.add(genreBox); // 장르 검색해서 출력
-
-			JTextPane quantity = new JTextPane();
-			quantity.setEditable(false);
-			quantity.setBackground(SystemColor.menu);
-			quantity.setText("\uC218\uB7C9");
-			quantity.setBounds(718, 89, 47, 21);
-			panel_1.add(quantity);
-
-			spinner = new JSpinner();
-			spinner.setEnabled(false);
-			spinner.setModel(new SpinnerNumberModel(new Integer(1), new Integer(1), null, new Integer(1)));
-			spinner.setBounds(765, 89, 66, 21);
-			panel_1.add(spinner);
-
-			JTextPane publisher = new JTextPane();
-			publisher.setEditable(false);
-			publisher.setBackground(SystemColor.menu);
-			publisher.setText("\uCD9C\uD310\uC0AC");
-			publisher.setBounds(342, 89, 47, 21);
-			panel_1.add(publisher);
-
-			JTextPane publishDate = new JTextPane();
-			publishDate.setEditable(false);
-			publishDate.setBackground(SystemColor.menu);
-			publishDate.setText("\uCD9C\uD310\uC77C");
-			publishDate.setBounds(342, 146, 47, 21);
-			panel_1.add(publishDate);
-
-			JTextPane isbn = new JTextPane();
-			isbn.setEditable(false);
-			isbn.setBackground(SystemColor.menu);
-			isbn.setText("ISBN");
-			isbn.setBounds(342, 200, 47, 21);
-			panel_1.add(isbn);
-
-			registerBookButton = new JButton("도서등록");
-			registerBookButton.setBounds(830, 30, 90, 40);
-			panel_1.add(registerBookButton);
-
-			modifyButton = new JButton("\uC218    \uC815");
-			modifyButton.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
-				}
-			});
-			modifyButton.setBounds(718, 190, 90, 40);
-			panel_1.add(modifyButton);
-
-			cancelButton = new JButton("\uCDE8    \uC18C");
-			cancelButton.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
-				}
-			});
-			cancelButton.setBounds(830, 190, 90, 40);
-			panel_1.add(cancelButton);
-
-			writerTF = new JTextField("");
-			writerTF.setColumns(10);
-			writerTF.setBounds(73, 146, 230, 21);
-			panel_1.add(writerTF);
-
-			publisherTF = new JTextField("");
-			publisherTF.setColumns(10);
-			publisherTF.setBounds(401, 89, 287, 21);
-			panel_1.add(publisherTF);
-
-			publishDateTF = new JTextField("");
-			publishDateTF.setColumns(10);
-			publishDateTF.setBounds(401, 146, 287, 21);
-			panel_1.add(publishDateTF);
-
-			isbnTF = new JTextField("");
-			isbnTF.setColumns(10);
-			isbnTF.setBounds(401, 200, 287, 21);
-			panel_1.add(isbnTF);
-
-			scrollPane = new JScrollPane();
-			scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-			scrollPane.setBounds(12, 303, 946, 390);
-			panel_1.add(scrollPane);
-
-			dm = new DefaultTableModel(new Object[][] {
-
-			}, new String[] { "no", "\uC81C\uBAA9", "\uC800\uC790", "\uCD9C\uD310\uC0AC", "\uC7A5\uB974",
-					"ISBN" }); /*
-								 * { Class[] columnTypes = new Class[] {
-								 * boolean.class, Object.class, Object.class,
-								 * Object.class, Object.class, Object.class };
-								 * public Class getColumnClass(int columnIndex)
-								 * { return columnTypes[columnIndex]; }
-								 * boolean[] columnEditables = new boolean[] {
-								 * false, false, false, false, false, false,
-								 * false }; public boolean isCellEditable(int
-								 * row, int column) { return
-								 * columnEditables[column]; } }
-								 */
-
-			dm2 = new DefaultTableModel(new Object[][] {
-
-			}, new String[] { "no", "\uC81C\uBAA9", "\uC800\uC790", "\uCD9C\uD310\uC0AC", "\uC7A5\uB974", "도서 ID" });
-
-			table = new JTable();
-			table.setRowHeight(21);
-			table.setModel(dm);
-			setTable();
-
-			categoryBox = new JComboBox();
-			categoryBox.setModel(new DefaultComboBoxModel(index));
-			categoryBox.setBounds(26, 40, 70, 21);
-			panel_1.add(categoryBox);
-
-			textTF = new JTextField(""); // 책 검색 필드
-			textTF.setColumns(10);
-			textTF.setBounds(108, 40, 287, 21);
-			panel_1.add(textTF);
-
-			searchButton = new JButton("\uAC80\uC0C9");
-			searchButton.setBounds(407, 39, 70, 23);
-			panel_1.add(searchButton);
-
-			deleteButton = new JButton("선택 도서 삭제");
-			deleteButton.setBounds(834, 715, 124, 35);
-			panel_1.add(deleteButton);
-
-			deleteButton2 = new JButton("선택 도서 삭제");
-			deleteButton2.setBounds(834, 715, 124, 35);
-			panel_1.add(deleteButton2);
-			deleteButton2.setVisible(false);
-
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
-	}
-
-	public void setTable() {
-		table.getTableHeader().setReorderingAllowed(false);
-		table.getTableHeader().setResizingAllowed(false);
-		table.getColumnModel().getColumn(0).setResizable(false);
-		table.getColumnModel().getColumn(0).setPreferredWidth(30);
-		table.getColumnModel().getColumn(0).setCellEditor(new DefaultCellEditor(new JCheckBox()));
-		table.getColumnModel().getColumn(0).setCellRenderer(dcr);
-		table.getColumnModel().getColumn(1).setResizable(false);
-		table.getColumnModel().getColumn(1).setPreferredWidth(200);
-		table.getColumnModel().getColumn(2).setResizable(false);
-		table.getColumnModel().getColumn(2).setPreferredWidth(130);
-		table.getColumnModel().getColumn(3).setResizable(false);
-		table.getColumnModel().getColumn(3).setPreferredWidth(130);
-		table.getColumnModel().getColumn(4).setResizable(false);
-		table.getColumnModel().getColumn(4).setPreferredWidth(120);
-		table.getColumnModel().getColumn(5).setResizable(false);
-		table.getColumnModel().getColumn(5).setPreferredWidth(200);
-		scrollPane.setViewportView(table);
 	}
 
 	public void init() {

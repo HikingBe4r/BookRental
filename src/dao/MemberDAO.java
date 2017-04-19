@@ -22,27 +22,25 @@ public class MemberDAO {
 		CallableStatement stmt = null;
 
 		try {
-		    conn = DBconn.getConnection();
-		    conn.setAutoCommit(false);
+			conn = DBconn.getConnection();
+			conn.setAutoCommit(false);
 
-		    String sql = "{ call registerMember(?, ?, ?) }";
-		    stmt = conn.prepareCall(sql);
-		    stmt.setString(1, member.getName());
-		    stmt.setString(2, member.getPhoneNum());
-		    stmt.setString(3, member.getBirthDay());
+			String sql = "{ call registerMember(?, ?, ?) }";
+			stmt = conn.prepareCall(sql);
+			stmt.setString(1, member.getName());
+			stmt.setString(2, member.getPhoneNum());
+			stmt.setString(3, member.getBirthDay());
 
-		    stmt.execute();
+			stmt.execute();
 
 		} finally {
-		    if (stmt != null)
-			stmt.close();
-		    if (conn != null)
-			conn.close();
+			if (stmt != null)
+				stmt.close();
+			if (conn != null)
+				conn.close();
 
 		}
-	    }
-
-
+	}
 
 	// 회원정보수정
 	public void updateMember(MemberVO member) throws SQLException {
@@ -67,13 +65,13 @@ public class MemberDAO {
 			pstm.setString(4, member.getId());
 
 			pstm.executeUpdate();
-			
+
 			conn.commit();
-			
+
 		} catch (Exception e) {
 			conn.rollback();
 			throw e;
-		}finally {
+		} finally {
 			if (pstm != null)
 				pstm.close();
 			if (conn != null)
@@ -105,7 +103,11 @@ public class MemberDAO {
 				mem.addElement(rs.getString(2));
 				mem.addElement(rs.getString(3));
 				mem.addElement(rs.getDate(4));
-				mem.addElement(rs.getString(5));
+				if(rs.getString(5).equals("0")) {
+					mem.addElement("");
+				} else {
+					mem.addElement("탈퇴");
+				}
 				memall.add(mem);
 			}
 
@@ -122,14 +124,10 @@ public class MemberDAO {
 
 	// 회원조건 검색 id순
 	public Vector<Vector<Object>> retrieveMemberListByCondition(String keyField, String keyWord) throws SQLException {
-		Vector<Vector<Object>> memberList = new Vector<Vector<Object>>(); // 이거
-																			// 고치세요.
-		Connection conn = null; // DBconn.getConnection();
+		Vector<Vector<Object>> memberList = new Vector<Vector<Object>>(); 
+		Connection conn = null; 
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
-
-		//System.out.println("keyfield: " + keyField);
-		//System.out.println("keyWord: " + keyWord);
 
 		try {
 			conn = DBconn.getConnection();
@@ -154,13 +152,17 @@ public class MemberDAO {
 			rs = pstmt.executeQuery();
 			while (rs.next()) {
 				Vector<Object> member = new Vector<Object>();
-				
+
 				member.addElement(false);
 				member.addElement(rs.getString(1));
 				member.addElement(rs.getString(2));
 				member.addElement(rs.getString(3));
 				member.addElement(rs.getDate(4));
-				member.addElement(rs.getString(5));
+				if(rs.getString(5).equals("0")) {
+					member.addElement("");
+				} else {
+					member.addElement("탈퇴");
+				}
 
 				memberList.addElement(member);
 			}
@@ -205,13 +207,11 @@ public class MemberDAO {
 			return true;
 
 		} catch (SQLException sqle) {
-			System.out.println(sqle.getErrorCode());
-			System.out.println(sqle.getMessage());
 			conn.rollback();
 			throw sqle;
 		} catch (Exception e) {
 			conn.rollback();
-			throw e;			
+			throw e;
 		} finally {
 			if (pstmt != null)
 				pstmt.close();

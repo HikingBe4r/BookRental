@@ -276,10 +276,7 @@ public class RegisterBookPanel extends JPanel implements ActionListener {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				try {
-					row = table.getSelectedRow(); // int index =
-													// table.getSelectedRow();
-													// // 선택한 칼럼
-
+					row = table.getSelectedRow(); 
 					if (box.isSelected()) {
 
 						dm.setValueAt(true, row, 0);
@@ -453,6 +450,9 @@ public class RegisterBookPanel extends JPanel implements ActionListener {
 					for (int i = selectList.size() - 1; i >= 0; i--) {
 						dm.removeRow(selectList.get(i));
 					}
+					
+					rowData.clear();
+					
 					idTF.setText("");
 					pTF.setText("");
 					puTF.setText("");
@@ -462,13 +462,13 @@ public class RegisterBookPanel extends JPanel implements ActionListener {
 					spinner.setValue(1);
 
 				} else if (index == JOptionPane.CANCEL_OPTION) {
-					JOptionPane.showMessageDialog(this, "취소되었습니다..");
+					JOptionPane.showMessageDialog(this, "취소되었습니다.");
 
 				}
 
 			} else if (target == updatebutton) { // 큰수정 버튼
 
-				String regex = "^(18[7-9][0-9]|20\\d{2})\\/(0[0-9]|1[0-2])\\/(0[1-9]|[1-2][0-9]|3[0-1])$";
+				String regex = "^(18[0-9][0-9]|19[0-9][0-9]|20\\d{2})\\/(0[0-9]|1[0-2])\\/(0[1-9]|[1-2][0-9]|3[0-1])$";
 				if (!dTF.getText().matches(regex)) {
 					JOptionPane.showMessageDialog(this, "출판일에 올바른 정보를 입력해주십시오.");
 					return;

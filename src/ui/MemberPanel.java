@@ -346,7 +346,7 @@ public class MemberPanel extends JPanel {
 			{
 				@Override
 	            public boolean isCellEditable(int row, int column) {
-	               if (column == 0) { 
+	               if (column == 0||column == 6) { 
 	                  return true;
 	               }
 	               return false;
@@ -493,7 +493,7 @@ public class MemberPanel extends JPanel {
 
 	private int checkTF() {
 		String phone_ptn = "^01(?:\\d)-(?:\\d{3}|\\d{4})-\\d{4}$"; // 전화번호
-		String bday_ptn = "^(18[0-9][0-9]|19[0-9][0-9]|20\\d{2})\\/(0[0-9]|1[0-2])\\/(0[1-9]|[1-2][0-9]|3[0-1])$"; // 생일
+		String bday_ptn = "^(18[0-9][0-9]|19[0-9][0-9]|20\\d{2})(\\/|-)(0[0-9]|1[0-2])(\\/|-)(0[1-9]|[1-2][0-9]|3[0-1])$"; // 생일
 
 		Pattern phone = Pattern.compile(phone_ptn);
 		Matcher phoneMatch = phone.matcher(phoneTF.getText());

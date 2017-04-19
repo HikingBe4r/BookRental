@@ -279,9 +279,11 @@ public class RegisterBookPanel extends JPanel implements ActionListener {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				try {
-					row = table.getSelectedRow();
+					row = table.getSelectedRow(); // int index = table.getSelectedRow(); // 선택한 칼럼
 
 					if (box.isSelected()) {
+						
+						dm.setValueAt(true, row, 0); 
 						System.out.println(row);
 
 						String title = (String) dm.getValueAt(row, 1);
@@ -314,6 +316,7 @@ public class RegisterBookPanel extends JPanel implements ActionListener {
 						}
 					} else {
 						if (row != -1) {
+							dm.setValueAt(false, row, 0);
 							rowData.remove(row);
 						}
 					}
@@ -359,7 +362,7 @@ public class RegisterBookPanel extends JPanel implements ActionListener {
 		panel_1.add(updatebutton);
 		updatebutton.setVisible(false);
 
-		add("second", new RetrieveBookPanel());
+		
 
 	}
 
@@ -383,11 +386,11 @@ public class RegisterBookPanel extends JPanel implements ActionListener {
 				comboBox.setSelectedIndex(0);
 				spinner.setValue(1);
 			} else if (target == manageButton) {
-				card.show(this, "second");
+				this.setVisible(false);
 
 			} else if (target == enterbutton) { // 등록
 
-				String regex = "\\d{4}\\/\\d{2}\\/\\d{2}";
+				String regex = "^(18[7-9][0-9]|20\\d{2})\\/(0[0-9]|1[0-2])\\/(0[1-9]|[1-2][0-9]|3[0-1])$";
 				if (!dTF.getText().matches(regex)) {
 					JOptionPane.showMessageDialog(this, "출판일에 올바른 정보를 입력해주십시오.");
 					return;
@@ -427,19 +430,53 @@ public class RegisterBookPanel extends JPanel implements ActionListener {
 				dm.addRow(rowData2);
 
 			} else if (target == choiceButton) {
+				// 선택한 리스트를 알아야해.
+				
+				
+				
+				int index = 1;
+				if(dm.getRowCount() == 0) {
+					JOptionPane.showMessageDialog(this, "등록할 도서가 없습니다.");
+				} else {
+					index = JOptionPane.showConfirmDialog(this, "등록하시겠습니까?", "등록", 2);
+				}
 
-				int index = JOptionPane.showConfirmDialog(this, "등록하시겠습니까?", "등록", 2);
-
-				if (index == 0) {
+				if (index == JOptionPane.OK_OPTION) {
 					BookDAO dao = new BookDAO();
+					List<Integer> selectList = new ArrayList<Integer>();	// 선택한 리스트.
+					for (int i = 0; i < dm.getRowCount(); i++) {
+						if ((Boolean) dm.getValueAt(i, 0) == true) {
+							selectList.add(i);	// 선택한 row를 넣고, column(0)== true인 row를 삭제.
+						}
+					}
 					dao.insertBook(rowData);
 					JOptionPane.showMessageDialog(this, "등록완료되었습니다.");
-					dm.setRowCount(0);
+					/*if(체크안된목록들남겨놓기){}*/
+
+					//dm.setRowCount(0);
+					//dm.
+					//dm.removeRow(index);
+					for(int i=selectList.size()-1; i>=0; i--) {
+						dm.removeRow(selectList.get(i));
+					}
+					idTF.setText("");
+					pTF.setText("");
+					puTF.setText("");
+					dTF.setText("");
+					ISBNTF.setText("");
+					comboBox.setSelectedIndex(0);
+					spinner.setValue(1);
+					
+					
+				}
+				else if(index == JOptionPane.CANCEL_OPTION){
+					JOptionPane.showMessageDialog(this, "취소되었습니다..");
+					
 				}
 
 			} else if (target == updatebutton) {	// 큰수정 버튼
 				
-				String regex = "\\d{4}\\/\\d{2}\\/\\d{2}";
+				String regex = "^(18[7-9][0-9]|20\\d{2})\\/(0[0-9]|1[0-2])\\/(0[1-9]|[1-2][0-9]|3[0-1])$";
 				if (!dTF.getText().matches(regex)) {
 					JOptionPane.showMessageDialog(this, "출판일에 올바른 정보를 입력해주십시오.");
 					return;
@@ -457,7 +494,7 @@ public class RegisterBookPanel extends JPanel implements ActionListener {
 
 					if (index == 0) {
 						BookDAO dao = new BookDAO();
-						dao.insertBook(rowData);
+						//dao.insertBook(rowData);
 						JOptionPane.showMessageDialog(this, "수정완료되었습니다.");
 						
 						table.setValueAt(idTF.getText(), table.getSelectedRow(), 1);
@@ -467,6 +504,16 @@ public class RegisterBookPanel extends JPanel implements ActionListener {
 						table.setValueAt(comboBox.getSelectedItem(), table.getSelectedRow(), 5);
 						table.setValueAt(ISBNTF.getText(), table.getSelectedRow(), 6);
 						table.setValueAt(spinner.getValue(), table.getSelectedRow(), 7);
+						
+						idTF.setText("");
+						pTF.setText("");
+						puTF.setText("");
+						dTF.setText("");
+						ISBNTF.setText("");
+						comboBox.setSelectedIndex(0);
+						spinner.setValue(1);
+						
+						
 						
 						enterbutton.setVisible(true);
 						updatebutton.setVisible(false);

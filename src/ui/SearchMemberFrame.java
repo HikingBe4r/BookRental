@@ -8,6 +8,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.util.Vector;
 
 import javax.swing.DefaultComboBoxModel;
@@ -45,6 +47,7 @@ public class SearchMemberFrame extends JFrame {
 	private MemberVO member = new MemberVO();
 	private RentalPanel rentalPanel;
 	private ReturnPanel returnPanel;
+	private final int BTN_ENABLED = 111111111;
 	
 	KeyListener kListener = new KeyListener() {
 
@@ -69,12 +72,20 @@ public class SearchMemberFrame extends JFrame {
 				}
 			}
 		}
-	};
+	};	
 
 	public SearchMemberFrame(ReturnPanel returnPanel) {
 		this.returnPanel = returnPanel;
 		setTitle("\uD68C\uC6D0\uAC80\uC0C9");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		this.addWindowListener(new WindowAdapter() {
+			public void windowClosing(WindowEvent e) {
+				JFrame frame = (JFrame)e.getWindow();
+				frame.dispose();
+				returnPanel.search.setEnabled(true);
+			}
+			
+		});
 		setBounds(400, 200, 600, 400);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -82,8 +93,7 @@ public class SearchMemberFrame extends JFrame {
 		contentPane.setLayout(null);
 
 		keyfieldCB = new JComboBox();
-		keyfieldCB
-				.setModel(new DefaultComboBoxModel(new String[] { "\uC774\uB984", "ID", "\uC804\uD654\uBC88\uD638" }));
+		keyfieldCB.setModel(new DefaultComboBoxModel(new String[] { "\uC774\uB984", "ID", "\uC804\uD654\uBC88\uD638" }));
 		keyfieldCB.setBounds(12, 10, 74, 21);
 		contentPane.add(keyfieldCB);
 
@@ -119,10 +129,12 @@ public class SearchMemberFrame extends JFrame {
 					returnPanel.rentalbooktf.setText("" + dao.rentableBookNum(member.getId())); // 연체자면
 																								// 대여가능권수
 																								// 0
+					
 
 				} catch (Exception e2) {
 					e2.printStackTrace();
 				}
+				returnPanel.search.setEnabled(true);
 				setVisible(false);
 				try {
 					Vector<Vector<Object>> rowData = dao.selectRentingBooksByMember(member.getId());
@@ -142,6 +154,7 @@ public class SearchMemberFrame extends JFrame {
 		cancelBtn = new JButton("\uCDE8\uC18C");
 		cancelBtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				returnPanel.search.setEnabled(true);	
 				setVisible(false);
 			}
 		});
@@ -175,6 +188,14 @@ public class SearchMemberFrame extends JFrame {
 		this.rentalPanel = rentalPanel;
 		setTitle("\uD68C\uC6D0\uAC80\uC0C9");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		this.addWindowListener(new WindowAdapter() {
+			public void windowClosing(WindowEvent e) {
+				JFrame frame = (JFrame)e.getWindow();
+				frame.dispose();
+				rentalPanel.memberSearchBtn.setEnabled(true);
+			}
+			
+		});
 		setBounds(400, 200, 600, 400);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -217,12 +238,13 @@ public class SearchMemberFrame extends JFrame {
 				RentalDAO dao = new RentalDAO();
 				try {
 					rentalPanel.rentableBookNumTF.setText("" + dao.rentableBookNum(member.getId())); // 연체자면
-																										// 대여가능권수
-																										// 0
+																									// 대여가능권수
+																									// 0
 
 				} catch (Exception e2) {
 					e2.printStackTrace();
 				}
+				rentalPanel.memberSearchBtn.setEnabled(true);
 				setVisible(false);
 			}
 		});
@@ -233,6 +255,7 @@ public class SearchMemberFrame extends JFrame {
 		cancelBtn = new JButton("\uCDE8\uC18C");
 		cancelBtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				rentalPanel.memberSearchBtn.setEnabled(true);
 				setVisible(false);
 			}
 		});

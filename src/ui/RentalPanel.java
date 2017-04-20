@@ -32,7 +32,8 @@ import domain.MemberVO;
 public class RentalPanel extends JPanel implements ActionListener{
 	public JTextField memberIdTF, memberNameTF, phoneTF, rentableBookNumTF, bookSearchConditionTF;
 	private JTable booksTable, cartTable;
-	private JButton memberSearchBtn, bookSearchBtn, rentBtn, cartBtn;
+	private JButton bookSearchBtn, rentBtn, cartBtn;
+	public JButton memberSearchBtn;
 	private JComboBox combo;
 	private Vector<String> condition = new Vector<String>();
 	private int bookKeyfield;	// 도서검색 기준
@@ -228,7 +229,7 @@ public class RentalPanel extends JPanel implements ActionListener{
             frame.setLocationRelativeTo(null);                                 
             frame.setAlwaysOnTop(true);                                      
             frame.setVisible(true);     
-			
+			memberSearchBtn.setEnabled(false);
 		} else if(target == combo) { // 도서검색 콤보박스
 			bookKeyfield = combo.getSelectedIndex() + 1;
 		} else if(target == rentBtn) { // 대여하기 버튼

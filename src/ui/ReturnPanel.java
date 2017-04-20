@@ -31,7 +31,8 @@ public class ReturnPanel extends JPanel implements ActionListener{
 	private JTable retrievetable, renewalcarttable, returncarttable;
 	public DefaultTableModel retrievetabledm;
 	private DefaultTableModel renewalcarttabledm, returncarttabledm;
-	private JButton search, renewalbutton, returnbutton;
+	private JButton renewalbutton, returnbutton;
+	public JButton search;
 	public Vector<Vector<Object>> rowData = new Vector<Vector<Object>>();
 	private List<String> returnbooks = new ArrayList<String>();
 	private List<String> renewalbooks = new ArrayList<String>();
@@ -203,6 +204,7 @@ public class ReturnPanel extends JPanel implements ActionListener{
 			if(target == search){ // 회원 검색
 				for(int i=retrievetabledm.getRowCount()-1; i>=0; i--) {
 					retrievetabledm.removeRow(i);
+					search.setEnabled(false);
 				}
 				for(int i=returncarttabledm.getRowCount()-1; i>=0; i--) {
 					returncarttabledm.removeRow(i);
@@ -217,6 +219,7 @@ public class ReturnPanel extends JPanel implements ActionListener{
 				smf.setLocationRelativeTo(null);                                 
 				smf.setAlwaysOnTop(true);  
 				smf.setVisible(true);
+				search.setEnabled(false);
 					
 			} else if(target == renewalbutton){ // 연장하기 버튼
 				if(memberidtf.getText().length() == 0) { 

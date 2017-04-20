@@ -234,20 +234,37 @@ public class ReturnPanel extends JPanel implements ActionListener {
 			renewalbooks.clear();
 
 			// 연장된 도서 상태 최신화시켜서 반납/연장 목록으로 다시 올리기
-			for (int i = renewalcarttabledm.getRowCount() - 1; i >= 0; i--) {
-				Vector<Object> rowData1 = new Vector<Object>();
-
+			/*for (int i = renewalcarttabledm.getRowCount() - 1; i >= 0; i--) {
+				//Vector<Object> rowData1 = new Vector<Object>();	
+				
 				rowData1.add((String) renewalcarttabledm.getValueAt(i, 0));
 				rowData1.add((String) renewalcarttabledm.getValueAt(i, 1));
 				rowData1.add((String) renewalcarttabledm.getValueAt(i, 2));
 				rowData1.add((String) renewalcarttabledm.getValueAt(i, 3));
 				rowData1.add((String) renewalcarttabledm.getValueAt(i, 4));
-				rowData1.add((String) renewalcarttabledm.getValueAt(i, 5));
-				rowData1.add("O");
-				retrievetabledm.addRow(rowData1); // 반납/연장 테이블에 행 추가
+				//rowData1.add((String) renewalcarttabledm.getValueAt(i, 5));
+				rowData1.add("O");			
+				//retrievetabledm.addRow(rowData1); // 반납/연장 테이블에 행 추가
 
+				
+			}*/
+			RentalDAO dao = new RentalDAO();
+			for(int i=retrievetabledm.getRowCount()-1; i>=0; i--) {
+				retrievetabledm.removeRow(i);;
+			}
+			try {
+				Vector<Vector<Object>> rowData = dao.selectRentingBooksByMember(memberidtf.getText());
+
+				for (int i = 0; i < rowData.size(); i++) {
+					retrievetabledm.addRow(rowData.elementAt(i));
+					
+				}
+			} catch (Exception e2) {
+			}
+			for(int i=renewalcarttabledm.getRowCount()-1; i>=0; i--) {
 				renewalcarttabledm.removeRow(i);
 			}
+			
 			JOptionPane.showMessageDialog(renewalbutton, "도서가 정상 연장되었습니다.");
 
 		} else if (target == returnbutton) { // 반납하기 버튼

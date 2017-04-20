@@ -350,6 +350,7 @@ public class RentalPanel extends JPanel implements ActionListener {
 			if (isPushed) {
 				RentalDAO rDAO = new RentalDAO();
 				String memberId = memberIdTF.getText();
+				//System.out.println(memberId + " " + memberId.length());
 				String penaltyDate = rDAO.overduePenalty(memberId);
 				int rentableBookNum = Integer.parseInt(rentableBookNumTF.getText());
 

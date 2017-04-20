@@ -329,7 +329,7 @@ public class RetrieveBookPanel extends JPanel implements ActionListener {
 			{
 				@Override
 				public boolean isCellEditable(int row, int column) {
-					if (column == 0) { // ù��° ĭ�� ���� ���� �������� �Ұ���
+					if (column == 0) { 
 						return true;
 					}
 					return false;
@@ -639,14 +639,8 @@ public class RetrieveBookPanel extends JPanel implements ActionListener {
 				BookDAO dao = new BookDAO();
 
 				for (int i = 0; i < dm2.getRowCount(); i++) {
-					// System.out.println("i번째: "+ dm.getValueAt(i, 0));
-					if ((boolean) dm2.getValueAt(i, 0) == true) { // checkBox
-																	// check 되어
-																	// 있으면
-						// isbnList.add((String)dm.getValueAt(i, 1)); // isbn
-						// idList = dao.selectBookById((String)dm.getValueAt(i,
-						// 5)); // isbn 동일한 도서 리스트를 저장
-						idList.add((String) removeLists.get(i).get(0));
+					if ((boolean) dm2.getValueAt(i, 0) == true) { // checkBox check 되어 있으면
+						idList.add((String)dm2.getValueAt(i, 5));
 					}
 				}
 

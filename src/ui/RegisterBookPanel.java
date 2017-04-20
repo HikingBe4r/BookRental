@@ -116,8 +116,6 @@ public class RegisterBookPanel extends JPanel implements ActionListener {
 				try {
 					row = table.getSelectedRow();
 
-					System.out.println("idTF: " + (String) dm.getValueAt(row, 1));
-
 					idTF.setText((String) dm.getValueAt(row, 1));
 					puTF.setText((String) dm.getValueAt(row, 3));
 					pTF.setText((String) dm.getValueAt(row, 2));
@@ -278,7 +276,6 @@ public class RegisterBookPanel extends JPanel implements ActionListener {
 					if (box.isSelected()) {
 
 						dm.setValueAt(true, row, 0);
-						System.out.println(row);
 
 						String title = (String) dm.getValueAt(row, 1);
 						String writer = (String) dm.getValueAt(row, 2);

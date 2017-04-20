@@ -48,7 +48,7 @@ public class SearchMemberFrame extends JFrame {
 	private RentalPanel rentalPanel;
 	private ReturnPanel returnPanel;
 	private final int BTN_ENABLED = 111111111;
-	
+
 	KeyListener kListener = new KeyListener() {
 
 		@Override
@@ -72,7 +72,7 @@ public class SearchMemberFrame extends JFrame {
 				}
 			}
 		}
-	};	
+	};
 
 	public SearchMemberFrame(ReturnPanel returnPanel) {
 		this.returnPanel = returnPanel;
@@ -80,11 +80,10 @@ public class SearchMemberFrame extends JFrame {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent e) {
-				JFrame frame = (JFrame)e.getWindow();
+				JFrame frame = (JFrame) e.getWindow();
 				frame.dispose();
 				returnPanel.search.setEnabled(true);
 			}
-			
 		});
 		setBounds(400, 200, 600, 400);
 		contentPane = new JPanel();
@@ -93,7 +92,8 @@ public class SearchMemberFrame extends JFrame {
 		contentPane.setLayout(null);
 
 		keyfieldCB = new JComboBox();
-		keyfieldCB.setModel(new DefaultComboBoxModel(new String[] { "\uC774\uB984", "ID", "\uC804\uD654\uBC88\uD638" }));
+		keyfieldCB
+				.setModel(new DefaultComboBoxModel(new String[] { "\uC774\uB984", "ID", "\uC804\uD654\uBC88\uD638" }));
 		keyfieldCB.setBounds(12, 10, 74, 21);
 		contentPane.add(keyfieldCB);
 
@@ -129,7 +129,6 @@ public class SearchMemberFrame extends JFrame {
 					returnPanel.rentalbooktf.setText("" + dao.rentableBookNum(member.getId())); // 연체자면
 																								// 대여가능권수
 																								// 0
-					
 
 				} catch (Exception e2) {
 					e2.printStackTrace();
@@ -154,7 +153,7 @@ public class SearchMemberFrame extends JFrame {
 		cancelBtn = new JButton("\uCDE8\uC18C");
 		cancelBtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				returnPanel.search.setEnabled(true);	
+				returnPanel.search.setEnabled(true);
 				setVisible(false);
 			}
 		});
@@ -190,11 +189,11 @@ public class SearchMemberFrame extends JFrame {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent e) {
-				JFrame frame = (JFrame)e.getWindow();
+				JFrame frame = (JFrame) e.getWindow();
 				frame.dispose();
 				rentalPanel.memberSearchBtn.setEnabled(true);
 			}
-			
+
 		});
 		setBounds(400, 200, 600, 400);
 		contentPane = new JPanel();
@@ -238,8 +237,8 @@ public class SearchMemberFrame extends JFrame {
 				RentalDAO dao = new RentalDAO();
 				try {
 					rentalPanel.rentableBookNumTF.setText("" + dao.rentableBookNum(member.getId())); // 연체자면
-																									// 대여가능권수
-																									// 0
+																										// 대여가능권수
+																										// 0
 
 				} catch (Exception e2) {
 					e2.printStackTrace();
@@ -304,7 +303,6 @@ public class SearchMemberFrame extends JFrame {
 				JOptionPane.showMessageDialog(this, "검색어를 입력하세요");
 			} else {
 				Vector<Vector<Object>> rowData = dao.retrieveMemberListByCondition(keyfield, keyword);
-				System.out.println(rowData);
 				for (Vector<Object> rd : rowData) {
 					Vector<Object> member = new Vector<Object>();
 					if (rd.elementAt(5).equals("")) {
@@ -336,7 +334,5 @@ public class SearchMemberFrame extends JFrame {
 
 		return member;
 	}
-	   
-	
 
 }

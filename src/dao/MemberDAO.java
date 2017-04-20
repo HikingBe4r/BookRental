@@ -201,7 +201,7 @@ public class MemberDAO {
 				pstmt.addBatch();
 				pstmt.clearParameters();
 			}
-			pstmt.executeBatch(); // 이줄이 실행이 안됨.
+			pstmt.executeBatch(); 
 			conn.commit();
 
 			return true;

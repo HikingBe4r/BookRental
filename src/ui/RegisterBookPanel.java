@@ -260,7 +260,7 @@ public class RegisterBookPanel extends JPanel implements ActionListener {
 				" 장 르 ", "   I  S  B  N   ", " 수 량 ", " 관 리 " }, 0) {
 			@Override
 			public boolean isCellEditable(int row, int column) {
-				if (column == 0 || column == 8) { 
+				if (column == 0 || column == 8) {
 					return true;
 				}
 				return false;
@@ -274,7 +274,7 @@ public class RegisterBookPanel extends JPanel implements ActionListener {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				try {
-					row = table.getSelectedRow(); 
+					row = table.getSelectedRow();
 					if (box.isSelected()) {
 
 						dm.setValueAt(true, row, 0);
@@ -448,9 +448,9 @@ public class RegisterBookPanel extends JPanel implements ActionListener {
 					for (int i = selectList.size() - 1; i >= 0; i--) {
 						dm.removeRow(selectList.get(i));
 					}
-					
+
 					rowData.clear();
-					
+
 					idTF.setText("");
 					pTF.setText("");
 					puTF.setText("");

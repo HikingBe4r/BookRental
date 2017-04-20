@@ -490,8 +490,6 @@ public class RetrieveBookPanel extends JPanel implements ActionListener {
 					removeLists = new Vector<Vector<Object>>(); // 리스트에 정보가 있으면 지운다
 				}
 
-				System.out.println("취소 버튼");
-
 				if (row == -1)
 					return;
 
@@ -536,7 +534,6 @@ public class RetrieveBookPanel extends JPanel implements ActionListener {
 					removeLists = null; // 리스트에 정보가 있으면 지운다
 				}
 
-				System.out.println("검색 버튼");
 				dm.setRowCount(0); // 새로 검색할때마다 0으로
 
 				BookDAO dao = new BookDAO();

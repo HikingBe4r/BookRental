@@ -24,35 +24,30 @@ public class LoginFrame extends JFrame {
 	private AdminDAO dao = new AdminDAO();
 	private JPasswordField passwordTF;
 
-	private void KeyEventListener() {
-		
-
-	}
-	
 	private void addListener() {
 		idTF.addKeyListener(kListener);
 		passwordTF.addKeyListener(kListener);
 	}
-	
+
 	KeyListener kListener = new KeyListener() {
-		
+
 		@Override
 		public void keyTyped(KeyEvent e) {
 			// TODO Auto-generated method stub
-			
+
 		}
-		
+
 		@Override
 		public void keyReleased(KeyEvent e) {
 			// TODO Auto-generated method stub
-			
+
 		}
-		
+
 		@Override
 		public void keyPressed(KeyEvent e) {
 			// TODO Auto-generated method stub
-			if(e.getSource() instanceof JTextField) {
-				if(e.getKeyCode() == KeyEvent.VK_ENTER) {
+			if (e.getSource() instanceof JTextField) {
+				if (e.getKeyCode() == KeyEvent.VK_ENTER) {
 					confirmLogin(idTF.getText().toString(), passwordTF.getText().toString());
 				}
 			}

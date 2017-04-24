@@ -44,12 +44,11 @@ public class MemberPanel extends JPanel {
 	private JTextField keywordTF, idTF, nameTF, phoneTF, birthdayTF, withdrawTF;
 	private JTable table;
 	private JCheckBox box;
-
 	private DefaultTableModel dtm;
-
 	private MemberDAO dao = new MemberDAO();
+	private ArrayList<String> idList = null;	// 선택한 회원 idList
 
-	// 테이블 안에 버튼, 체크박스
+	// J테이블 안에 버튼, 체크박스
 	class ButtonRenderer extends JButton implements TableCellRenderer {
 		public ButtonRenderer() {
 			setOpaque(true);
@@ -150,9 +149,7 @@ public class MemberPanel extends JPanel {
 		initBtn.addActionListener(listener);
 		keywordTF.addKeyListener(kListener);
 	}
-
-	ArrayList<String> idList = null;
-
+	
 	ActionListener listener = new ActionListener() {
 
 		@Override
@@ -163,6 +160,7 @@ public class MemberPanel extends JPanel {
 					searchMemberList(keyfieldCB.getSelectedIndex(), keywordTF.getText());
 				} else if (e.getSource() == withdrawBtn) {
 					idList = new ArrayList<String>();
+					
 					for (int i = 0; i < dtm.getRowCount(); i++) {
 						if ((Boolean) dtm.getValueAt(i, 0) == true) {
 							idList.add(dtm.getValueAt(i, 1).toString());
@@ -180,11 +178,10 @@ public class MemberPanel extends JPanel {
 				}
 			} else if (e.getSource() instanceof JCheckBox) {
 				if ((JCheckBox) (e.getSource()) == box) {
-					int index = table.getSelectedRow(); // 선택한 칼럼
 					if (box.isSelected()) {
-						dtm.setValueAt(true, index, 0);
+						dtm.setValueAt(true, table.getSelectedRow(), 0);
 					} else {
-						dtm.setValueAt(false, index, 0);
+						dtm.setValueAt(false, table.getSelectedRow(), 0);
 					}
 				}
 			}
@@ -195,38 +192,28 @@ public class MemberPanel extends JPanel {
 		@Override
 		public void mouseClicked(MouseEvent e) {
 			if (e.getSource() instanceof JTable) {
-				int index = table.getSelectedRow();
-
-				viewSelectedMember(index);
+				viewSelectedMember(table.getSelectedRow());
 			}
 		};
 
 		public void mousePressed(MouseEvent e) {
 			if (e.getSource() instanceof JTable) {
-				int index = table.getSelectedRow();
-
-				viewSelectedMember(index);
+				viewSelectedMember(table.getSelectedRow());
 			}
 		};
 	};
 	
 	KeyListener kListener = new KeyListener() {
 
+		// 사용하지 않음.
 		@Override
-		public void keyTyped(java.awt.event.KeyEvent e) {
-			// TODO Auto-generated method stub
-
-		}
+		public void keyTyped(java.awt.event.KeyEvent e) {}
 
 		@Override
-		public void keyReleased(java.awt.event.KeyEvent e) {
-			// TODO Auto-generated method stub
-
-		}
+		public void keyReleased(java.awt.event.KeyEvent e) {}
 
 		@Override
 		public void keyPressed(java.awt.event.KeyEvent e) {
-			// TODO Auto-generated method stub
 			if (e.getSource() == keywordTF) {
 				if (e.getKeyCode() == KeyEvent.VK_ENTER) {
 					searchMemberList(keyfieldCB.getSelectedIndex(), keywordTF.getText());
@@ -395,6 +382,10 @@ public class MemberPanel extends JPanel {
 	public MemberPanel() {
 		init();
 	}
+	
+	
+	// ------------------------------------------------------------------------------------------------
+	// 기능부
 
 	// 테이블에 행추가 하기전에. 다 지워주는거
 	private void deleteTableRows() {
@@ -402,12 +393,13 @@ public class MemberPanel extends JPanel {
 	}
 
 	/**
-	 * 회원등록, 수정, 전체조회 등 은 아래에 추가해주세요.
+	 * sub		: 회원 조건검색
+	 * param	: selectedKeyfield: 콤보박스 선택, keyword: 검색어
+	 * return 	: boolean: true(검색성공), false(검색실패)
+	 * dept		: 조건에 맞는 회원 검색메소드
 	 */
-
-	// 회원 조건검색
 	private boolean searchMemberList(int selectedKeyfield, String keyword) {
-		String keyfield = null;// , keyword = keywordTF.getText();
+		String keyfield = null;
 
 		try {
 			if (selectedKeyfield == 0) {
@@ -430,7 +422,12 @@ public class MemberPanel extends JPanel {
 		return false;
 	}
 
-	// 회원탈퇴
+	/**
+	 * sub		: 회원탈퇴
+	 * param	: idList: 탈퇴할 회원id 목록
+	 * return 	: boolean: true(탈퇴성공), false(탈퇴실패)
+	 * dept		: 해당 회원탈퇴 처리
+	 */
 	private boolean removeMember(ArrayList<String> idList) {
 
 		try {
@@ -451,8 +448,12 @@ public class MemberPanel extends JPanel {
 		return false;
 	}
 
-	// 회원 상세조회
-	// 마우스 리스너로 클릭하면 그 행정보 가져오기.
+	/**
+	 * sub		: 회원 상세조회
+	 * param	: index: JTable의 selectedRow
+	 * return 	: 
+	 * dept		: JTable클릭시 해당 회원정보 가져오기
+	 */
 	private void viewSelectedMember(int index) {
 		idTF.setText(table.getValueAt(index, 1).toString());
 		nameTF.setText(table.getValueAt(index, 2).toString());
@@ -461,7 +462,12 @@ public class MemberPanel extends JPanel {
 		withdrawTF.setText(table.getValueAt(index, 5).toString());
 	}
 
-	// 초기화버튼
+	/**
+	 * sub		: 회원 상세조회창 초기화
+	 * param	: 
+	 * return 	: 
+	 * dept		: 상세조회 패널의 TextField 초기화 및 회원등록 준비
+	 */
 	private void resetviewInfo() {
 		idTF.setText(null);
 		nameTF.setText(null);
@@ -476,11 +482,15 @@ public class MemberPanel extends JPanel {
 		birthdayTF.setEditable(true);
 	}
 
-	// 전체회원검색
+	/**
+	 * sub		: 전체회원검색
+	 * param	: 
+	 * return 	: 
+	 * dept		: DB에 저장된 전체회원을 검색한다.
+	 */
 	private void searchAllmemberList() {
 		resetviewInfo();
 		try {
-
 			nameTF.setEditable(false);
 			phoneTF.setEditable(false);
 			birthdayTF.setEditable(false);
@@ -491,6 +501,12 @@ public class MemberPanel extends JPanel {
 		}
 	}
 
+	/**
+	 * sub		: 유효성검사
+	 * param	: 
+	 * return 	: int : 0(정상), 1(전화번호 형식틀림), 2(생일 형식 틀림)
+	 * dept		: 회원등록시 전화번호, 생일에 대한 유효성검사 메소드
+	 */
 	private int checkTF() {
 		String phone_ptn = "^01(?:\\d)-(?:\\d{3}|\\d{4})-\\d{4}$"; // 전화번호
 		String bday_ptn = "^(18[0-9][0-9]|19[0-9][0-9]|20\\d{2})(\\/|-|.)(0[0-9]|1[0-2])(\\/|-|.)(0[1-9]|[1-2][0-9]|3[0-1])$"; // 생일
@@ -501,16 +517,21 @@ public class MemberPanel extends JPanel {
 		Pattern bday = Pattern.compile(bday_ptn);
 		Matcher birthdayMatch = bday.matcher(birthdayTF.getText());
 
-		if (!phoneMatch.matches()) {// 전화번호 형식이 맞고
+		if (!phoneMatch.matches()) {// 전화번호 형식이 틀리고
 			return 1;
 		}
-		if (!birthdayMatch.matches()) {	// 생일 형식이 맞으면
+		if (!birthdayMatch.matches()) {	// 생일 형식이 틀리면
 			return 2;
 		}
 		return 0;
 	}
 
-	// 회원등록
+	/**
+	 * sub		: 회원등록
+	 * param	: name, phone, birthday	// 지금은 없지만 추가하는게 더 좋다.
+	 * return 	: 
+	 * dept		: 해당 정보로 회원등록 실행
+	 */
 	private void registerMemberlist() {
 
 		try {
@@ -518,17 +539,13 @@ public class MemberPanel extends JPanel {
 			if (checkTF() == 0) {
 				index = JOptionPane.showConfirmDialog(this, "등록하시겠습니까?", "등록", 2);
 			} else if (checkTF() == 1) {
-				// 형식에 맞게 입력해주세요.
 				JOptionPane.showMessageDialog(this, "전화번호 형식을 확인해주세요.");
-
 			} else if (checkTF() == 2) {
 				JOptionPane.showMessageDialog(this, "생년월일 형식을 확인해주세요.");
 			}
 			if (index == 0) {
 				JOptionPane.showMessageDialog(this, "회원이 등록되었습니다.");
 				dao.insertMember(new MemberVO(nameTF.getText(), phoneTF.getText(), birthdayTF.getText()));
-				// 전화번호정규식
-
 				searchMemberList(0, nameTF.getText().toString());
 				resetviewInfo();
 				nameTF.setEditable(false);
@@ -548,7 +565,12 @@ public class MemberPanel extends JPanel {
 		}
 	}
 
-	// 회원정보 수정
+	/**
+	 * sub		: 회원정보 수정
+	 * param	: name, phone, birthday	// 지금은 없지만 추가하는게 더 좋다.
+	 * return 	: 
+	 * dept		: 해당 정보로 회원정보 수정 실행
+	 */
 	private void updateMemberInfo() {
 
 		try {
@@ -579,6 +601,12 @@ public class MemberPanel extends JPanel {
 		}
 	}
 	
+	/**
+	 * sub		: 테이블 내용 쓰기
+	 * param	: Vector<Vector<Object>> rowData: 테이블에 써질 내용
+	 * return 	: 
+	 * dept		: 테이블을 한번 비운뒤, 테이블에 rowdata를 추가한다.
+	 */
 	private void insertTableRows(Vector<Vector<Object>> rowData) {
 		deleteTableRows();
 		for (Vector<Object> rd : rowData) {

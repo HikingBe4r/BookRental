@@ -55,8 +55,6 @@ public class RetrieveBookPanel extends JPanel implements ActionListener {
 	public List<String> isbnList = new ArrayList<String>(); // 도서 삭제 시 isbn리스트
 	public List<String> idList = new ArrayList<String>(); // 도서 삭제 시 고유 isbn리스트
 	Vector<Vector<Object>> removeLists = new Vector<Vector<Object>>(); // 도서 삭제시 도서리스트
-
-	
 	
 	class ButtonRenderer extends JButton implements TableCellRenderer {
 		public ButtonRenderer() {
@@ -312,18 +310,7 @@ public class RetrieveBookPanel extends JPanel implements ActionListener {
 					}
 					return false;
 				}
-			}; /*
-								 * { Class[] columnTypes = new Class[] {
-								 * boolean.class, Object.class, Object.class,
-								 * Object.class, Object.class, Object.class };
-								 * public Class getColumnClass(int columnIndex)
-								 * { return columnTypes[columnIndex]; }
-								 * boolean[] columnEditables = new boolean[] {
-								 * false, false, false, false, false, false,
-								 * false }; public boolean isCellEditable(int
-								 * row, int column) { return
-								 * columnEditables[column]; } }
-								 */
+			};
 
 			dm2 = new DefaultTableModel(new Object[][] { }, new String[] { "no", "\uC81C\uBAA9", "\uC800\uC790", "\uCD9C\uD310\uC0AC", "\uC7A5\uB974", "도서 ID" } ) 
 			{
@@ -423,13 +410,6 @@ public class RetrieveBookPanel extends JPanel implements ActionListener {
 					JOptionPane.showMessageDialog(this, "출판일에 올바른 정보를 입력해주십시오.");
 					return;
 				}
-/*
-				regex = "\\D";
-				if (isbnTF.getText().matches(regex) || isbnTF.getText().length() >= 14
-						|| isbnTF.getText().length() <= 12) {
-					JOptionPane.showMessageDialog(this, "ISBN에 올바른 정보를 입력해주십시오.");
-					return;
-				}*/
 
 				if (subjectTF.getText().length() == 0 || writerTF.getText().length() == 0
 						|| publisherTF.getText().length() == 0 || publishDateTF.getText().length() == 0
@@ -444,22 +424,11 @@ public class RetrieveBookPanel extends JPanel implements ActionListener {
 
 					Vector<Vector<Object>> book = new Vector<Vector<Object>>();
 					BookDAO dao = new BookDAO();
-					// book_id, title, writer, publisher, isbn, status,
-					// publish_date, genre_id
-					book = dao.selectBookById((String) dm.getValueAt(row, 5));
-	
-					// String bookId, String subject, String writer, String
-					// publisher, String publishDate, String isbn, String isRent,
-					// int genre1
 					
-					//List<BookVO> books = new ArrayList<BookVO>();
-					//for(int i=0; i< (int)spinner.getValue(); i++) {
-						BookVO mbook = new BookVO((String) book.get(0).get(0), subjectTF.getText(), writerTF.getText(),
-								publisherTF.getText(), publishDateTF.getText(), isbnTF.getText(), "0",
-								genreBox.getSelectedIndex() + 1);
-						
-						//books.add(mbook);
-					//}
+					book = dao.selectBookById((String) dm.getValueAt(row, 5));
+					BookVO mbook = new BookVO((String) book.get(0).get(0), subjectTF.getText(), writerTF.getText(),
+							publisherTF.getText(), publishDateTF.getText(), isbnTF.getText(), "0",
+							genreBox.getSelectedIndex() + 1);
 					dao.updateBook(mbook);
 					
 					table.setValueAt(subjectTF.getText(), table.getSelectedRow(), 1);
@@ -468,11 +437,9 @@ public class RetrieveBookPanel extends JPanel implements ActionListener {
 	                table.setValueAt(genreBox.getSelectedItem(), table.getSelectedRow(), 4);
 	                table.setValueAt(isbnTF.getText(), table.getSelectedRow(), 5);
 	                // table에 변경된 데이터 적용				
-				}
-				else
+				} else {
 					return;
-				
-
+				}
 			}
 
 			else if (target == cancelButton) { // 취소
@@ -578,23 +545,15 @@ public class RetrieveBookPanel extends JPanel implements ActionListener {
 				deleteButton.setVisible(false);
 				deleteButton2.setVisible(true);
 
-				/*
-				 * if(isbnList.isEmpty()==false) { isbnList = null; // 리스트에 정보가
-				 * 있으면 지운다 } if(removeLists.isEmpty()==false) { removeLists =
-				 * null; // 리스트에 정보가 있으면 지운다 }
-				 */
-
 				isbnList = new ArrayList<String>();
 				removeLists = new Vector<Vector<Object>>();
 
 				BookDAO dao = new BookDAO();
 
 				for (int i = 0; i < dm.getRowCount(); i++) {
-					// System.out.println("i번째: "+ dm.getValueAt(i, 0));
 					if ((boolean) dm.getValueAt(i, 0) == true) { // checkBox
 																	// check 되어
 																	// 있으면
-						// isbnList.add((String)dm.getValueAt(i, 1)); // isbn
 						Vector<Vector<Object>> removeList = dao.selectBookById((String) dm.getValueAt(i, 5));
 						for (int j = 0; j < removeList.size(); j++) {
 							if (removeList.get(j).get(5).equals("0"))
@@ -622,10 +581,6 @@ public class RetrieveBookPanel extends JPanel implements ActionListener {
 					rowData.addElement(removeLists.get(i).get(0));
 					dm2.addRow(rowData);
 				}
-
-				// for(int i=0 ; i<removeLists.size(); i++)
-				// idList.add((String)removeLists.get(i).get(0)); // idList에 삭제할
-				// 도서 리스트 저장
 
 				dm.setRowCount(0); // 새로 검색할때마다 0으로
 				removeLists = new Vector<Vector<Object>>();
@@ -658,12 +613,10 @@ public class RetrieveBookPanel extends JPanel implements ActionListener {
 				return;
 			}
 		}
-
 		catch (Exception ex) {
 			ex.printStackTrace();
 		}
 	}
-
 
 	public void init() {
 		addComponent();

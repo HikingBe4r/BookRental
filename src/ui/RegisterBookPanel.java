@@ -33,19 +33,16 @@ import domain.BookVO;
 import domain.GenreVO;
 
 public class RegisterBookPanel extends JPanel implements ActionListener {
-	private JTextField idTF;
-	private JTextField pTF;
-	private JTextField puTF;
-	private JTextField dTF;
-	private JTextField ISBNTF;
+	private JPanel panel_1;
+	private JTextField idTF, pTF, puTF, dTF, ISBNTF;
 	private JTable table;
-	private JButton updatebutton;
-	private JButton resetbutton = new JButton("초 기 화");
+	private JButton updatebutton, resetbutton = new JButton("초 기 화"), manageButton = new JButton("도서 관리"),
+			enterbutton = new JButton("등     록"), choiceButton;
+	private JTextPane titlePane, writerPane, genrePane, quntityPane, publishPane, datePane, txtpnIsbn;
+	private JScrollPane scrollPane;
 	private JSpinner spinner;
 	private JComboBox comboBox;
-	private JButton manageButton = new JButton("도서 관리");
 	private CardLayout card = new CardLayout();
-	private JButton enterbutton = new JButton("등     록"), choiceButton;
 	private DefaultTableModel dm;
 	private int row = -1;
 	private List<BookVO> rowData = new ArrayList<BookVO>();
@@ -159,23 +156,23 @@ public class RegisterBookPanel extends JPanel implements ActionListener {
 	private void addComponent() {
 		setLayout(card);
 
-		JPanel panel_1 = new JPanel();
+		panel_1 = new JPanel();
 		panel_1.setBackground(Color.WHITE);
 		panel_1.setBounds(0, 0, 970, 262);
 		add(panel_1);
 		panel_1.setLayout(null);
 
-		JTextPane titlePane = new JTextPane();
+		titlePane = new JTextPane();
 		titlePane.setBounds(26, 58, 47, 21);
 		titlePane.setText("제목");
 		panel_1.add(titlePane);
 
-		JTextPane writerPane = new JTextPane();
+		writerPane = new JTextPane();
 		writerPane.setBounds(26, 120, 47, 21);
 		writerPane.setText("저자");
 		panel_1.add(writerPane);
 
-		JTextPane genrePane = new JTextPane();
+		genrePane = new JTextPane();
 		genrePane.setBounds(26, 185, 47, 21);
 		genrePane.setText("장르");
 		panel_1.add(genrePane);
@@ -187,7 +184,7 @@ public class RegisterBookPanel extends JPanel implements ActionListener {
 		comboBox.setToolTipText("");
 		panel_1.add(comboBox);
 
-		JTextPane quntityPane = new JTextPane();
+		quntityPane = new JTextPane();
 		quntityPane.setBounds(247, 185, 47, 21);
 		quntityPane.setText("수량");
 		panel_1.add(quntityPane);
@@ -197,17 +194,17 @@ public class RegisterBookPanel extends JPanel implements ActionListener {
 		spinner.setModel(new SpinnerNumberModel(1, 1, 999, 1));
 		panel_1.add(spinner);
 
-		JTextPane publishPane = new JTextPane();
+		publishPane = new JTextPane();
 		publishPane.setBounds(418, 58, 47, 21);
 		publishPane.setText("출판사");
 		panel_1.add(publishPane);
 
-		JTextPane datePane = new JTextPane();
+		datePane = new JTextPane();
 		datePane.setBounds(418, 120, 47, 21);
 		datePane.setText("출판일");
 		panel_1.add(datePane);
 
-		JTextPane txtpnIsbn = new JTextPane();
+		txtpnIsbn = new JTextPane();
 		txtpnIsbn.setBounds(418, 185, 47, 21);
 		txtpnIsbn.setText("ISBN");
 		panel_1.add(txtpnIsbn);
@@ -247,7 +244,7 @@ public class RegisterBookPanel extends JPanel implements ActionListener {
 		panel_1.add(enterbutton);
 		enterbutton.setVisible(true);
 
-		JScrollPane scrollPane = new JScrollPane();
+		scrollPane = new JScrollPane();
 		scrollPane.setBounds(12, 285, 946, 397);
 		panel_1.add(scrollPane);
 
@@ -507,13 +504,11 @@ public class RegisterBookPanel extends JPanel implements ActionListener {
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
-
 	}
 
 	public void init() {
 		addComponent();
 		addEventListener();
-
 	}
 
 	public RegisterBookPanel() {

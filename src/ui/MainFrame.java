@@ -11,7 +11,7 @@ import javax.swing.JPanel;
 
 public class MainFrame extends JFrame implements ActionListener {
 	private JButton historyBtn, rentalBtn, memberBtn, returnBtn, bookBtn;
-	private JPanel centerPanel;
+	private JPanel centerPanel, leftPanel;
 	private CardLayout card = new CardLayout(0, 0);
 	private MemberPanel memberPanel;
 	private RentalHistoryPanel historyPanel;
@@ -24,7 +24,7 @@ public class MainFrame extends JFrame implements ActionListener {
 	int btnHeight = 130 + 5;
 
 	public void addComponent() {
-		JPanel leftPanel = new JPanel();
+		leftPanel = new JPanel();
 		leftPanel.setBounds(0, 0, 200, 762);
 		getContentPane().add(leftPanel);
 		leftPanel.setLayout(null);

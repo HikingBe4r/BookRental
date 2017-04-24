@@ -13,11 +13,15 @@ import conn.DBconn;
 import domain.MemberVO;
 
 public class MemberDAO {
-	Connection conn = null;
-	PreparedStatement pstm = null;// 회원등록
 
+
+	/**
+	 * sub		: 회원 등록 메소드
+	 * param	: MemberVO : 회원정보(MemberVO) 
+	 * return 	: 
+	 * dept		: 입력받은 회원을 등록한다.
+	 */
 	public void insertMember(MemberVO member) throws SQLException {
-
 		Connection conn = null;
 		CallableStatement stmt = null;
 
@@ -32,19 +36,21 @@ public class MemberDAO {
 			stmt.setString(3, member.getBirthDay());
 
 			stmt.execute();
-
 		} finally {
 			if (stmt != null)
 				stmt.close();
 			if (conn != null)
 				conn.close();
-
 		}
 	}
 
-	// 회원정보수정
+	/**
+	 * sub		: 회원정보 수정 메소드
+	 * param	: MemberVO : 회원정보(MemberVO) 
+	 * return 	: 
+	 * dept		: 입력받은 회원정보를 수정한다.
+	 */
 	public void updateMember(MemberVO member) throws SQLException {
-
 		Connection conn = null;
 		PreparedStatement pstm = null;
 
@@ -53,9 +59,9 @@ public class MemberDAO {
 			conn.setAutoCommit(false);
 
 			StringBuilder sql = new StringBuilder();
-			sql.append("update member         ");
-			sql.append("set name = ? , phoneNum = ? , birthDay = ? ");
-			sql.append("where id = ?    ");
+			sql.append("update member        					 	");
+			sql.append("set name = ? , phoneNum = ? , birthDay = ? 	");
+			sql.append("where id = ?    							");
 
 			pstm = conn.prepareStatement(sql.toString());
 
@@ -67,7 +73,6 @@ public class MemberDAO {
 			pstm.executeUpdate();
 
 			conn.commit();
-
 		} catch (Exception e) {
 			conn.rollback();
 			throw e;
@@ -79,7 +84,12 @@ public class MemberDAO {
 		}
 	}
 
-	// 전체회원 조회
+	/**
+	 * sub		: 전체 회원조회 메소드
+	 * param	:  
+	 * return 	: Vector<Vector<Object>> : JTable에서 사용할 rowData
+	 * dept		: 전체 회원정보를 조회한다.
+	 */
 	public Vector<Vector<Object>> retrieveAllMemberList() throws SQLException {
 		Vector<Vector<Object>> memall = new Vector<Vector<Object>>();
 		Connection conn = null;
@@ -90,9 +100,9 @@ public class MemberDAO {
 			stmt = conn.createStatement();
 
 			StringBuilder sql = new StringBuilder();
-			sql.append("select id, name, phoneNum, birthDay ,withdraw ");
-			sql.append("from member ");
-			sql.append("order by id asc   		");
+			sql.append("select id, name, phoneNum, birthDay ,withdraw 	");
+			sql.append("from member 									");
+			sql.append("order by id asc   								");
 
 			rs = stmt.executeQuery(sql.toString());
 
@@ -122,7 +132,12 @@ public class MemberDAO {
 		}
 	}
 
-	// 회원조건 검색 id순
+	/**
+	 * sub		: 회원 조건검색 메소드
+	 * param	: keyField: 검색조건(콤보박스 선택), keyWord: 검색어
+	 * return 	: Vector<Vector<Object>> : JTable에서 사용할 rowData
+	 * dept		: 조건에 맞는 회원을 검색한다.
+	 */
 	public Vector<Vector<Object>> retrieveMemberListByCondition(String keyField, String keyWord) throws SQLException {
 		Vector<Vector<Object>> memberList = new Vector<Vector<Object>>(); 
 		Connection conn = null; 
@@ -133,18 +148,18 @@ public class MemberDAO {
 			conn = DBconn.getConnection();
 
 			StringBuffer sql = new StringBuffer();
-			sql.append("select id, name, phoneNum, birthday, withdraw    ");
-			sql.append("from member    ");
+			sql.append("select id, name, phoneNum, birthday, withdraw   	");
+			sql.append("from member    										");
 
 			if (keyField == "id") {
-				sql.append("where id like ?    "); // ? = keyword
+				sql.append("where id like ?    								"); 
 			} else if (keyField == "name") {
-				sql.append("where name like ?    "); // ? = keyword
+				sql.append("where name like ?    							");
 			} else if (keyField == "phoneNum") {
-				sql.append("where phoneNum like ?    "); // ? = keyword
+				sql.append("where phoneNum like ?    						"); 
 			}
 
-			sql.append("order by id asc   		");
+			sql.append("order by id asc   									");
 
 			pstmt = conn.prepareStatement(sql.toString());
 			pstmt.setString(1, "%" + keyWord + "%");
@@ -178,7 +193,12 @@ public class MemberDAO {
 		}
 	}
 
-	// 회원탈퇴처리
+	/**
+	 * sub		: 회원 탈퇴 메소드
+	 * param	: ArrayList<String> idList: 탈퇴할 회원 id 리스트 
+	 * return 	: boolean : true(탈퇴성공), false(탈퇴실패)
+	 * dept		: 조건에 맞는 회원을 탈퇴한다.
+	 */
 	public boolean withdrawMemberList(ArrayList<String> idList) throws SQLException {
 
 		Connection conn = null; // DBconn.getConnection();

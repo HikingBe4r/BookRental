@@ -29,10 +29,6 @@ import dao.MemberDAO;
 import dao.RentalDAO;
 import domain.MemberVO;
 
-/**
- * @author kodica0301
- *
- */
 public class SearchMemberFrame extends JFrame {
 
 	private JButton searchBtn, acceptBtn, cancelBtn;
@@ -47,7 +43,6 @@ public class SearchMemberFrame extends JFrame {
 	private MemberVO member = new MemberVO();
 	private RentalPanel rentalPanel;
 	private ReturnPanel returnPanel;
-	private final int BTN_ENABLED = 111111111;
 
 	KeyListener kListener = new KeyListener() {
 
@@ -126,10 +121,7 @@ public class SearchMemberFrame extends JFrame {
 				returnPanel.phonenumbertf.setText(member.getPhoneNum());
 				RentalDAO dao = new RentalDAO();
 				try {
-					returnPanel.rentalbooktf.setText("" + dao.rentableBookNum(member.getId())); // 연체자면
-																								// 대여가능권수
-																								// 0
-
+					returnPanel.rentalbooktf.setText("" + dao.rentableBookNum(member.getId())); // 연체자면 대여가능권수 0
 				} catch (Exception e2) {
 					e2.printStackTrace();
 				}
@@ -236,10 +228,7 @@ public class SearchMemberFrame extends JFrame {
 				rentalPanel.phoneTF.setText(member.getPhoneNum());
 				RentalDAO dao = new RentalDAO();
 				try {
-					rentalPanel.rentableBookNumTF.setText("" + dao.rentableBookNum(member.getId())); // 연체자면
-																										// 대여가능권수
-																										// 0
-
+					rentalPanel.rentableBookNumTF.setText("" + dao.rentableBookNum(member.getId())); // 연체자면 대여가능권수 0
 				} catch (Exception e2) {
 					e2.printStackTrace();
 				}
@@ -289,7 +278,7 @@ public class SearchMemberFrame extends JFrame {
 	}
 
 	private boolean searchMemberList(int selectedKeyfield, String keyword) {
-		String keyfield = null;// , keyword = keywordTF.getText();
+		String keyfield = null;
 
 		try {
 			if (selectedKeyfield == 0) {
@@ -324,8 +313,6 @@ public class SearchMemberFrame extends JFrame {
 	}
 
 	public MemberVO selectedMember(int selectedRow) {
-		// MemberVO member = new MemberVO();
-		int index = table.getSelectedRow();
 		member.setId(table.getValueAt(selectedRow, 0).toString());
 		member.setName(table.getValueAt(selectedRow, 1).toString());
 		member.setPhone(table.getValueAt(selectedRow, 2).toString());

@@ -11,6 +11,13 @@ import conn.DBconn;
 
 public class RentalDAO {
 	// 연체 패널티
+	
+	/**
+	 * sub		: 연체 패널티 조회
+	 * param	: memberId: 회원id
+	 * return 	: String: 날짜반환
+	 * dept		: 연체회원이 언제까지 못빌리는지 계산하는 메소드
+	 */
 	public String overduePenalty(String memberId) {
 		Connection conn = null;
 		PreparedStatement pstmt = null;
@@ -18,10 +25,10 @@ public class RentalDAO {
 		try {
 			conn = DBconn.getConnection();
 			StringBuilder sql = new StringBuilder();
-			sql.append("select to_char(max(return_date + (return_date - due_date) )) ");
-			sql.append("from rental ");
-			sql.append("where member_id = ? ");
-			sql.append("and (return_date + (return_date - due_date)) > sysdate ");
+			sql.append("select to_char(max(return_date + (return_date - due_date) )) 	");
+			sql.append("from rental 													");
+			sql.append("where member_id = ? 											");
+			sql.append("and (return_date + (return_date - due_date)) > sysdate			");
 			pstmt = conn.prepareStatement(sql.toString());
 			pstmt.setString(1, memberId);
 			rs = pstmt.executeQuery();
@@ -46,7 +53,12 @@ public class RentalDAO {
 		return "";
 	}
 	
-	// 대여 가능권수
+	/**
+	 * sub		: 대여가능 권수 조회
+	 * param	: memberId: 회원id
+	 * return 	: int : 대여가능 권수 반환
+	 * dept		: 해당 회원의 대여가능 권수를 계산해 반환한다.
+	 */
 	public int rentableBookNum(String memberId) throws SQLException {
 		int num = 0;
 		if(isDelayer(memberId) || hasOverdue(memberId)) {
@@ -59,10 +71,10 @@ public class RentalDAO {
 			try {
 				conn = DBconn.getConnection();
 				StringBuilder sql = new StringBuilder();
-				sql.append("select count(rental_id) ");
-				sql.append("from rental ");
-				sql.append("where member_id = ? ");
-				sql.append("and return_date is null ");
+				sql.append("select count(rental_id)					");
+				sql.append("from rental 							");
+				sql.append("where member_id = ? 					");
+				sql.append("and return_date is null 				");
 				
 				pstmt = conn.prepareStatement(sql.toString());
 				
@@ -71,7 +83,7 @@ public class RentalDAO {
 				rs = pstmt.executeQuery();
 				if(rs.next()) {
 					num = 5 - rs.getInt(1);
-				}			
+				}
 			} catch (Exception e) {
 				e.printStackTrace();
 			} finally {
@@ -82,49 +94,60 @@ public class RentalDAO {
 			return num;
 		}
 	}
-	// 연체 중인 도서가 있는지(있으면 true)
-		public boolean hasOverdue(String memberId) {
-			Connection conn = null;
-			PreparedStatement pstmt = null;
-			ResultSet rs = null;
-			try {
-				conn = DBconn.getConnection();
-				StringBuilder sql = new StringBuilder();
-				sql.append("select count(rental_id) ");
-				sql.append("from rental ");
-				sql.append("where member_id = ? " );
-				sql.append("and sysdate > due_date ");
-				pstmt = conn.prepareStatement(sql.toString());
-				
-				pstmt.setString(1, memberId);
-				
-				rs = pstmt.executeQuery();
-				int count = 0;
-				
-				if(rs.next()) {
-					count = rs.getInt(1);
-				}
-				
-				if(count > 0) {
-					return true;
-				}
-				
-			} catch (Exception e) {
-				e.printStackTrace();
-			} finally {
-				try {
-					if(rs != null) rs.close();
-					if(pstmt != null) pstmt.close();
-					if(conn != null) conn.close();
-				} catch (Exception e2) {
-					e2.printStackTrace();
-				}
+	/**
+	 * sub		: 연체중인도서 확인 메소드
+	 * param	: memberId: 회원id
+	 * return 	: boolean : true(연체중), false(정상대여중)
+	 * dept		: 해당 회원이 연체중인 도서를 가지고있는지 체크한다.
+	 */
+	public boolean hasOverdue(String memberId) {
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		try {
+			conn = DBconn.getConnection();
+			StringBuilder sql = new StringBuilder();
+			sql.append("select count(rental_id) 			");
+			sql.append("from rental							");
+			sql.append("where member_id = ? 				");
+			sql.append("and sysdate > due_date 				");
+			pstmt = conn.prepareStatement(sql.toString());
+
+			pstmt.setString(1, memberId);
+
+			rs = pstmt.executeQuery();
+			int count = 0;
+
+			if (rs.next()) {
+				count = rs.getInt(1);
 			}
-			
-			return false;
+
+			if (count > 0) {
+				return true;
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if (rs != null)
+					rs.close();
+				if (pstmt != null)
+					pstmt.close();
+				if (conn != null)
+					conn.close();
+			} catch (Exception e2) {
+				e2.printStackTrace();
+			}
 		}
+		return false;
+	}
 	
-	// 연체자인지 확인(맞으면 true)
+	/**
+	 * sub		: 연체자 확인 메소드
+	 * param	: memberId: 회원id
+	 * return 	: boolean : true(연체중), false(정상대여중)
+	 * dept		: 해당 회원이 연체중인지 확인하는 메소드.
+	 */
 	public boolean isDelayer(String memberId) throws SQLException{
 		Connection conn = null;
 		PreparedStatement pstmt = null;		
@@ -132,9 +155,9 @@ public class RentalDAO {
 		try {
 			conn = DBconn.getConnection();
 			StringBuilder sql = new StringBuilder();
-			sql.append("select trunc(due_date) - trunc(sysdate) ");
-			sql.append("from rental ");
-			sql.append("where member_id = ? and return_date is null ");
+			sql.append("select trunc(due_date) - trunc(sysdate) 				");
+			sql.append("from rental 											");
+			sql.append("where member_id = ? and return_date is null 			");
 			pstmt = conn.prepareStatement(sql.toString());
 			
 			pstmt.setString(1, memberId);
@@ -155,7 +178,13 @@ public class RentalDAO {
 		return false;
 	}
 	
-	// 대여 히스토리 검색
+	/**
+	 * sub		: 대여목록 조회
+	 * param	: keyword: 검색어, pattern: [0] : 도서명(true) or 회원명(false), [1] : 대여, [2] : 반납, [3] : 연장,
+	 * 			  startDate: 검색 시작기간 , endDate: 검색 종료 기간 
+	 * return 	: Vector<Vector<Object>> : JTable에 사용할 rowData
+	 * dept		: pattern과 keyword에 맞는 startDate ~ endDate 사이의 대여목록 조회 
+	 */
 	public Vector<Vector<Object>> selectRentalHistoryList
 				(String keyword, boolean[] pattern, String startDate, String endDate) throws SQLException {
 		// pattern : String 배열에서 boolean 배열로 바꿈
@@ -178,9 +207,6 @@ public class RentalDAO {
 		ResultSet rs = null;
 		try {
 			conn = DBconn.getConnection();
-			
-			// 대여,반납,연장 조건처리 어떻게 할것인지 생각해볼 필요
-			// 대여,반납,연장 sql문 따로 생성한 후, union?
 			
 			StringBuilder rentSql = new StringBuilder();
 			// 대여 일련번호, 도서ID, 도서명, 회원ID, 회원명, 연락처, 구분, 대여일, 반납일, 반납예정일
@@ -275,7 +301,6 @@ public class RentalDAO {
 				history.addElement(rs.getString(8));	// 대여일
 				history.addElement(rs.getString(9));	// 반납일
 				history.addElement(rs.getString(10));	// 반납예정일
-				//System.out.println(history.toString());
 				historys.add(history);
 			}			
 			
@@ -290,17 +315,21 @@ public class RentalDAO {
 		return historys;
 	}
 	
-	
-	// 도서 연장
+	/**
+	 * sub		: 도서 연장 메소드
+	 * param	: rentingBooksId: 대여중인 도서 id 리스트
+	 * return 	: 
+	 * dept		: 해당 도서의 반납 예정일을 7일 추가한다. 
+	 */
 	public void renewalBooksFromBasket(List<String> rentingBooksId) throws SQLException {
 		Connection conn = null;
 		PreparedStatement pstmt = null;
 		try {
 			conn = DBconn.getConnection();
 			StringBuilder sql = new StringBuilder();
-			sql.append("update rental ");
-			sql.append("set due_date = due_date + 7 ");	// 연장시 반납예정일 7일 증가
-			sql.append("where book_id = ?");
+			sql.append("update rental 					");
+			sql.append("set due_date = due_date + 7 	");	// 연장시 반납예정일 7일 증가
+			sql.append("where book_id = ?				");
 			pstmt = conn.prepareStatement(sql.toString());
 			
 			for(int i=0; i<rentingBooksId.size(); i++) {
@@ -320,7 +349,13 @@ public class RentalDAO {
 	}
 	
 	
-	// 대여 현황 조회
+	
+	/**
+	 * sub		: 대여 현황 조회
+	 * param	: memberId: 회원 id
+	 * return 	: Vector<Vector<Object>>: JTable에서 사용할 rowData
+	 * dept		: 해당 회원의 대여현황 조회
+	 */
 	public Vector<Vector<Object>> selectRentingBooksByMember(String memberId) throws SQLException {
 		Vector<Vector<Object>> books = new Vector<Vector<Object>>();
 		Connection conn = null;
@@ -332,14 +367,14 @@ public class RentalDAO {
 			StringBuilder sql = new StringBuilder();
 			// 도서ID, 도서명, 저자, 출판사, 장르, 반납예정일, (기)연장여부
 			sql.append(
-					"select b.book_id, b.title, b.writer, b.publisher, g.genre_name, to_char(r.due_date,'YYYY/MM/DD'), ");
-			sql.append("decode(trunc(r.due_date - r.rent_date), 14, 'O', 'X') "); // 연장을 이미 했는지 여부(연장완료? 기연장여부?)
-			sql.append("from book b, rental r, genre g ");
-			sql.append("where b.book_id = r.book_id ");
-			sql.append("and g.genre_id = b.genre_id ");
-			sql.append("and r.member_id = ? "); // 해당 회원의
-			sql.append("and r.return_date is null "); // 현재 대여(연장)상태인 기록
-			sql.append("order by r.rental_id asc");
+					"select b.book_id, b.title, b.writer, b.publisher, g.genre_name, to_char(r.due_date,'YYYY/MM/DD'), 	");
+			sql.append("decode(trunc(r.due_date - r.rent_date), 14, 'O', 'X') 											"); // 연장을 이미 했는지 여부(연장완료? 기연장여부?)
+			sql.append("from book b, rental r, genre g 																	");
+			sql.append("where b.book_id = r.book_id 																	");
+			sql.append("and g.genre_id = b.genre_id 																	");
+			sql.append("and r.member_id = ? 																			"); // 해당 회원의
+			sql.append("and r.return_date is null 																		"); // 현재 대여(연장)상태인 기록
+			sql.append("order by r.rental_id asc																		");
 
 			pstmt = conn.prepareStatement(sql.toString());
 
@@ -358,7 +393,6 @@ public class RentalDAO {
 				book.addElement(rs.getString(7));
 
 				books.add(book);
-
 			}
 
 		} catch (Exception e) {
@@ -373,11 +407,14 @@ public class RentalDAO {
 		}
 
 		return books;
-
 	}
 	
-	
-	// 도서 대여
+	/**
+	 * sub		: 도서 대여 처리
+	 * param	: memberId: 회원 id, books: 대여할 책id 목록
+	 * return 	: 
+	 * dept		: 회원에 대한 도서 대여 일괄처리
+	 */
 	public void rentalBooksFromBasket(String memberId, List<String> books) throws SQLException {
 		Connection conn = null;
 		PreparedStatement pstmt = null; // 도서 대여기록 추가
@@ -387,13 +424,13 @@ public class RentalDAO {
 			conn = DBconn.getConnection();
 			StringBuilder sql = new StringBuilder();
 			StringBuilder sql2 = new StringBuilder();
-			sql.append("insert into rental(rental_id, member_id, book_id, rent_date, due_date) ");
-			sql.append("values (rental_seq.nextval, ?, ?, sysdate, sysdate+7) ");
+			sql.append("insert into rental(rental_id, member_id, book_id, rent_date, due_date) 		");
+			sql.append("values (rental_seq.nextval, ?, ?, sysdate, sysdate+7) 						");
 			pstmt = conn.prepareStatement(sql.toString());
 
-			sql2.append("update book ");
-			sql2.append("set status = '1' "); // 0 : 대여가능, 1 : 대여중
-			sql2.append("where book_id = ? ");
+			sql2.append("update book 				");
+			sql2.append("set status = '1' 			"); // 0 : 대여가능, 1 : 대여중
+			sql2.append("where book_id = ? 			");
 			pstmt2 = conn.prepareStatement(sql2.toString());
 
 			for (int i = 0; i < books.size(); i++) {
@@ -426,7 +463,13 @@ public class RentalDAO {
 
 		}
 	}
-	//도서 반납
+	
+	/**
+	 * sub		: 도서 반납 처리
+	 * param	: rentingBookId: 대여중인 책id 목록 
+	 * return 	: 
+	 * dept		: 해당 도서 반납일괄처리
+	 */
 	public void returnBooksFromBasket(List<String> rentingBookId) throws SQLException {
 		Connection conn = null;
 		PreparedStatement pstmt = null; // 도서반납일 추가
@@ -436,16 +479,16 @@ public class RentalDAO {
 
 			// 도서반납일 추가 sql문
 			StringBuilder sql = new StringBuilder();
-			sql.append("update rental ");
-			sql.append("set return_date = sysdate ");
-			sql.append("where book_id = ? and return_date is null ");
+			sql.append("update rental 								");
+			sql.append("set return_date = sysdate 					");
+			sql.append("where book_id = ? and return_date is null 	");
 			pstmt = conn.prepareStatement(sql.toString());
 
 			// 대여현황확인 변경 sql문
 			StringBuilder sql2 = new StringBuilder();
-			sql2.append("update book ");
-			sql2.append("set status = '0' ");
-			sql2.append("where book_id = ?");
+			sql2.append("update book 								");
+			sql2.append("set status = '0' 							");
+			sql2.append("where book_id = ?							");
 			pstmt2 = conn.prepareStatement(sql2.toString());
 
 			for (int i = 0; i < rentingBookId.size(); i++) {
@@ -472,5 +515,4 @@ public class RentalDAO {
 				conn.close();
 		}
 	}
-	
 }

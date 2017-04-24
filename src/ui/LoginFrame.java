@@ -23,6 +23,9 @@ public class LoginFrame extends JFrame {
 	private JTextField idTF;
 	private AdminDAO dao = new AdminDAO();
 	private JPasswordField passwordTF;
+	private JLabel lblNewLabel, lblPassword, lblNewLabel_1;
+	private JButton loginBtn;
+	private Image img, img1;
 
 	private void addListener() {
 		idTF.addKeyListener(kListener);
@@ -31,21 +34,14 @@ public class LoginFrame extends JFrame {
 
 	KeyListener kListener = new KeyListener() {
 
+		// 사용하지 않음.
 		@Override
-		public void keyTyped(KeyEvent e) {
-			// TODO Auto-generated method stub
-
-		}
-
+		public void keyTyped(KeyEvent e) {}
 		@Override
-		public void keyReleased(KeyEvent e) {
-			// TODO Auto-generated method stub
-
-		}
+		public void keyReleased(KeyEvent e) {}
 
 		@Override
 		public void keyPressed(KeyEvent e) {
-			// TODO Auto-generated method stub
 			if (e.getSource() instanceof JTextField) {
 				if (e.getKeyCode() == KeyEvent.VK_ENTER) {
 					confirmLogin(idTF.getText().toString(), passwordTF.getText().toString());
@@ -70,30 +66,30 @@ public class LoginFrame extends JFrame {
 		getContentPane().add(idTF);
 		idTF.setColumns(10);
 
-		JLabel lblNewLabel = new JLabel("User Name");
+		lblNewLabel = new JLabel("User Name");
 		lblNewLabel.setFont(new Font("Consolas", Font.PLAIN, 12));
 		lblNewLabel.setBounds(148, 78, 91, 15);
 		getContentPane().add(lblNewLabel);
 
-		JLabel lblPassword = new JLabel("Password");
+		lblPassword = new JLabel("Password");
 		lblPassword.setFont(new Font("Consolas", Font.PLAIN, 12));
 		lblPassword.setBounds(148, 129, 56, 15);
 		getContentPane().add(lblPassword);
 
-		JButton loginBtn = new JButton("Login");
+		loginBtn = new JButton("Login");
 		loginBtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				confirmLogin(idTF.getText().toString(), passwordTF.getText().toString());
 			}
 		});
-		Image img = new ImageIcon(this.getClass().getResource("/Ok.png")).getImage();
+		img = new ImageIcon(this.getClass().getResource("/Ok.png")).getImage();
 		loginBtn.setIcon(new ImageIcon(img));
 
 		loginBtn.setBounds(148, 176, 106, 38);
 		getContentPane().add(loginBtn);
 
-		JLabel lblNewLabel_1 = new JLabel("");
-		Image img1 = new ImageIcon(this.getClass().getResource("/login.png")).getImage();
+		lblNewLabel_1 = new JLabel("");
+		img1 = new ImageIcon(this.getClass().getResource("/login.png")).getImage();
 		lblNewLabel_1.setIcon(new ImageIcon(img1));
 
 		lblNewLabel_1.setBounds(12, 42, 116, 172);
@@ -121,7 +117,13 @@ public class LoginFrame extends JFrame {
 	public static void main(String[] args) {
 		new LoginFrame();
 	}
-
+	
+	/**
+	 * sub		: 로그인 처리
+	 * param	: id, password
+	 * return 	: 
+	 * dept		: 입력값에 대한 관리자 로그인 처리
+	 */
 	private void confirmLogin(String id, String password) {
 		try {
 			if (dao.loginAdmin(new AdminVO(id, password))) {

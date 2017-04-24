@@ -11,7 +11,6 @@ public class DBconn {
 			Class.forName("oracle.jdbc.OracleDriver");
 
 		} catch (ClassNotFoundException e) {
-			// TODO: handle exception
 			e.printStackTrace();
 		}
 

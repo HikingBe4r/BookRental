@@ -84,7 +84,6 @@ public class RentalHistoryPanel extends JPanel implements ActionListener {
 		try {
 			String[] columnNames = { "대여일련번호", "도서ID", "도서명", "회원ID", "회원명", "연락처", "구분", "대여일", "반납일", "반납예정일" };
 			dm = new DefaultTableModel(columnNames, 0) {
-
 				@Override
 				public boolean isCellEditable(int row, int column) {
 					return false;
@@ -99,14 +98,12 @@ public class RentalHistoryPanel extends JPanel implements ActionListener {
 			for (int i = 0; i < rowData.size(); i++) {
 				dm.addRow(rowData.elementAt(i));
 			}
-
 			return new JTable(dm);
 
 		} catch (Exception e) {
 			e.printStackTrace();
 			return null;
 		}
-
 	} // createTable()
 
 	private void addComponent() {

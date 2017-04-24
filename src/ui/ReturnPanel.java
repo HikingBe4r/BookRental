@@ -232,22 +232,7 @@ public class ReturnPanel extends JPanel implements ActionListener {
 			}
 
 			renewalbooks.clear();
-
-			// 연장된 도서 상태 최신화시켜서 반납/연장 목록으로 다시 올리기
-			/*for (int i = renewalcarttabledm.getRowCount() - 1; i >= 0; i--) {
-				//Vector<Object> rowData1 = new Vector<Object>();	
-				
-				rowData1.add((String) renewalcarttabledm.getValueAt(i, 0));
-				rowData1.add((String) renewalcarttabledm.getValueAt(i, 1));
-				rowData1.add((String) renewalcarttabledm.getValueAt(i, 2));
-				rowData1.add((String) renewalcarttabledm.getValueAt(i, 3));
-				rowData1.add((String) renewalcarttabledm.getValueAt(i, 4));
-				//rowData1.add((String) renewalcarttabledm.getValueAt(i, 5));
-				rowData1.add("O");			
-				//retrievetabledm.addRow(rowData1); // 반납/연장 테이블에 행 추가
-
-				
-			}*/
+			
 			RentalDAO dao = new RentalDAO();
 			for(int i=retrievetabledm.getRowCount()-1; i>=0; i--) {
 				retrievetabledm.removeRow(i);;
@@ -384,10 +369,7 @@ public class ReturnPanel extends JPanel implements ActionListener {
 						// 연체 회원
 						JOptionPane.showMessageDialog(button, "연체 중인 도서가 있는 회원입니다.");
 					} else {
-						renewalbooks.add((String) retrievetable.getValueAt(index, 0)); // 장바구니에
-																						// 도서
-																						// ID
-																						// 추가
+						renewalbooks.add((String) retrievetable.getValueAt(index, 0)); // 장바구니에 도서 ID 추가
 						// 연장 장바구니 테이블에 출력
 						Vector<Object> rowData1 = new Vector<Object>();
 						rowData1.add((String) retrievetable.getValueAt(index, 0));
@@ -500,13 +482,9 @@ public class ReturnPanel extends JPanel implements ActionListener {
 					} else if (renewalbooks.contains((String) retrievetable.getValueAt(index, 0))) {
 						// 이미 연장 장바구니에 들어 있으면
 						JOptionPane.showMessageDialog(button, "이미 연장 장바구니에 존재합니다.");
-
 					} else {
 
-						returnbooks.add((String) retrievetable.getValueAt(index, 0)); // 장바구니에
-																						// 도서
-																						// ID
-																						// 추가
+						returnbooks.add((String) retrievetable.getValueAt(index, 0)); // 장바구니에 도서 ID 추가
 						// 반납 장바구니 테이블에 출력
 						Vector<Object> rowData1 = new Vector<Object>();
 						rowData1.add((String) retrievetable.getValueAt(index, 0));
